@@ -1,0 +1,374 @@
+@page "{id:guid}"
+@model AppBackendBasic.AdminUI.Pages.Users.DetailsModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 16px;
+        padding: 32px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .profile-avatar-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .info-row {
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    .info-value {
+        font-size: 15px;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    .activity-item {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.2s;
+    }
+    .activity-item:hover {
+        background: #f8fafc;
+    }
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    .session-card {
+        padding: 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        transition: all 0.2s;
+    }
+    .session-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+    }
+    .session-card.current {
+        border-color: var(--success-color);
+        background: rgba(16, 185, 129, 0.05);
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Back Button -->
+<div class="mb-3">
+    <a asp-page="/Users/Index" class="btn btn-outline-secondary" style="border-radius: 8px;">
+        <i class="fas fa-arrow-left me-2"></i>Back to Users
+    </a>
+</div>
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <div class="profile-avatar-lg">
+                @( 
+                    !string.IsNullOrEmpty(Model.User?.FullName) 
+                        ? Model.User.FullName.Substring(0, 1).ToUpper() 
+                        : (!string.IsNullOrEmpty(Model.User?.Email) 
+                            ? Model.User.Email.Substring(0, 1).ToUpper() 
+                            : "N")
+                )
+            </div>
+            <div class="ms-4">
+                <h2 class="mb-1" style="font-weight: 700;">@(Model.User?.FullName ?? "N/A")</h2>
+                <p class="mb-2 opacity-90">@Model.User?.Email</p>
+                <div class="d-flex gap-2">
+                    @if (Model.User?.IsActive == true)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                    @if (Model.User?.IsAdmin == true)
+                    {
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-shield-alt me-1"></i>Admin
+                        </span>
+                    }
+                    @if (Model.User?.EmailVerified == true)
+                    {
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-check-circle me-1"></i>Verified
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-radius: 8px;">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <form method="post" asp-page-handler="ToggleStatus" asp-route-id="@Model.User?.Id">
+                        <button type="submit" class="dropdown-item">
+                            <i class="fas fa-power-off me-2"></i>
+                            @(Model.User?.IsActive == true ? "Deactivate" : "Activate") User
+                        </button>
+                    </form>
+                </li>
+                <li>
+                    <form method="post" asp-page-handler="ToggleAdmin" asp-route-id="@Model.User?.Id" asp-route-isAdmin="@(!Model.User?.IsAdmin)">
+                        <button type="submit" class="dropdown-item">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            @(Model.User?.IsAdmin == true ? "Remove Admin" : "Make Admin")
+                        </button>
+                    </form>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- User Information -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-user me-2" style="color: var(--primary-color);"></i>User Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Full Name</div>
+                        <div class="col-md-8 info-value">@(Model.User?.FullName ?? "N/A")</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Email Address</div>
+                        <div class="col-md-8 info-value">
+                            @Model.User?.Email
+                            @if (Model.User?.EmailVerified == true)
+                            {
+                                <i class="fas fa-check-circle text-success ms-2" title="Verified"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Phone Number</div>
+                        <div class="col-md-8 info-value">
+                            @(Model.User?.PhoneNumber ?? "N/A")
+                            @if (Model.User?.PhoneVerified == true)
+                            {
+                                <i class="fas fa-check-circle text-success ms-2" title="Verified"></i>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Account Status</div>
+                        <div class="col-md-8 info-value">
+                            @if (Model.User?.IsActive == true)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Role</div>
+                        <div class="col-md-8 info-value">
+                            @if (Model.User?.IsAdmin == true)
+                            {
+                                <span class="badge bg-purple">Administrator</span>
+                            }
+                            else
+                            {
+                                <span>User</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Member Since</div>
+                        <div class="col-md-8 info-value">@Model.User?.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-md-4 info-label">Last Login</div>
+                        <div class="col-md-8 info-value">
+                            @if (Model.User?.LastLoginAt != null)
+                            {
+                                @Model.User.LastLoginAt.Value.ToString("MMM dd, yyyy HH:mm")
+                            }
+                            else
+                            {
+                                <span>Never</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-history me-2" style="color: var(--primary-color);"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                @foreach (var activity in Model.RecentActivity)
+                {
+                    <div class="activity-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">@activity.Action</div>
+                                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                    <i class="fas fa-clock me-1"></i>@activity.Timestamp.ToString("MMM dd, yyyy HH:mm")
+                                    <span class="ms-3"><i class="fas fa-map-marker-alt me-1"></i>@activity.IpAddress</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Subscription Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-crown me-2" style="color: var(--warning-color);"></i>Subscription
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">
+                        @(Model.User?.SubscriptionStatus ?? "Free")
+                    </div>
+                    @if (Model.User?.SubscriptionExpiresAt != null)
+                    {
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+                            Expires: @Model.User.SubscriptionExpiresAt.Value.ToString("MMM dd, yyyy")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-desktop me-2" style="color: var(--info-color);"></i>Active Sessions
+                </h5>
+            </div>
+            <div class="card-body">
+                @foreach (var session in Model.ActiveSessions)
+                {
+                    <div class="session-card @(session.IsCurrentSession ? "current" : "")">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px; color: var(--text-primary);">
+                                    @session.Device
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                                    @session.IpAddress
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                                    Last active: @session.LastActive.ToString("MMM dd, HH:mm")
+                                </div>
+                            </div>
+                            @if (session.IsCurrentSession)
+                            {
+                                <span class="badge bg-success" style="font-size: 10px;">Current</span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px;">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" style="font-weight: 600;">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Delete User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>@Model.User?.FullName</strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                <form method="post" asp-page-handler="Delete" asp-route-id="@Model.User?.Id" class="d-inline">
+                    <button type="submit" class="btn btn-danger" style="border-radius: 8px;">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

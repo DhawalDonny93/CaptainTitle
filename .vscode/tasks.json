@@ -1,0 +1,120 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AppBackendBasic.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AppBackendBasic.API/AppBackendBasic.API.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-adminui",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AppBackendBasic.AdminUI/AppBackendBasic.AdminUI.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-webui",
+            "type": "npm",
+            "script": "build",
+            "path": "AppBackendBasic.WebUI/",
+            "problemMatcher": [],
+            "detail": "Build Vite React WebUI"
+        },
+        {
+            "label": "watch-api",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/AppBackendBasic.API/AppBackendBasic.API.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-adminui",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/AppBackendBasic.AdminUI/AppBackendBasic.AdminUI.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-webui",
+            "type": "npm",
+            "script": "dev",
+            "path": "AppBackendBasic.WebUI/",
+            "problemMatcher": [],
+            "isBackground": true,
+            "detail": "Run Vite dev server with hot reload"
+        },
+        {
+            "label": "clean",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/AppBackendBasic.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "install-webui",
+            "type": "npm",
+            "script": "install",
+            "path": "AppBackendBasic.WebUI/",
+            "problemMatcher": [],
+            "detail": "Install WebUI npm dependencies"
+        },
+        {
+            "label": "lint-webui",
+            "type": "npm",
+            "script": "lint",
+            "path": "AppBackendBasic.WebUI/",
+            "problemMatcher": ["$eslint-stylish"],
+            "detail": "Lint WebUI TypeScript/React code"
+        },
+        {
+            "label": "preview-webui",
+            "type": "npm",
+            "script": "preview",
+            "path": "AppBackendBasic.WebUI/",
+            "problemMatcher": [],
+            "detail": "Preview production build of WebUI"
+        }
+    ]
+}

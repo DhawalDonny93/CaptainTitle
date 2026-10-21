@@ -1,0 +1,127 @@
+@* Skeleton Loader Component for Loading States *@
+
+<div class="skeleton-loader">
+    @if (ViewData["LoaderType"]?.ToString() == "card")
+    {
+        <div class="card skeleton-card">
+            <div class="card-body">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </div>
+        </div>
+    }
+    else if (ViewData["LoaderType"]?.ToString() == "table")
+    {
+        <div class="skeleton-table">
+            <div class="skeleton skeleton-table-header"></div>
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="skeleton skeleton-table-row"></div>
+            }
+        </div>
+    }
+    else if (ViewData["LoaderType"]?.ToString() == "list")
+    {
+        <div class="skeleton-list">
+            @for (int i = 0; i < 3; i++)
+            {
+                <div class="skeleton-list-item">
+                    <div class="skeleton skeleton-avatar"></div>
+                    <div class="skeleton-list-content">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        @* Default skeleton *@
+        <div class="skeleton-default">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+        </div>
+    }
+</div>
+
+<style>
+    .skeleton-loader {
+        padding: 1rem;
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .skeleton-title {
+        height: 24px;
+        width: 60%;
+        margin-bottom: 16px;
+    }
+
+    .skeleton-text {
+        height: 16px;
+        width: 100%;
+    }
+
+    .skeleton-text.short {
+        width: 70%;
+    }
+
+    .skeleton-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .skeleton-table-header {
+        height: 40px;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .skeleton-table-row {
+        height: 48px;
+        width: 100%;
+        margin-bottom: 4px;
+    }
+
+    .skeleton-list-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .skeleton-list-content {
+        flex: 1;
+    }
+
+    .skeleton-card {
+        border: 1px solid #e0e0e0;
+    }
+
+    @@keyframes skeleton-loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .skeleton {
+            animation: none;
+            background: #f0f0f0;
+        }
+    }
+</style>

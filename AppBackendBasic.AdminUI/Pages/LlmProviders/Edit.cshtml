@@ -1,0 +1,180 @@
+@page "{id:int}"
+@model AppBackendBasic.AdminUI.Pages.LlmProviders.EditModel
+@{
+    ViewData["Title"] = "Edit LLM Provider";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="mb-4">
+                <a asp-page="Index" class="btn btn-link text-decoration-none ps-0">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Providers
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Edit LLM Provider</h4>
+                </div>
+                <div class="card-body">
+                    <div id="loadingSpinner" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Loading provider details...</p>
+                    </div>
+
+                    <form method="post" id="providerForm" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Provider Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="Name" required>
+                                <small class="text-muted">Internal identifier</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Display Name</label>
+                                <input type="text" class="form-control" id="displayName" name="DisplayName">
+                                <small class="text-muted">User-friendly name</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">API Key</label>
+                            <input type="password" class="form-control" name="ApiKey" 
+                                   placeholder="Leave empty to keep existing key">
+                            <small class="text-muted">Only enter if you want to update the API key</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Base URL</label>
+                            <input type="url" class="form-control" id="baseUrl" name="BaseUrl">
+                            <small class="text-muted">API endpoint</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Priority <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="priority" name="Priority" min="1" required>
+                                <small class="text-muted">Lower = higher priority</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Rate Limit (per min)</label>
+                                <input type="number" class="form-control" id="rateLimit" name="RateLimitPerMinute" min="1">
+                                <small class="text-muted">Optional</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="isActive" name="IsActive">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Provider
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function() {
+            'use strict';
+            
+            const providerId = @Model.Id;
+            let formSubmitHandlerAttached = false;
+
+            async function loadProvider() {
+                try {
+                    const response = await window.apiClient.get(`/api/admin/llm-providers/${providerId}`);
+                    const provider = response;
+
+                    // Safely populate form fields
+                    const nameField = document.getElementById('name');
+                    const displayNameField = document.getElementById('displayName');
+                    const baseUrlField = document.getElementById('baseUrl');
+                    const priorityField = document.getElementById('priority');
+                    const rateLimitField = document.getElementById('rateLimit');
+                    const isActiveField = document.getElementById('isActive');
+
+                    if (nameField) nameField.value = provider.name || '';
+                    if (displayNameField) displayNameField.value = provider.displayName || '';
+                    if (baseUrlField) baseUrlField.value = provider.apiEndpoint || provider.baseUrl || '';
+                    if (priorityField) priorityField.value = provider.priority || 1;
+                    if (rateLimitField) rateLimitField.value = provider.rateLimitPerMinute || '';
+                    if (isActiveField) isActiveField.value = provider.isActive ? 'true' : 'false';
+
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('providerForm').style.display = 'block';
+                } catch (error) {
+                    console.error('Error loading provider:', error);
+                    alert('❌ Error loading provider: ' + (error.message || 'Unknown error'));
+                    window.location.href = '/LlmProviders/Index';
+                }
+            }
+
+            function attachFormHandler() {
+                const form = document.getElementById('providerForm');
+                if (!form || formSubmitHandlerAttached) {
+                    return;
+                }
+
+                formSubmitHandlerAttached = true;
+                
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const data = {
+                        name: formData.get('Name'),
+                        displayName: formData.get('DisplayName'),
+                        baseUrl: formData.get('BaseUrl') || null,
+                        priority: parseInt(formData.get('Priority')),
+                        rateLimitPerMinute: formData.get('RateLimitPerMinute') ? parseInt(formData.get('RateLimitPerMinute')) : null,
+                        isActive: formData.get('IsActive') === 'true'
+                    };
+
+                    const apiKey = formData.get('ApiKey');
+                    if (apiKey) {
+                        data.apiKey = apiKey;
+                    }
+
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalHtml = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+
+                    try {
+                        await window.apiClient.put(`/api/admin/llm-providers/${providerId}`, data);
+                        alert('✅ Provider updated successfully!');
+                        window.location.href = '/LlmProviders/Index';
+                    } catch (error) {
+                        alert('❌ Failed to update provider: ' + error.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalHtml;
+                    }
+                });
+            }
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    attachFormHandler();
+                    loadProvider();
+                });
+            } else {
+                attachFormHandler();
+                loadProvider();
+            }
+        })();
+    </script>
+}

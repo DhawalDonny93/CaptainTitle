@@ -1,0 +1,382 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Notifications.SendModel
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<style>
+    .notification-form {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+    }
+    .form-section {
+        margin-bottom: 24px;
+    }
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+    .form-label-custom {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        display: block;
+    }
+    .form-control-custom {
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        padding: 12px 16px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .form-control-custom:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+    .broadcast-toggle {
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .broadcast-toggle:hover {
+        border-color: var(--primary-color);
+    }
+    .broadcast-toggle.active {
+        border-color: var(--primary-color);
+        background: rgba(99, 102, 241, 0.05);
+    }
+    .priority-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+    }
+    .priority-badge.normal {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+    .priority-badge.high {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    .priority-badge.urgent {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .priority-badge.active {
+        border-color: currentColor;
+    }
+    .history-item {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.2s;
+    }
+    .history-item:hover {
+        background: #f8fafc;
+    }
+    .history-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--primary-color);">
+                    @Model.Stats.TotalSent.ToString("N0")
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    Total Sent
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--success-color);">
+                    @Model.Stats.SentToday
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    Sent Today
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--info-color);">
+                    @Model.Stats.SentThisWeek
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    This Week
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--warning-color);">
+                    @Model.Stats.SentThisMonth
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    This Month
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--success-color);">
+                    @Model.Stats.DeliveryRate.ToString("F1")%
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    Delivery Rate
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 28px; font-weight: 700; color: var(--secondary-color);">
+                    @Model.Stats.OpenRate.ToString("F1")%
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                    Open Rate
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Send Notification Form -->
+    <div class="col-md-7">
+        <div class="notification-form">
+            <h5 style="font-weight: 700; color: var(--text-primary); margin-bottom: 24px;">
+                <i class="fas fa-paper-plane me-2" style="color: var(--primary-color);"></i>
+                Send Notification
+            </h5>
+
+            <form method="post" asp-page-handler="Send">
+                <!-- Notification Type -->
+                <div class="form-section">
+                    <label class="form-label-custom">
+                        <i class="fas fa-bullhorn me-2"></i>Notification Type
+                    </label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="broadcast-toggle" id="individualToggle" onclick="selectType(false)">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-user fa-2x" style="color: var(--primary-color);"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 15px;">Individual</div>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Send to specific user</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="broadcast-toggle" id="broadcastToggle" onclick="selectType(true)">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-users fa-2x" style="color: var(--warning-color);"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 15px;">Broadcast</div>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">Send to all users</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="Notification.IsBroadcast" id="isBroadcastInput" />
+                </div>
+
+                <!-- User Email (for individual) -->
+                <div class="form-section" id="emailSection">
+                    <label class="form-label-custom" for="userEmail">
+                        <i class="fas fa-envelope me-2"></i>Recipient Email
+                    </label>
+                    <input type="email" 
+                           class="form-control form-control-custom" 
+                           id="userEmail"
+                           asp-for="Notification.UserEmail"
+                           placeholder="user@example.com">
+                </div>
+
+                <!-- Title -->
+                <div class="form-section">
+                    <label class="form-label-custom" for="title">
+                        <i class="fas fa-heading me-2"></i>Title <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-custom" 
+                           id="title"
+                           asp-for="Notification.Title"
+                           placeholder="Enter notification title"
+                           required>
+                </div>
+
+                <!-- Message -->
+                <div class="form-section">
+                    <label class="form-label-custom" for="message">
+                        <i class="fas fa-comment-alt me-2"></i>Message <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control form-control-custom" 
+                              id="message"
+                              asp-for="Notification.Message"
+                              rows="4" 
+                              placeholder="Enter your message here..."
+                              required></textarea>
+                    <small class="text-muted">Maximum 500 characters</small>
+                </div>
+
+                <!-- Priority -->
+                <div class="form-section">
+                    <label class="form-label-custom">
+                        <i class="fas fa-flag me-2"></i>Priority
+                    </label>
+                    <div class="d-flex gap-2">
+                        <span class="priority-badge normal active" onclick="selectPriority('Normal', this)">
+                            <i class="fas fa-circle me-1"></i>Normal
+                        </span>
+                        <span class="priority-badge high" onclick="selectPriority('High', this)">
+                            <i class="fas fa-circle me-1"></i>High
+                        </span>
+                        <span class="priority-badge urgent" onclick="selectPriority('Urgent', this)">
+                            <i class="fas fa-circle me-1"></i>Urgent
+                        </span>
+                    </div>
+                    <input type="hidden" asp-for="Notification.Priority" id="priorityInput" value="Normal" />
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 10px;">
+                        <i class="fas fa-paper-plane me-2"></i>Send Notification
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification History -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-history me-2" style="color: var(--primary-color);"></i>
+                    Recent Notifications
+                </h5>
+            </div>
+            <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+                @foreach (var notification in Model.RecentNotifications)
+                {
+                    <div class="history-item">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px; color: var(--text-primary);">
+                                    @notification.Title
+                                </div>
+                                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                    @notification.Message
+                                </div>
+                            </div>
+                            <span class="badge bg-success" style="font-size: 10px;">
+                                @notification.Status
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div style="font-size: 12px; color: var(--text-secondary);">
+                                <i class="fas fa-clock me-1"></i>
+                                @notification.SentAt.ToString("MMM dd, HH:mm")
+                            </div>
+                            <div style="font-size: 12px;">
+                                @if (notification.Type == "Broadcast")
+                                {
+                                    <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color);">
+                                        <i class="fas fa-users me-1"></i>@notification.Recipients users
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                                        <i class="fas fa-user me-1"></i>Individual
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isBroadcast = false;
+
+        function selectType(broadcast) {
+            isBroadcast = broadcast;
+            document.getElementById('isBroadcastInput').value = broadcast;
+            
+            // Update UI
+            document.getElementById('individualToggle').classList.toggle('active', !broadcast);
+            document.getElementById('broadcastToggle').classList.toggle('active', broadcast);
+            
+            // Show/hide email field
+            document.getElementById('emailSection').style.display = broadcast ? 'none' : 'block';
+            document.getElementById('userEmail').required = !broadcast;
+        }
+
+        function selectPriority(priority, element) {
+            document.getElementById('priorityInput').value = priority;
+            
+            // Remove active from all
+            document.querySelectorAll('.priority-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            
+            // Add active to selected
+            element.classList.add('active');
+        }
+
+        // Initialize
+        selectType(false);
+    </script>
+}

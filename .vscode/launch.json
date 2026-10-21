@@ -1,0 +1,83 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Launch API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/AppBackendBasic.API/bin/Debug/net8.0/AppBackendBasic.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/AppBackendBasic.API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Launch AdminUI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/AppBackendBasic.AdminUI/bin/Debug/net8.0/AppBackendBasic.AdminUI.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/AppBackendBasic.AdminUI",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
+            "name": "Launch WebUI (Vite)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "cwd": "${workspaceFolder}/AppBackendBasic.WebUI",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "serverReadyAction": {
+                "pattern": "Local:\\s+(https?://localhost:\\d+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch All (API + AdminUI + WebUI)",
+            "configurations": [
+                "Launch API",
+                "Launch AdminUI",
+                "Launch WebUI (Vite)"
+            ],
+            "stopAll": true,
+            "presentation": {
+                "hidden": false,
+                "group": "all",
+                "order": 1
+            }
+        }
+    ]
+}

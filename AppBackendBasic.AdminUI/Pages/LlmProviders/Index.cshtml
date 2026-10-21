@@ -1,0 +1,145 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.LlmProviders.IndexModel
+@{
+    ViewData["Title"] = "LLM Providers";
+}
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">LLM Provider Configuration</h2>
+            <p class="text-muted">Manage AI model providers and their configurations</p>
+        </div>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Provider
+        </a>
+    </div>
+
+    @if (Model.Providers == null || !Model.Providers.Any())
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                <h5>No LLM Providers Configured</h5>
+                <p class="text-muted">Add your first AI provider to start using LLM features</p>
+                <a asp-page="Create" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus me-2"></i>Add Provider
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var provider in Model.Providers)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">@provider.DisplayName</h5>
+                                    <small class="text-muted">@provider.Name</small>
+                                </div>
+                                <span class="badge @(provider.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(provider.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <small class="text-muted">Priority</small>
+                                    <strong>@provider.Priority</strong>
+                                </div>
+                                @if (provider.RateLimitPerMinute.HasValue)
+                                {
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <small class="text-muted">Rate Limit</small>
+                                        <strong>@provider.RateLimitPerMinute/min</strong>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(provider.BaseUrl))
+                                {
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <small class="text-muted">Endpoint</small>
+                                        <small class="text-truncate" style="max-width: 150px;" title="@provider.BaseUrl">
+                                            @provider.BaseUrl
+                                        </small>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a asp-page="Edit" asp-route-id="@provider.Id" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-info" onclick="testProvider(@provider.Id)">
+                                    <i class="fas fa-vial me-1"></i>Test
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteProvider(@provider.Id, '@provider.DisplayName')">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                <i class="far fa-clock me-1"></i>
+                                Updated @provider.UpdatedAt.ToString("MMM dd, yyyy")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function testProvider(id) {
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Testing...';
+
+            try {
+                const data = await window.apiClient.post(`/api/admin/llm-providers/${id}/test`);
+                alert('✅ Provider test successful!\n\n' + (data.message || 'Connection verified'));
+            } catch (error) {
+                alert('❌ Error testing provider: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        async function deleteProvider(id, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await window.apiClient.delete(`/api/admin/llm-providers/${id}`);
+                alert('✅ Provider deleted successfully');
+                window.location.reload();
+            } catch (error) {
+                alert('❌ Error deleting provider: ' + error.message);
+            }
+        }
+    </script>
+}

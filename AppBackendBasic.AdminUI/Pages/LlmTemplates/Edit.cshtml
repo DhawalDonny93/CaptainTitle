@@ -1,0 +1,151 @@
+@page "{id:guid}"
+@model AppBackendBasic.AdminUI.Pages.LlmTemplates.EditModel
+@{
+    ViewData["Title"] = "Edit LLM Template";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit LLM Prompt Template</h1>
+        <a asp-page="./Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="Template.Id" />
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Template.Name" class="font-weight-bold">Name *</label>
+                            <input asp-for="Template.Name" class="form-control" required />
+                            <span asp-validation-for="Template.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Template.Category" class="font-weight-bold">Category *</label>
+                            <input asp-for="Template.Category" class="form-control" required />
+                            <span asp-validation-for="Template.Category" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Template.Description" class="font-weight-bold">Description *</label>
+                    <textarea asp-for="Template.Description" class="form-control" rows="2" required></textarea>
+                    <span asp-validation-for="Template.Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Template.SystemPrompt" class="font-weight-bold">System Prompt *</label>
+                    <textarea asp-for="Template.SystemPrompt" class="form-control font-monospace" rows="6" required></textarea>
+                    <span asp-validation-for="Template.SystemPrompt" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Template.UserPromptTemplate" class="font-weight-bold">User Prompt Template</label>
+                    <textarea asp-for="Template.UserPromptTemplate" class="form-control font-monospace" rows="3"></textarea>
+                    <span asp-validation-for="Template.UserPromptTemplate" class="text-danger"></span>
+                    <small class="form-text text-muted">Use placeholders: {userInput}, {context}</small>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Template.ResponseSchema" class="font-weight-bold">Response Schema (JSON)</label>
+                    <textarea asp-for="Template.ResponseSchema" class="form-control font-monospace" rows="6"></textarea>
+                    <span asp-validation-for="Template.ResponseSchema" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label asp-for="Template.Model" class="font-weight-bold">Model *</label>
+                            <select asp-for="Template.Model" class="form-control" required>
+                                <option value="gpt-4o">GPT-4o</option>
+                                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            </select>
+                            <span asp-validation-for="Template.Model" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label asp-for="Template.Temperature" class="font-weight-bold">Temperature</label>
+                            <input asp-for="Template.Temperature" type="number" step="0.1" min="0" max="2" class="form-control" />
+                            <span asp-validation-for="Template.Temperature" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label asp-for="Template.MaxTokens" class="font-weight-bold">Max Tokens</label>
+                            <input asp-for="Template.MaxTokens" type="number" class="form-control" />
+                            <span asp-validation-for="Template.MaxTokens" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label asp-for="Template.ResponseFormat" class="font-weight-bold">Response Format</label>
+                            <select asp-for="Template.ResponseFormat" class="form-control">
+                                <option value="json">JSON</option>
+                                <option value="text">Text</option>
+                                <option value="structured">Structured</option>
+                            </select>
+                            <span asp-validation-for="Template.ResponseFormat" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="Template.RequiresImage" type="checkbox" class="custom-control-input" id="requiresImage" />
+                                <label class="custom-control-label font-weight-bold" for="requiresImage">
+                                    Requires Image
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input asp-for="Template.IsActive" type="checkbox" class="custom-control-input" id="isActive" />
+                                <label class="custom-control-label font-weight-bold" for="isActive">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between">
+                    <a asp-page="./Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Template
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

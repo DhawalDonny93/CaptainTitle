@@ -1,0 +1,580 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Settings.IndexModel
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<style>
+    .settings-tabs {
+        background: white;
+        border-radius: 12px;
+        padding: 8px;
+        margin-bottom: 24px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+    }
+    .settings-tab {
+        padding: 12px 24px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .settings-tab:hover {
+        background: rgba(99, 102, 241, 0.05);
+        color: var(--primary-color);
+    }
+    .settings-tab.active {
+        background: var(--primary-color);
+        color: white;
+    }
+    .settings-section {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+        display: none;
+    }
+    .settings-section.active {
+        display: block;
+    }
+    .setting-row {
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .setting-row:last-child {
+        border-bottom: none;
+    }
+    .setting-label {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    .setting-description {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: 0.3s;
+        border-radius: 28px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+        background-color: var(--success-color);
+    }
+    input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+    }
+    .form-input {
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 10px 14px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .form-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+</style>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Settings Tabs -->
+<div class="settings-tabs">
+    <button class="settings-tab active" onclick="showTab('general')">
+        <i class="fas fa-cog me-2"></i>General
+    </button>
+    <button class="settings-tab" onclick="showTab('features')">
+        <i class="fas fa-toggle-on me-2"></i>Features
+    </button>
+    <button class="settings-tab" onclick="showTab('email')">
+        <i class="fas fa-envelope me-2"></i>Email
+    </button>
+    <button class="settings-tab" onclick="showTab('security')">
+        <i class="fas fa-shield-alt me-2"></i>Security
+    </button>
+    <button class="settings-tab" onclick="showTab('limits')">
+        <i class="fas fa-tachometer-alt me-2"></i>Rate Limits
+    </button>
+</div>
+
+<form method="post" asp-page-handler="Update">
+    <!-- General Settings -->
+    <div id="general-section" class="settings-section active">
+        <h5 style="font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-cog me-2" style="color: var(--primary-color);"></i>General Settings
+        </h5>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Application Name</div>
+                    <div class="setting-description">The name of your application</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control form-input" asp-for="Settings.ApplicationName" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Application URL</div>
+                    <div class="setting-description">The public URL of your application</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="url" class="form-control form-input" asp-for="Settings.ApplicationUrl" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Support Email</div>
+                    <div class="setting-description">Email address for user support</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="email" class="form-control form-input" asp-for="Settings.SupportEmail" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Maintenance Mode</div>
+                    <div class="setting-description">Enable to put the application in maintenance mode</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.MaintenanceMode" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Flags -->
+    <div id="features-section" class="settings-section">
+        <h5 style="font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-toggle-on me-2" style="color: var(--primary-color);"></i>Feature Flags
+        </h5>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">User Registration</div>
+                    <div class="setting-description">Allow new users to register</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableUserRegistration" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Email Verification</div>
+                    <div class="setting-description">Require email verification for new accounts</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableEmailVerification" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Two-Factor Authentication</div>
+                    <div class="setting-description">Enable 2FA for enhanced security</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableTwoFactorAuth" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Social Login</div>
+                    <div class="setting-description">Allow login with social providers</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableSocialLogin" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Push Notifications</div>
+                    <div class="setting-description">Enable push notifications</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableNotifications" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Analytics</div>
+                    <div class="setting-description">Enable analytics tracking</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.EnableAnalytics" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Settings -->
+    <div id="email-section" class="settings-section">
+        <h5 style="font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-envelope me-2" style="color: var(--primary-color);"></i>Email Configuration
+        </h5>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">SMTP Host</div>
+                    <div class="setting-description">SMTP server hostname</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control form-input" asp-for="Settings.SmtpHost" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">SMTP Port</div>
+                    <div class="setting-description">SMTP server port (usually 587 or 465)</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.SmtpPort" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">SMTP Username</div>
+                    <div class="setting-description">SMTP authentication username</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control form-input" asp-for="Settings.SmtpUsername" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">From Email</div>
+                    <div class="setting-description">Email address to send from</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="email" class="form-control form-input" asp-for="Settings.SmtpFromEmail" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">From Name</div>
+                    <div class="setting-description">Display name for sent emails</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control form-input" asp-for="Settings.SmtpFromName" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div id="security-section" class="settings-section">
+        <h5 style="font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-shield-alt me-2" style="color: var(--primary-color);"></i>Security Settings
+        </h5>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Password Minimum Length</div>
+                    <div class="setting-description">Minimum number of characters required</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.PasswordMinLength" min="6" max="32" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Require Uppercase</div>
+                    <div class="setting-description">Password must contain uppercase letters</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.PasswordRequireUppercase" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Require Lowercase</div>
+                    <div class="setting-description">Password must contain lowercase letters</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.PasswordRequireLowercase" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Require Digit</div>
+                    <div class="setting-description">Password must contain numbers</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.PasswordRequireDigit" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Require Special Character</div>
+                    <div class="setting-description">Password must contain special characters</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.PasswordRequireSpecialChar" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Max Login Attempts</div>
+                    <div class="setting-description">Maximum failed login attempts before lockout</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.MaxLoginAttempts" min="3" max="10" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Lockout Duration (minutes)</div>
+                    <div class="setting-description">How long to lock account after max attempts</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.LockoutDurationMinutes" min="5" max="1440" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Session Timeout (minutes)</div>
+                    <div class="setting-description">Automatic logout after inactivity</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.SessionTimeoutMinutes" min="15" max="1440" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Refresh Token Expiry (days)</div>
+                    <div class="setting-description">How long refresh tokens remain valid</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.RefreshTokenExpiryDays" min="1" max="90" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Limiting -->
+    <div id="limits-section" class="settings-section">
+        <h5 style="font-weight: 700; margin-bottom: 24px; color: var(--text-primary);">
+            <i class="fas fa-tachometer-alt me-2" style="color: var(--primary-color);"></i>Rate Limiting
+        </h5>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Enable Rate Limiting</div>
+                    <div class="setting-description">Limit API requests to prevent abuse</div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <label class="toggle-switch">
+                        <input type="checkbox" asp-for="Settings.RateLimitEnabled" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Max Requests</div>
+                    <div class="setting-description">Maximum requests allowed per period</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.RateLimitRequests" min="10" max="1000" />
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="setting-label">Period (seconds)</div>
+                    <div class="setting-description">Time window for rate limit</div>
+                </div>
+                <div class="col-md-6">
+                    <input type="number" class="form-control form-input" asp-for="Settings.RateLimitPeriodSeconds" min="10" max="3600" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 10px; padding: 12px 32px;">
+            <i class="fas fa-save me-2"></i>Save All Settings
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-lg ms-2" style="border-radius: 10px; padding: 12px 32px;" onclick="location.reload()">
+            <i class="fas fa-undo me-2"></i>Reset
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function showTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all tabs
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(tabName + '-section').classList.add('active');
+            
+            // Activate selected tab
+            event.target.classList.add('active');
+        }
+    </script>
+}

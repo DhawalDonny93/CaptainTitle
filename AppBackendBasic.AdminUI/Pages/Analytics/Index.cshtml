@@ -1,0 +1,508 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Analytics.IndexModel
+@{
+    ViewData["Title"] = "Analytics";
+}
+
+<style>
+    .metric-card {
+        position: relative;
+        overflow: hidden;
+    }
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    .metric-card.primary::before {
+        background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+    }
+    .metric-card.success::before {
+        background: var(--success-color);
+    }
+    .metric-card.warning::before {
+        background: var(--warning-color);
+    }
+    .metric-card.info::before {
+        background: var(--info-color);
+    }
+    .metric-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .metric-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 8px 0 4px 0;
+        color: var(--text-primary);
+    }
+    .metric-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    .metric-change {
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 8px;
+    }
+    .metric-change.up {
+        color: var(--success-color);
+    }
+    .metric-change.down {
+        color: var(--danger-color);
+    }
+    .country-row {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .country-row:last-child {
+        border-bottom: none;
+    }
+    .progress-thin {
+        height: 6px;
+        border-radius: 3px;
+        background: #f1f5f9;
+    }
+    .period-selector {
+        display: flex;
+        gap: 8px;
+        background: white;
+        padding: 4px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+    .period-btn {
+        padding: 8px 16px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-secondary);
+    }
+    .period-btn.active {
+        background: var(--primary-color);
+        color: white;
+    }
+</style>
+
+<!-- Period Selector -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 style="font-weight: 700; color: var(--text-primary); margin: 0;">Analytics Overview</h4>
+        <p style="color: var(--text-secondary); margin: 4px 0 0 0;">Track your application performance and user metrics</p>
+    </div>
+    <div class="period-selector">
+        <button class="period-btn @(Model.Period == "week" ? "active" : "")" onclick="window.location.href='?period=week'">
+            Week
+        </button>
+        <button class="period-btn @(Model.Period == "month" ? "active" : "")" onclick="window.location.href='?period=month'">
+            Month
+        </button>
+        <button class="period-btn @(Model.Period == "year" ? "active" : "")" onclick="window.location.href='?period=year'">
+            Year
+        </button>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card metric-card primary">
+            <div class="card-body">
+                <div class="metric-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="metric-label">Total Users</div>
+                <div class="metric-value">@Model.Analytics.TotalUsers.ToString("N0")</div>
+                <div class="metric-change up">
+                    <i class="fas fa-arrow-up me-1"></i>+@Model.Analytics.NewUsersThisMonth this month
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card success">
+            <div class="card-body">
+                <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="metric-label">Active Users</div>
+                <div class="metric-value">@Model.Analytics.ActiveUsers.ToString("N0")</div>
+                <div class="metric-change up">
+                    <i class="fas fa-arrow-up me-1"></i>@((Model.Analytics.ActiveUsers * 100.0 / Model.Analytics.TotalUsers).ToString("F1"))% of total
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card warning">
+            <div class="card-body">
+                <div class="metric-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color);">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="metric-label">Subscriptions</div>
+                <div class="metric-value">@Model.Analytics.ActiveSubscriptions.ToString("N0")</div>
+                <div class="metric-change up">
+                    <i class="fas fa-arrow-up me-1"></i>@((Model.Analytics.ActiveSubscriptions * 100.0 / Model.Analytics.TotalUsers).ToString("F1"))% conversion
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card info">
+            <div class="card-body">
+                <div class="metric-icon" style="background: rgba(6, 182, 212, 0.1); color: var(--info-color);">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">$@Model.Analytics.TotalRevenue.ToString("N0")</div>
+                <div class="metric-change up">
+                    <i class="fas fa-arrow-up me-1"></i>$@Model.Analytics.MonthlyRecurringRevenue.ToString("N0") MRR
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-4 mb-4">
+    <!-- User Growth Chart -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" style="font-weight: 600;">
+                        <i class="fas fa-chart-line me-2" style="color: var(--primary-color);"></i>User Growth
+                    </h5>
+                    <span class="badge" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                        Last 12 months
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="userGrowthChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-chart-pie me-2" style="color: var(--primary-color);"></i>Key Metrics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Churn Rate</span>
+                        <strong style="color: var(--danger-color);">@Model.Analytics.ChurnRate.ToString("F1")%</strong>
+                    </div>
+                    <div class="progress-thin">
+                        <div style="height: 100%; background: var(--danger-color); width: @Model.Analytics.ChurnRate%; border-radius: 3px;"></div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">ARPU</span>
+                        <strong style="color: var(--success-color);">$@Model.Analytics.AverageRevenuePerUser.ToString("F2")</strong>
+                    </div>
+                    <div class="text-center p-3" style="background: rgba(16, 185, 129, 0.05); border-radius: 12px;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--success-color);">
+                            $@Model.Analytics.AverageRevenuePerUser.ToString("F2")
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            Average Revenue Per User
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">New Users Today</span>
+                        <strong style="color: var(--primary-color);">@Model.Analytics.NewUsersToday</strong>
+                    </div>
+                    <div class="text-center p-2" style="background: rgba(99, 102, 241, 0.05); border-radius: 8px;">
+                        <span style="font-size: 20px; font-weight: 700; color: var(--primary-color);">
+                            +@Model.Analytics.NewUsersToday
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-4 mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-chart-area me-2" style="color: var(--info-color);"></i>Revenue Trend
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscription Distribution -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-chart-pie me-2" style="color: var(--warning-color);"></i>Subscription Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="subscriptionChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="row g-4">
+    <!-- Top Countries -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-globe me-2" style="color: var(--primary-color);"></i>Top Countries
+                </h5>
+            </div>
+            <div class="card-body">
+                @foreach (var country in Model.Analytics.TopCountries)
+                {
+                    <div class="country-row">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span style="font-weight: 600; color: var(--text-primary);">@country.Country</span>
+                                <span style="font-size: 13px; color: var(--text-secondary); margin-left: 8px;">
+                                    @country.Users users
+                                </span>
+                            </div>
+                            <strong style="color: var(--primary-color);">@country.Percentage.ToString("F1")%</strong>
+                        </div>
+                        <div class="progress-thin">
+                            <div style="height: 100%; background: var(--primary-color); width: @country.Percentage%; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Statistics -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="fas fa-desktop me-2" style="color: var(--secondary-color);"></i>Device Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="deviceChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // User Growth Chart
+        const userGrowthCtx = document.getElementById('userGrowthChart');
+        const userGradient = userGrowthCtx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        userGradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+        userGradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+        
+        new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: [@string.Join(",", Model.Analytics.UserGrowthData.Select(d => $"'{d.Label}'"))],
+                datasets: [{
+                    label: 'Users',
+                    data: [@string.Join(",", Model.Analytics.UserGrowthData.Select(d => d.Value))],
+                    borderColor: 'rgb(99, 102, 241)',
+                    backgroundColor: userGradient,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(99, 102, 241)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        padding: 12,
+                        borderRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
+                        ticks: { font: { size: 12 }, color: '#64748b' }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { size: 12 }, color: '#64748b' }
+                    }
+                }
+            }
+        });
+
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart');
+        const revenueGradient = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        revenueGradient.addColorStop(0, 'rgba(6, 182, 212, 0.3)');
+        revenueGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+        
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: [@string.Join(",", Model.Analytics.RevenueData.Select(d => $"'{d.Label}'"))],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [@string.Join(",", Model.Analytics.RevenueData.Select(d => d.Value))],
+                    borderColor: 'rgb(6, 182, 212)',
+                    backgroundColor: revenueGradient,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(6, 182, 212)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        padding: 12,
+                        borderRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
+                        ticks: {
+                            font: { size: 12 },
+                            color: '#64748b',
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { size: 12 }, color: '#64748b' }
+                    }
+                }
+            }
+        });
+
+        // Subscription Chart
+        new Chart(document.getElementById('subscriptionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: [@string.Join(",", Model.Analytics.SubscriptionData.Select(d => $"'{d.Label}'"))],
+                datasets: [{
+                    data: [@string.Join(",", Model.Analytics.SubscriptionData.Select(d => d.Value))],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(239, 68, 68, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, font: { size: 13 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        padding: 12,
+                        borderRadius: 8
+                    }
+                }
+            }
+        });
+
+        // Device Chart
+        new Chart(document.getElementById('deviceChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Desktop', 'Mobile', 'Tablet'],
+                datasets: [{
+                    data: [@Model.Analytics.DeviceStats.Desktop, @Model.Analytics.DeviceStats.Mobile, @Model.Analytics.DeviceStats.Tablet],
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, font: { size: 13 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        padding: 12,
+                        borderRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

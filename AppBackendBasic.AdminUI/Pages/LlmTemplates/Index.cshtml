@@ -1,0 +1,169 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.LlmTemplates.IndexModel
+@{
+    ViewData["Title"] = "LLM Prompt Templates";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">LLM Prompt Templates</h1>
+        <a asp-page="./Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Template
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Filter by Category -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Templates</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="form-inline">
+                <label class="mr-2">Category:</label>
+                <select name="category" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category" selected="@(Model.SelectedCategory == category)">@category</option>
+                    }
+                </select>
+                <label class="mr-2 ml-3">Status:</label>
+                <select name="isActive" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="true" selected="@(Model.IsActiveFilter == true)">Active</option>
+                    <option value="false" selected="@(Model.IsActiveFilter == false)">Inactive</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Templates List -->
+    <div class="row">
+        @foreach (var template in Model.Templates)
+        {
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow h-100 @(template.IsActive ? "" : "bg-light")">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">@template.Name</h6>
+                        <div>
+                            @if (template.IsActive)
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">Inactive</span>
+                            }
+                            @if (template.RequiresImage)
+                            {
+                                <span class="badge badge-info ml-1">Image Required</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-2">
+                            <small><strong>Category:</strong> @template.Category</small>
+                        </p>
+                        <p class="mb-3">@template.Description</p>
+                        
+                        <div class="row text-center mb-3">
+                            <div class="col-3">
+                                <small class="text-muted">Model</small>
+                                <p class="mb-0"><strong>@template.Model</strong></p>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted">Temp</small>
+                                <p class="mb-0"><strong>@template.Temperature</strong></p>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted">Tokens</small>
+                                <p class="mb-0"><strong>@template.MaxTokens</strong></p>
+                            </div>
+                            <div class="col-3">
+                                <small class="text-muted">Format</small>
+                                <p class="mb-0"><strong>@template.ResponseFormat</strong></p>
+                            </div>
+                        </div>
+
+                        <div class="text-muted small mb-3">
+                            <i class="far fa-clock"></i> Created: @template.CreatedAt.ToString("MMM dd, yyyy")
+                            @if (template.UpdatedAt > template.CreatedAt)
+                            {
+                                <span class="ml-2">| Updated: @template.UpdatedAt.ToString("MMM dd, yyyy")</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a asp-page="./Details" asp-route-id="@template.Id" class="btn btn-sm btn-info">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@template.Id" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        @if (template.IsActive)
+                        {
+                            <form method="post" asp-page-handler="Deactivate" asp-route-id="@template.Id" 
+                                  onsubmit="return confirm('Are you sure you want to deactivate this template?');" 
+                                  class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-ban"></i> Deactivate
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="Activate" asp-route-id="@template.Id" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Activate
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Templates.Any())
+    {
+        <div class="card shadow">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No templates found</h5>
+                <p class="text-muted">Create your first prompt template to get started</p>
+                <a asp-page="./Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Template
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

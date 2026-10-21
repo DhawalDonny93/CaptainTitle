@@ -1,0 +1,356 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.AuditLogs.IndexModel
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<style>
+    .filter-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 24px;
+    }
+    .log-table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+    .log-row {
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.2s;
+    }
+    .log-row:hover {
+        background: #f8fafc;
+    }
+    .log-row:last-child {
+        border-bottom: none;
+    }
+    .action-badge {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .action-login { background: #dbeafe; color: #1e40af; }
+    .action-logout { background: #e0e7ff; color: #4338ca; }
+    .action-create { background: #d1fae5; color: #065f46; }
+    .action-update { background: #fef3c7; color: #92400e; }
+    .action-delete { background: #fee2e2; color: #991b1b; }
+    .action-view { background: #e0f2fe; color: #075985; }
+    .action-export { background: #f3e8ff; color: #6b21a8; }
+    .status-success { color: var(--success-color); }
+    .status-failed { color: var(--danger-color); }
+    .pagination {
+        margin-top: 20px;
+    }
+    .page-link {
+        border-radius: 8px;
+        margin: 0 4px;
+        border: 1px solid var(--border-color);
+    }
+    .page-link:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    .page-item.active .page-link {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+
+<!-- Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--primary-color);">
+                    @Model.Stats.TotalLogs.ToString("N0")
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    Total Logs
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--success-color);">
+                    @Model.Stats.LogsToday
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    Today
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--info-color);">
+                    @Model.Stats.LogsThisWeek
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    This Week
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--warning-color);">
+                    @Model.Stats.LogsThisMonth
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    This Month
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--success-color);">
+                    @Model.Stats.SuccessRate.ToString("F1")%
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    Success Rate
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-body text-center">
+                <div style="font-size: 24px; font-weight: 700; color: var(--danger-color);">
+                    @Model.Stats.FailedActions
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                    Failed
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-card">
+    <form method="get" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label" style="font-weight: 600; font-size: 13px;">
+                <i class="fas fa-search me-1"></i>Search
+            </label>
+            <input type="text" 
+                   name="searchQuery" 
+                   class="form-control" 
+                   placeholder="Search logs..."
+                   value="@Model.SearchQuery"
+                   style="border-radius: 8px;">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-weight: 600; font-size: 13px;">
+                <i class="fas fa-filter me-1"></i>Action
+            </label>
+            <select name="actionFilter" class="form-select" style="border-radius: 8px;">
+                <option value="all" selected="@(Model.ActionFilter == "all" || string.IsNullOrEmpty(Model.ActionFilter))">All Actions</option>
+                <option value="Login" selected="@(Model.ActionFilter == "Login")">Login</option>
+                <option value="Logout" selected="@(Model.ActionFilter == "Logout")">Logout</option>
+                <option value="Create" selected="@(Model.ActionFilter == "Create")">Create</option>
+                <option value="Update" selected="@(Model.ActionFilter == "Update")">Update</option>
+                <option value="Delete" selected="@(Model.ActionFilter == "Delete")">Delete</option>
+                <option value="View" selected="@(Model.ActionFilter == "View")">View</option>
+                <option value="Export" selected="@(Model.ActionFilter == "Export")">Export</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-weight: 600; font-size: 13px;">
+                <i class="fas fa-user me-1"></i>User
+            </label>
+            <input type="text" 
+                   name="userFilter" 
+                   class="form-control" 
+                   placeholder="User email..."
+                   value="@Model.UserFilter"
+                   style="border-radius: 8px;">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-weight: 600; font-size: 13px;">
+                <i class="fas fa-calendar me-1"></i>Start Date
+            </label>
+            <input type="date" 
+                   name="startDate" 
+                   class="form-control" 
+                   value="@Model.StartDate?.ToString("yyyy-MM-dd")"
+                   style="border-radius: 8px;">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-weight: 600; font-size: 13px;">
+                <i class="fas fa-calendar me-1"></i>End Date
+            </label>
+            <input type="date" 
+                   name="endDate" 
+                   class="form-control" 
+                   value="@Model.EndDate?.ToString("yyyy-MM-dd")"
+                   style="border-radius: 8px;">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100" style="border-radius: 8px;">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Logs Table -->
+<div class="log-table">
+    <div class="card-header" style="background: white; border-bottom: 1px solid var(--border-color); padding: 20px 24px;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0" style="font-weight: 600;">
+                <i class="fas fa-file-alt me-2" style="color: var(--primary-color);"></i>
+                Audit Logs (@Model.TotalLogs entries)
+            </h5>
+            <button class="btn btn-outline-primary btn-sm" style="border-radius: 8px;" onclick="exportLogs()">
+                <i class="fas fa-download me-2"></i>Export CSV
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Timestamp</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Action</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Entity</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">User</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">IP Address</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Details</th>
+                    <th style="padding: 16px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.Logs.Take(Model.PageSize))
+                {
+                    <tr class="log-row">
+                        <td style="padding: 16px 24px;">
+                            <div style="font-size: 13px; color: var(--text-primary); font-weight: 500;">
+                                @log.Timestamp.ToString("MMM dd, yyyy")
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">
+                                @log.Timestamp.ToString("HH:mm:ss")
+                            </div>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span class="action-badge action-@log.Action.ToLower()">
+                                @log.Action
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span style="font-size: 14px; color: var(--text-primary); font-weight: 500;">
+                                @log.Entity
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">
+                                @log.UserEmail
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span style="font-size: 13px; color: var(--text-secondary); font-family: monospace;">
+                                @log.IpAddress
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">
+                                @log.Details
+                            </span>
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            @if (log.Success)
+                            {
+                                <i class="fas fa-check-circle status-success" title="Success"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-times-circle status-failed" title="Failed"></i>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer" style="background: white; border-top: 1px solid var(--border-color); padding: 20px 24px;">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="?page=@(Model.CurrentPage - 1)@GetQueryString()">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    
+                    @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="?page=@i@GetQueryString()">@i</a>
+                        </li>
+                    }
+                    
+                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link" href="?page=@(Model.CurrentPage + 1)@GetQueryString()">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+
+@if (!Model.Logs.Any())
+{
+    <div class="card mt-4">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-file-alt fa-3x mb-3" style="color: var(--text-secondary); opacity: 0.5;"></i>
+            <h5 style="color: var(--text-secondary);">No audit logs found</h5>
+            <p style="color: var(--text-secondary);">Try adjusting your filters.</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function exportLogs() {
+            alert('Export functionality will download logs as CSV file');
+            // In production, this would trigger a download
+        }
+    </script>
+}
+
+@functions {
+    string GetQueryString()
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrEmpty(Model.SearchQuery))
+            parts.Add($"searchQuery={Uri.EscapeDataString(Model.SearchQuery)}");
+        if (!string.IsNullOrEmpty(Model.ActionFilter))
+            parts.Add($"actionFilter={Uri.EscapeDataString(Model.ActionFilter)}");
+        if (!string.IsNullOrEmpty(Model.UserFilter))
+            parts.Add($"userFilter={Uri.EscapeDataString(Model.UserFilter)}");
+        if (Model.StartDate.HasValue)
+            parts.Add($"startDate={Model.StartDate.Value:yyyy-MM-dd}");
+        if (Model.EndDate.HasValue)
+            parts.Add($"endDate={Model.EndDate.Value:yyyy-MM-dd}");
+        
+        return parts.Any() ? "&" + string.Join("&", parts) : "";
+    }
+}

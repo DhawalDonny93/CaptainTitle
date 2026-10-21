@@ -1,0 +1,465 @@
+using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using AppBackendBasic.Core.DTOs;
+using AppBackendBasic.Core.Entities;
+using AppBackendBasic.Core.Interfaces;
+using AppBackendBasic.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace AppBackendBasic.Services.LLM;
+
+public class LlmService : ILlmService
+{
+    private readonly ApplicationDbContext _context;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<LlmService> _logger;
+    private readonly HttpClient _httpClient;
+    private readonly ISubscriptionService _subscriptionService;
+
+    public LlmService(
+        ApplicationDbContext context,
+        IConfiguration configuration,
+        ILogger<LlmService> logger,
+        HttpClient httpClient,
+        ISubscriptionService subscriptionService)
+    {
+        _context = context;
+        _configuration = configuration;
+        _logger = logger;
+        _httpClient = httpClient;
+        _subscriptionService = subscriptionService;
+        
+        // Configure HttpClient for OpenAI
+        var apiKey = _configuration["OpenAI:ApiKey"];
+        _httpClient.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", apiKey);
+    }
+
+    public async Task<LlmMessageResponse> SendMessageAsync(int userId, SendLlmMessageRequest request)
+    {
+        // Check rate limits
+        var canProceed = await CheckRateLimitAsync(userId);
+        if (!canProceed)
+        {
+            throw new InvalidOperationException("Rate limit exceeded. Please try again later.");
+        }
+
+        // Get or create conversation
+        LlmConversation conversation;
+        if (request.ConversationId.HasValue)
+        {
+            conversation = await _context.LlmConversations
+                .Include(c => c.Messages)
+                .FirstOrDefaultAsync(c => c.Id == request.ConversationId.Value && c.UserId == userId);
+            
+            if (conversation == null)
+            {
+                throw new InvalidOperationException("Conversation not found.");
+            }
+        }
+        else
+        {
+            conversation = new LlmConversation
+            {
+                UserId = userId,
+                Model = request.Model,
+                Title = GenerateTitleFromMessage(request.Message)
+            };
+            _context.LlmConversations.Add(conversation);
+            await _context.SaveChangesAsync();
+        }
+
+        // Create user message
+        var userMessage = new LlmMessage
+        {
+            ConversationId = conversation.Id,
+            Role = "user",
+            Content = request.Message,
+            ImageBase64 = request.ImageBase64,
+            ImageUrl = request.ImageUrl
+        };
+        _context.LlmMessages.Add(userMessage);
+
+        // Prepare OpenAI request
+        var openAIRequest = await PrepareOpenAIRequestAsync(conversation, request);
+
+        // Call OpenAI API
+        var stopwatch = Stopwatch.StartNew();
+        var openAIResponse = await CallOpenAIAsync(openAIRequest);
+        stopwatch.Stop();
+
+        // Create assistant message
+        var assistantMessage = new LlmMessage
+        {
+            ConversationId = conversation.Id,
+            Role = "assistant",
+            Content = openAIResponse.Choices[0].Message.Content.ToString() ?? string.Empty,
+            PromptTokens = openAIResponse.Usage.PromptTokens,
+            CompletionTokens = openAIResponse.Usage.CompletionTokens,
+            TotalTokens = openAIResponse.Usage.TotalTokens,
+            FinishReason = openAIResponse.Choices[0].FinishReason,
+            ResponseTimeMs = stopwatch.ElapsedMilliseconds
+        };
+        _context.LlmMessages.Add(assistantMessage);
+
+        // Update conversation stats
+        conversation.TotalMessages += 2; // user + assistant
+        conversation.TotalTokensUsed += openAIResponse.Usage.TotalTokens;
+        conversation.UpdatedAt = DateTime.UtcNow;
+
+        // Update usage quota
+        await UpdateUsageQuotaAsync(userId, openAIResponse.Usage, request.ImageBase64 != null || request.ImageUrl != null);
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("LLM message sent for user {UserId}, conversation {ConversationId}, tokens: {Tokens}", 
+            userId, conversation.Id, openAIResponse.Usage.TotalTokens);
+
+        return new LlmMessageResponse
+        {
+            MessageId = assistantMessage.Id,
+            ConversationId = conversation.Id,
+            Role = assistantMessage.Role,
+            Content = assistantMessage.Content,
+            TotalTokens = assistantMessage.TotalTokens,
+            CreatedAt = assistantMessage.CreatedAt
+        };
+    }
+
+    public async Task<LlmConversationResponse> GetConversationAsync(int userId, Guid conversationId)
+    {
+        var conversation = await _context.LlmConversations
+            .Include(c => c.Messages.OrderBy(m => m.CreatedAt))
+            .FirstOrDefaultAsync(c => c.Id == conversationId && c.UserId == userId && !c.IsDeleted);
+
+        if (conversation == null)
+        {
+            throw new InvalidOperationException("Conversation not found.");
+        }
+
+        return MapToConversationResponse(conversation);
+    }
+
+    public async Task<List<LlmConversationResponse>> GetUserConversationsAsync(int userId, int page = 1, int pageSize = 20)
+    {
+        var conversations = await _context.LlmConversations
+            .Where(c => c.UserId == userId && !c.IsDeleted)
+            .OrderByDescending(c => c.UpdatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Include(c => c.Messages.OrderBy(m => m.CreatedAt).Take(5)) // Include first 5 messages for preview
+            .ToListAsync();
+
+        return conversations.Select(MapToConversationResponse).ToList();
+    }
+
+    public async Task<LlmConversationResponse> CreateConversationAsync(int userId, CreateConversationRequest request)
+    {
+        var conversation = new LlmConversation
+        {
+            UserId = userId,
+            Title = request.Title,
+            Model = request.Model
+        };
+
+        _context.LlmConversations.Add(conversation);
+        await _context.SaveChangesAsync();
+
+        return MapToConversationResponse(conversation);
+    }
+
+    public async Task<bool> DeleteConversationAsync(int userId, Guid conversationId)
+    {
+        var conversation = await _context.LlmConversations
+            .FirstOrDefaultAsync(c => c.Id == conversationId && c.UserId == userId);
+
+        if (conversation == null)
+        {
+            return false;
+        }
+
+        conversation.IsDeleted = true;
+        conversation.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<LlmUsageResponse> GetUsageAsync(int userId)
+    {
+        var quota = await GetOrCreateQuotaAsync(userId);
+        var subscription = await _subscriptionService.GetStatusAsync(userId);
+
+        return new LlmUsageResponse
+        {
+            RequestsUsed = quota.RequestsUsed,
+            RequestsLimit = quota.RequestsLimit,
+            RequestsRemaining = Math.Max(0, quota.RequestsLimit - quota.RequestsUsed),
+            TokensUsed = quota.TokensUsed,
+            TokensLimit = quota.TokensLimit,
+            TokensRemaining = Math.Max(0, quota.TokensLimit - quota.TokensUsed),
+            ImagesUsed = quota.ImagesUsed,
+            ImagesLimit = quota.ImagesLimit,
+            ImagesRemaining = Math.Max(0, quota.ImagesLimit - quota.ImagesUsed),
+            PeriodStart = quota.PeriodStart,
+            PeriodEnd = quota.PeriodEnd,
+            SubscriptionTier = subscription.IsSubscribed ? "premium" : "free"
+        };
+    }
+
+    public async Task<bool> CheckRateLimitAsync(int userId)
+    {
+        var quota = await GetOrCreateQuotaAsync(userId);
+        var now = DateTime.UtcNow;
+
+        // Check if period has expired, reset if needed
+        if (now > quota.PeriodEnd)
+        {
+            await ResetQuotaAsync(quota);
+        }
+
+        // Check overall limits
+        if (quota.RequestsUsed >= quota.RequestsLimit)
+        {
+            _logger.LogWarning("User {UserId} exceeded request limit", userId);
+            return false;
+        }
+
+        if (quota.TokensUsed >= quota.TokensLimit)
+        {
+            _logger.LogWarning("User {UserId} exceeded token limit", userId);
+            return false;
+        }
+
+        // Check rate limiting (requests per minute/hour/day)
+        var oneMinuteAgo = now.AddMinutes(-1);
+        var oneHourAgo = now.AddHours(-1);
+        var oneDayAgo = now.AddDays(-1);
+
+        var recentRequests = await _context.LlmMessages
+            .Where(m => m.Conversation.UserId == userId && m.Role == "user")
+            .Where(m => m.CreatedAt >= oneDayAgo)
+            .GroupBy(m => 1)
+            .Select(g => new
+            {
+                LastMinute = g.Count(m => m.CreatedAt >= oneMinuteAgo),
+                LastHour = g.Count(m => m.CreatedAt >= oneHourAgo),
+                LastDay = g.Count()
+            })
+            .FirstOrDefaultAsync();
+
+        if (recentRequests != null)
+        {
+            if (recentRequests.LastMinute >= quota.RequestsPerMinute)
+            {
+                _logger.LogWarning("User {UserId} exceeded requests per minute limit", userId);
+                return false;
+            }
+
+            if (recentRequests.LastHour >= quota.RequestsPerHour)
+            {
+                _logger.LogWarning("User {UserId} exceeded requests per hour limit", userId);
+                return false;
+            }
+
+            if (recentRequests.LastDay >= quota.RequestsPerDay)
+            {
+                _logger.LogWarning("User {UserId} exceeded requests per day limit", userId);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Private helper methods
+    private async Task<LlmUsageQuota> GetOrCreateQuotaAsync(int userId)
+    {
+        var quota = await _context.LlmUsageQuotas
+            .FirstOrDefaultAsync(q => q.UserId == userId && q.PeriodEnd > DateTime.UtcNow);
+
+        if (quota == null)
+        {
+            // Get subscription to determine limits
+            var subscription = await _subscriptionService.GetStatusAsync(userId);
+            var isPremium = subscription.IsSubscribed;
+
+            quota = new LlmUsageQuota
+            {
+                UserId = userId,
+                PeriodStart = DateTime.UtcNow,
+                PeriodEnd = DateTime.UtcNow.AddDays(30),
+                RequestsLimit = isPremium ? 10000 : 100,
+                TokensLimit = isPremium ? 1000000 : 100000,
+                ImagesLimit = isPremium ? 500 : 50,
+                RequestsPerMinute = isPremium ? 60 : 10,
+                RequestsPerHour = isPremium ? 1000 : 100,
+                RequestsPerDay = isPremium ? 5000 : 500
+            };
+
+            _context.LlmUsageQuotas.Add(quota);
+            await _context.SaveChangesAsync();
+        }
+
+        return quota;
+    }
+
+    private async Task ResetQuotaAsync(LlmUsageQuota quota)
+    {
+        quota.PeriodStart = DateTime.UtcNow;
+        quota.PeriodEnd = DateTime.UtcNow.AddDays(30);
+        quota.RequestsUsed = 0;
+        quota.TokensUsed = 0;
+        quota.ImagesUsed = 0;
+        quota.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task UpdateUsageQuotaAsync(int userId, OpenAIUsage usage, bool hasImage)
+    {
+        var quota = await GetOrCreateQuotaAsync(userId);
+        quota.RequestsUsed++;
+        quota.TokensUsed += usage.TotalTokens;
+        if (hasImage)
+        {
+            quota.ImagesUsed++;
+        }
+        quota.LastRequestAt = DateTime.UtcNow;
+        quota.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<OpenAIRequest> PrepareOpenAIRequestAsync(LlmConversation conversation, SendLlmMessageRequest request)
+    {
+        // Get conversation history (last 10 messages for context)
+        var messages = await _context.LlmMessages
+            .Where(m => m.ConversationId == conversation.Id)
+            .OrderByDescending(m => m.CreatedAt)
+            .Take(10)
+            .OrderBy(m => m.CreatedAt)
+            .Select(m => new OpenAIMessage
+            {
+                Role = m.Role,
+                Content = m.Content
+            })
+            .ToListAsync();
+
+        // Add current user message
+        if (!string.IsNullOrEmpty(request.ImageBase64) || !string.IsNullOrEmpty(request.ImageUrl))
+        {
+            // Message with image
+            var contentParts = new List<OpenAIMessageContent>
+            {
+                new OpenAIMessageContent { Type = "text", Text = request.Message }
+            };
+
+            if (!string.IsNullOrEmpty(request.ImageBase64))
+            {
+                contentParts.Add(new OpenAIMessageContent
+                {
+                    Type = "image_url",
+                    ImageUrl = new OpenAIImageUrl { Url = $"data:image/jpeg;base64,{request.ImageBase64}" }
+                });
+            }
+            else if (!string.IsNullOrEmpty(request.ImageUrl))
+            {
+                contentParts.Add(new OpenAIMessageContent
+                {
+                    Type = "image_url",
+                    ImageUrl = new OpenAIImageUrl { Url = request.ImageUrl }
+                });
+            }
+
+            messages.Add(new OpenAIMessage
+            {
+                Role = "user",
+                Content = contentParts
+            });
+        }
+        else
+        {
+            // Text-only message
+            messages.Add(new OpenAIMessage
+            {
+                Role = "user",
+                Content = request.Message
+            });
+        }
+
+        return new OpenAIRequest
+        {
+            Model = request.Model,
+            Messages = messages,
+            Temperature = request.Temperature,
+            MaxTokens = request.MaxTokens
+        };
+    }
+
+    private async Task<OpenAIResponse> CallOpenAIAsync(OpenAIRequest request)
+    {
+        try
+        {
+            var jsonContent = JsonSerializer.Serialize(request, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("https://api.openai.com/v1/chat/completions", httpContent);
+
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var openAIResponse = JsonSerializer.Deserialize<OpenAIResponse>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            if (openAIResponse == null)
+            {
+                throw new InvalidOperationException("Failed to deserialize OpenAI response.");
+            }
+
+            return openAIResponse;
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "OpenAI API request failed");
+            throw new InvalidOperationException("Failed to communicate with OpenAI API.", ex);
+        }
+    }
+
+    private string GenerateTitleFromMessage(string message)
+    {
+        // Simple title generation - take first 50 chars
+        return message.Length > 50 ? message.Substring(0, 50) + "..." : message;
+    }
+
+    private LlmConversationResponse MapToConversationResponse(LlmConversation conversation)
+    {
+        return new LlmConversationResponse
+        {
+            Id = conversation.Id,
+            Title = conversation.Title,
+            Model = conversation.Model,
+            TotalMessages = conversation.TotalMessages,
+            TotalTokensUsed = conversation.TotalTokensUsed,
+            CreatedAt = conversation.CreatedAt,
+            UpdatedAt = conversation.UpdatedAt,
+            Messages = conversation.Messages.Select(m => new LlmMessageResponse
+            {
+                MessageId = m.Id,
+                ConversationId = m.ConversationId,
+                Role = m.Role,
+                Content = m.Content,
+                ImageUrl = m.ImageUrl,
+                TotalTokens = m.TotalTokens,
+                CreatedAt = m.CreatedAt
+            }).ToList()
+        };
+    }
+}

@@ -1,0 +1,294 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+    }
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 8px 0;
+        color: var(--text-primary);
+    }
+    .stat-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    .stat-change {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        display: inline-block;
+        margin-top: 8px;
+    }
+    .stat-change.positive {
+        background: #d1fae5;
+        color: #065f46;
+    }
+</style>
+
+<div class="row g-4">
+    <!-- Stats Cards -->
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">@Model.Stats?.TotalUsers</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 12% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Active Users</div>
+                <div class="stat-value">@Model.Stats?.ActiveUsers</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 8% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning-color);">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Subscriptions</div>
+                <div class="stat-value">@Model.Stats?.ActiveSubscriptions</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 23% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon" style="background: rgba(6, 182, 212, 0.1); color: var(--info-color);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value">$@Model.Stats?.TotalRevenue.ToString("N0")</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 15% from last month
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- User Growth Chart -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" style="font-weight: 600; color: var(--text-primary);">
+                        <i class="fas fa-chart-line me-2" style="color: var(--primary-color);"></i>User Growth
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary active">Month</button>
+                        <button class="btn btn-outline-secondary">Year</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="userGrowthChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; color: var(--text-primary);">
+                    <i class="fas fa-chart-pie me-2" style="color: var(--primary-color);"></i>Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Churn Rate</span>
+                        <strong style="color: var(--danger-color);">@Model.Stats?.ChurnRate.ToString("F2")%</strong>
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 10px; background: #fee2e2;">
+                        <div class="progress-bar" style="background: var(--danger-color); width: @Model.Stats?.ChurnRate%; border-radius: 10px;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Active Rate</span>
+                        <strong style="color: var(--success-color);">@((Model.Stats?.TotalUsers > 0 ? (Model.Stats.ActiveUsers * 100.0 / Model.Stats.TotalUsers) : 0).ToString("F1"))%</strong>
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 10px; background: #d1fae5;">
+                        <div class="progress-bar" style="background: var(--success-color); width: @((Model.Stats?.TotalUsers > 0 ? (Model.Stats.ActiveUsers * 100.0 / Model.Stats.TotalUsers) : 0))%; border-radius: 10px;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 14px; color: var(--text-secondary);">Subscription Rate</span>
+                        <strong style="color: var(--warning-color);">@((Model.Stats?.TotalUsers > 0 ? (Model.Stats.ActiveSubscriptions * 100.0 / Model.Stats.TotalUsers) : 0).ToString("F1"))%</strong>
+                    </div>
+                    <div class="progress" style="height: 10px; border-radius: 10px; background: #fef3c7;">
+                        <div class="progress-bar" style="background: var(--warning-color); width: @((Model.Stats?.TotalUsers > 0 ? (Model.Stats.ActiveSubscriptions * 100.0 / Model.Stats.TotalUsers) : 0))%; border-radius: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- Welcome Card -->
+    <div class="col-md-12">
+        <div class="card" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-2" style="font-weight: 700;">Welcome to Admin Dashboard! 👋</h4>
+                        <p class="mb-0 opacity-90">
+                            Manage your application, view analytics, send notifications, and configure system settings from here.
+                        </p>
+                    </div>
+                    <div class="ms-4">
+                        <i class="fas fa-rocket fa-3x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // User Growth Chart with modern styling
+        const ctx = document.getElementById('userGrowthChart');
+        
+        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Users',
+                    data: [12, 19, 25, 32, 45, 58, 72, 89, 105, 125, 148, @Model.Stats?.TotalUsers],
+                    borderColor: 'rgb(99, 102, 241)',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgb(99, 102, 241)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                        padding: 12,
+                        borderRadius: 8,
+                        titleFont: {
+                            size: 14,
+                            weight: '600'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            color: '#64748b'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+    </script>
+}

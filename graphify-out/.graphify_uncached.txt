@@ -1,0 +1,170 @@
+TEAM_CODE_PATTERNS.md
+DATABASE_CONSOLIDATION_SUMMARY.md
+LLM_CITATION_EXPLANATION.md
+CONTROLLER_UPDATE_GUIDE.md
+PROMPTTRACKING_CREATEDBYUSERID_FIX.md
+AuraSEO_PRD.md
+PRD_AI_SEO_Platform.md
+USERID_AND_CITATION_FIX.md
+ADMINUI_AUTH_FIX.md
+HANGFIRE_JOB_PATTERN_FIX.md
+IMPLEMENTATION_SUMMARY.md
+WEBAPI_CONSOLIDATION_SUMMARY.md
+ONBOARDING_PROMPTS_FEATURE.md
+PROVIDERID_COLUMN_FIX.md
+STACK_OVERFLOW_FIX.md
+TEAM_IMPLEMENTATION_SUMMARY.md
+LLM_PROVIDER_AUTH_GUIDE.md
+BASE_SYNC_GUI_GUIDE.md
+LLM_PROVIDER_UNIFICATION_GUIDE.md
+PRODUCTION_READINESS_AUDIT.md
+DATA_FLOW_ANALYSIS.md
+HANGFIRE_ERROR_FIX.md
+README_TEAM_IMPLEMENTATION.md
+CONTENT_CREATION_DROPDOWNS_SUMMARY.md
+CODEBASE_STATUS.md
+USERID_FIX_SUMMARY.md
+COMPLETION_STATUS.md
+RAZORPAY_MIGRATION_GUIDE.md
+LLM_ENHANCEMENTS_IMPLEMENTATION_SUMMARY.md
+BASIC_FRAMEWORK_PRODUCTION_READY_SUMMARY.md
+README.md
+DATABASE_CONSOLIDATION_ANALYSIS.md
+AUDIT_ISSUES_FIX_SUMMARY.md
+USERID_SEGREGATION_IMPLEMENTATION.md
+BUILD_FIX_SUMMARY.md
+TEAM_IMPLEMENTATION_GUIDE.md
+LLM_PROVIDERS_SETUP_GUIDE.md
+DATABASE_SCHEMA_FIX_FINAL.md
+BASE_FRAMEWORK_STRATEGY.md
+LLM_CONTEXT_AWARE_JOBKEY_IMPLEMENTATION.md
+SITEAUDIT_EFFICIENT_STATUS_IMPLEMENTATION.md
+DATABASE_TABLES_ANALYSIS.md
+CITATIONS_MENTIONS_FIX_SUMMARY.md
+LLM_REQUESTTYPE_JOBKEY_FIX.md
+SEO_OPPORTUNITY_FK_FIX.md
+LLM_JOBKEY_MAPPING.md
+LLM_SERVICE_LIFETIME_FIX.md
+GIT_BRANCHING_STRATEGY.md
+UNUSED_PAGES_URLS.md
+PROVIDERID_DATATYPE_FIX.md
+LLM_CONFIGURATION_ANALYSIS.md
+DATABASE_CLEANUP_FINAL_SUMMARY.md
+QUICK_REFERENCE.md
+BASE_SYNC_WORKFLOW.md
+ACTUAL_STACK_OVERFLOW_FIX.md
+BACKGROUND_JOBS_DOCUMENTATION.md
+GIT_BRANCHING_WEB_GUIDE.md
+FILTER_REDESIGN_SUMMARY.md
+AppBackendBasic.AdminUI/README.md
+AppBackendBasic.AdminUI/obj/Debug/net8.0/AppBackendBasic.AdminUI.csproj.FileListAbsolute.txt
+AppBackendBasic.AdminUI/wwwroot/lib/jquery/LICENSE.txt
+AppBackendBasic.AdminUI/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt
+AppBackendBasic.AdminUI/wwwroot/lib/jquery-validation/LICENSE.md
+AISEODocs/index.html
+AISEODocs/README.md
+AISEODocs/pages/quickstart.html
+AppBackendBasic.Infrastructure/obj/Release/net8.0/AppBackendBasic.Infrastructure.csproj.FileListAbsolute.txt
+AppBackendBasic.Infrastructure/obj/Debug/net8.0/AppBackendBasic.Infrastructure.csproj.FileListAbsolute.txt
+AppBackendBasic.API/obj/Release/net8.0/PublishOutputs.b096e0daef.txt
+AppBackendBasic.API/obj/Release/net8.0/AppBackendBasic.API.csproj.FileListAbsolute.txt
+AppBackendBasic.API/obj/Debug/net8.0/AppBackendBasic.API.csproj.FileListAbsolute.txt
+AppBackendBasic.Services/obj/Release/net8.0/AppBackendBasic.Services.csproj.FileListAbsolute.txt
+AppBackendBasic.Services/obj/Debug/net8.0/AppBackendBasic.Services.csproj.FileListAbsolute.txt
+AppBackendBasic.WebUI/index.html
+AppBackendBasic.WebUI/LOADING_STANDARDIZATION.md
+AppBackendBasic.WebUI/GOOGLE_AUTH_TROUBLESHOOTING.md
+AppBackendBasic.WebUI/NETWORK_ERROR_FIX.md
+AppBackendBasic.WebUI/GOOGLE_CALLBACK_IMPLEMENTATION.md
+AppBackendBasic.WebUI/NETLIFY_DEPLOYMENT.md
+AppBackendBasic.WebUI/README.md
+AppBackendBasic.WebUI/GOOGLE_OAUTH_ARCHITECTURE.md
+AppBackendBasic.WebUI/GOOGLE_OAUTH_IMPLEMENTATION_EXAMPLE.md
+AppBackendBasic.WebUI/docs/LLM_LOGOS_GUIDE.md
+AppBackendBasic.WebUI/docs/LLM_LOGOS_QUICK_REFERENCE.md
+AppBackendBasic.WebUI/docs/LLM_LOGOS_API_REFERENCE.md
+AppBackendBasic.WebUI/docs/README_LLM_LOGOS.md
+AppBackendBasic.Core/obj/Release/net8.0/AppBackendBasic.Core.csproj.FileListAbsolute.txt
+AppBackendBasic.Core/obj/Debug/net8.0/AppBackendBasic.Core.csproj.FileListAbsolute.txt
+scripts/SEED_SCRIPT_FIXES.md
+scripts/README.md
+Database_Migrations/19_consolidate_user_profile_README.md
+AppBackendBasic.API/uploads/profiles/252dcd97-3f88-4d26-868e-9b4df457fc97/photo_small_639027003532406270.jpg
+AppBackendBasic.API/uploads/profiles/252dcd97-3f88-4d26-868e-9b4df457fc97/photo_original_639027003532406270.jpg
+AppBackendBasic.API/uploads/profiles/252dcd97-3f88-4d26-868e-9b4df457fc97/photo_medium_639027003532406270.jpg
+AppBackendBasic.API/uploads/profiles/252dcd97-3f88-4d26-868e-9b4df457fc97/photo_large_639027003532406270.jpg
+AppBackendBasic.WebUI/public/images/llm-logos/gemini.svg
+AppBackendBasic.WebUI/public/images/llm-logos/claude.svg
+AppBackendBasic.WebUI/public/images/llm-logos/google-ai.svg
+AppBackendBasic.WebUI/public/images/llm-logos/deepseek.svg
+AppBackendBasic.WebUI/public/images/llm-logos/chatgpt.svg
+AppBackendBasic.WebUI/public/images/llm-logos/perplexity.svg
+AppBackendBasic.WebUI/public/images/platform-logos/gemini.svg
+AppBackendBasic.WebUI/public/images/platform-logos/claude.svg
+AppBackendBasic.WebUI/public/images/platform-logos/openai.svg
+AppBackendBasic.WebUI/public/images/platform-logos/deepseek.svg
+AppBackendBasic.WebUI/public/images/platform-logos/google-ai-overview.svg
+AppBackendBasic.WebUI/public/images/platform-logos/grok.svg
+AppBackendBasic.WebUI/public/images/llm-icons/gemini.svg
+AppBackendBasic.WebUI/public/images/llm-icons/claude.svg
+AppBackendBasic.WebUI/public/images/llm-icons/openai.svg
+AppBackendBasic.WebUI/public/images/llm-icons/deepseek.svg
+AppBackendBasic.WebUI/public/images/llm-icons/google.svg
+AppBackendBasic.WebUI/public/images/llm-icons/grok.svg
+AppBackendBasic.WebUI/public/images/llm-icons/perplexity.svg
+InspiratonImages/SiteAuditResults1.png
+InspiratonImages/Visibility Dashboard.png
+InspiratonImages/Visibility Source Domains.png
+InspiratonImages/Citations Details.png
+InspiratonImages/SiteAuditResults2.png
+InspiratonImages/Dashboard.png
+InspiratonImages/Prompt List.png
+InspiratonImages/Opprotunities Scanning.png
+InspiratonImages/Pricing 2.png
+InspiratonImages/Content Header 2.png
+InspiratonImages/Pricing 3.png
+InspiratonImages/Promptmonitor.png
+InspiratonImages/Pricing 1.png
+InspiratonImages/Content Header 1.png
+InspiratonImages/Knowledge Base 3.png
+InspiratonImages/Agent Dashboard.png
+InspiratonImages/Prompts.png
+InspiratonImages/Screenshot 2026-02-20 at 12.56.37 PM.png
+InspiratonImages/Knowledge Base 2.png
+InspiratonImages/Visibility.png
+InspiratonImages/Citations.png
+InspiratonImages/prompts Info.png
+InspiratonImages/Knowledge Base 1.png
+InspiratonImages/Onboarding FAQs.png
+InspiratonImages/Prompt Monitor Scanning.png
+InspiratonImages/Knowledge Base 4.png
+InspiratonImages/promptMonitor 8.png
+InspiratonImages/Article AI Content Creator .png
+InspiratonImages/OnboardingRunning.png
+InspiratonImages/promptMonitor 5.png
+InspiratonImages/promptMonitor 4.png
+InspiratonImages/promptMonitor 10.png
+InspiratonImages/promptMonitor 6.png
+InspiratonImages/promptMonitor 7.png
+InspiratonImages/promptMonitor 11.png
+InspiratonImages/Notifications.png
+InspiratonImages/promptMonitor 3.png
+InspiratonImages/promptMonitor 2.png
+InspiratonImages/Tasks UI.png
+InspiratonImages/Action Plan.png
+InspiratonImages/Content Editor.png
+InspiratonImages/promptMonitor 1.png
+InspiratonImages/PromptMonitor Inspiration.png
+InspiratonImages/Content Organizer.png
+InspiratonImages/Onboarding AISEO 2.png
+InspiratonImages/Opportunities Found.png
+InspiratonImages/ToDo Borad.png
+InspiratonImages/Article Import 1.png
+InspiratonImages/Article Import 3.png
+InspiratonImages/Onboarding AISEO 1.png
+InspiratonImages/Article Import 2.png
+InspiratonImages/Opportunities.png
+InspiratonImages/Main Dashboard.png
+InspiratonImages/Content Creator.png
+InspiratonImages/promptMonitor Tracking.png
+InspiratonImages/Article Import 4.png

@@ -1,0 +1,106 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.LlmProviders.CreateModel
+@{
+    ViewData["Title"] = "Add LLM Provider";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="mb-4">
+                <a asp-page="Index" class="btn btn-link text-decoration-none ps-0">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Providers
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Add New LLM Provider</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Provider.Name" class="form-label">Provider Name <span class="text-danger">*</span></label>
+                                <input asp-for="Provider.Name" class="form-control" 
+                                       placeholder="e.g., openai, anthropic, gemini">
+                                <span asp-validation-for="Provider.Name" class="text-danger"></span>
+                                <small class="text-muted">Internal identifier (lowercase, no spaces)</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Provider.DisplayName" class="form-label">Display Name</label>
+                                <input asp-for="Provider.DisplayName" class="form-control" 
+                                       placeholder="e.g., OpenAI, Anthropic Claude">
+                                <span asp-validation-for="Provider.DisplayName" class="text-danger"></span>
+                                <small class="text-muted">User-friendly name</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Provider.ApiKey" class="form-label">API Key <span class="text-danger">*</span></label>
+                            <input asp-for="Provider.ApiKey" type="password" class="form-control" 
+                                   placeholder="Enter API key">
+                            <span asp-validation-for="Provider.ApiKey" class="text-danger"></span>
+                            <small class="text-muted">Your API key will be encrypted</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Provider.BaseUrl" class="form-label">Base URL</label>
+                            <input asp-for="Provider.BaseUrl" type="url" class="form-control" 
+                                   placeholder="https://api.openai.com/v1">
+                            <span asp-validation-for="Provider.BaseUrl" class="text-danger"></span>
+                            <small class="text-muted">API endpoint (optional, uses provider default if empty)</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Provider.Priority" class="form-label">Priority <span class="text-danger">*</span></label>
+                                <input asp-for="Provider.Priority" type="number" class="form-control" min="1">
+                                <span asp-validation-for="Provider.Priority" class="text-danger"></span>
+                                <small class="text-muted">Lower = higher priority</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Provider.RateLimitPerMinute" class="form-label">Rate Limit (per min)</label>
+                                <input asp-for="Provider.RateLimitPerMinute" type="number" class="form-control" 
+                                       placeholder="e.g., 60" min="1">
+                                <span asp-validation-for="Provider.RateLimitPerMinute" class="text-danger"></span>
+                                <small class="text-muted">Optional</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Provider.IsActive" class="form-label">Status</label>
+                                <select asp-for="Provider.IsActive" class="form-select">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Supported Providers:</strong> OpenAI, Anthropic Claude, Google Gemini, Groq, and custom endpoints
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Provider
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

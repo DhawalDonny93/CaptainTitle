@@ -1,0 +1,147 @@
+@page "{id:guid}"
+@model AppBackendBasic.AdminUI.Pages.LlmTemplates.DetailsModel
+@{
+    ViewData["Title"] = "Template Details";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Template Details</h1>
+        <div>
+            <a asp-page="./Edit" asp-route-id="@Model.Template.Id" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a asp-page="./Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">@Model.Template.Name</h6>
+                    <div>
+                        @if (Model.Template.IsActive)
+                        {
+                            <span class="badge badge-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">Inactive</span>
+                        }
+                        @if (Model.Template.RequiresImage)
+                        {
+                            <span class="badge badge-info ml-1">Image Required</span>
+                        }
+                        <span class="badge badge-primary ml-1">@Model.Template.Category</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-primary">Description</h6>
+                        <p>@Model.Template.Description</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="font-weight-bold text-primary">System Prompt</h6>
+                        <pre class="bg-light p-3 rounded border">@Model.Template.SystemPrompt</pre>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Template.UserPromptTemplate))
+                    {
+                        <div class="mb-4">
+                            <h6 class="font-weight-bold text-primary">User Prompt Template</h6>
+                            <pre class="bg-light p-3 rounded border">@Model.Template.UserPromptTemplate</pre>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Template.ResponseSchema))
+                    {
+                        <div class="mb-4">
+                            <h6 class="font-weight-bold text-primary">Response Schema</h6>
+                            <pre class="bg-light p-3 rounded border">@Model.Template.ResponseSchema</pre>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Configuration</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Model</small>
+                        <p class="mb-0 font-weight-bold">@Model.Template.Model</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Temperature</small>
+                        <p class="mb-0 font-weight-bold">@Model.Template.Temperature</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Max Tokens</small>
+                        <p class="mb-0 font-weight-bold">@Model.Template.MaxTokens</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Response Format</small>
+                        <p class="mb-0 font-weight-bold">@Model.Template.ResponseFormat</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Category</small>
+                        <p class="mb-0 font-weight-bold">@Model.Template.Category</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Requires Image</small>
+                        <p class="mb-0 font-weight-bold">
+                            @if (Model.Template.RequiresImage)
+                            {
+                                <span class="text-success"><i class="fas fa-check"></i> Yes</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="fas fa-times"></i> No</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Status</small>
+                        <p class="mb-0 font-weight-bold">
+                            @if (Model.Template.IsActive)
+                            {
+                                <span class="text-success"><i class="fas fa-check-circle"></i> Active</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger"><i class="fas fa-ban"></i> Inactive</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Metadata</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted">Template ID</small>
+                        <p class="mb-0 font-weight-bold small">@Model.Template.Id</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Created</small>
+                        <p class="mb-0">@Model.Template.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Last Updated</small>
+                        <p class="mb-0">@Model.Template.UpdatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
