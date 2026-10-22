@@ -309,3 +309,9 @@ pip-delete-this-directory.txt
 *.exe
 *.out
 *.app
+
+# Captain Title runtime media storage
+App_Data/
+
+# ASP.NET DataProtection private keys - never commit
+AppBackendBasic.API/keys/

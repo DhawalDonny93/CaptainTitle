@@ -33,6 +33,7 @@ using Hangfire.PostgreSql;
 using AppBackendBasic.Services.BackgroundJobs.Jobs;
 using AppBackendBasic.Services.LLM;
 using AppBackendBasic.Infrastructure.Services;
+using AppBackendBasic.Services.Captions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -205,7 +206,6 @@ builder.Services.AddScoped<IUserProviderRepository, UserProviderRepository>();
 builder.Services.AddScoped<IOnboardingRepository, OnboardingRepository>();
 builder.Services.AddScoped<IUserTeamMappingRepository, UserTeamMappingRepository>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
-builder.Services.AddScoped<IPromptEditHistoryRepository, PromptEditHistoryRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRateLimitingService, RateLimitingService>();
 builder.Services.AddHttpClient<IEmailService, SendGridEmailService>();
@@ -305,15 +305,24 @@ builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 builder.Services.AddScoped<EmailQueueJob>();
 builder.Services.AddScoped<CleanupJob>();
 builder.Services.AddScoped<JobScheduler>();
-// Register all background jobs
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.DashboardMetricsUpdateJob>();
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.VisibilityTrendAggregationJob>();
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.CitationAggregationJob>();
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.OpportunityDetectionJob>();
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.PromptResearchGenerationJob>();
-builder.Services.AddScoped<AppBackendBasic.Infrastructure.BackgroundJobs.SiteCrawlJob>();
-builder.Services.AddScoped<IPromptResearchService, AppBackendBasic.Infrastructure.Services.PromptResearchService>();
-builder.Services.AddScoped<IPromptTemplateService, AppBackendBasic.Infrastructure.Services.PromptTemplateService>();
+
+// Register Captain Title (caption generator) services
+builder.Services.Configure<CaptionOptions>(builder.Configuration.GetSection(CaptionOptions.SectionName));
+builder.Services.AddSingleton<ICaptionStorage, LocalCaptionStorage>();
+builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
+builder.Services.AddSingleton<ICaptionMediaTokenService, CaptionMediaTokenService>();
+builder.Services.AddHttpClient<IWhisperClient, WhisperClient>();
+builder.Services.AddHttpClient<ISarvamClient, SarvamClient>();
+builder.Services.AddScoped<ICaptionCatalogService, CaptionCatalogService>();
+builder.Services.AddScoped<ICaptionEntitlementService, CaptionEntitlementService>();
+builder.Services.AddScoped<ICaptionTranscriptionService, CaptionTranscriptionService>();
+builder.Services.AddScoped<IHinglishService, HinglishService>();
+builder.Services.AddScoped<ICaptionProjectService, CaptionProjectService>();
+builder.Services.AddScoped<ICaptionJobRunner, CaptionJobRunner>();
+builder.Services.AddScoped<ICaptionBillingService, CaptionBillingService>();
+builder.Services.AddSingleton<CaptionJobWorker>();
+builder.Services.AddSingleton<ICaptionJobQueue>(sp => sp.GetRequiredService<CaptionJobWorker>());
+builder.Services.AddHostedService(sp => sp.GetRequiredService<CaptionJobWorker>());
 
 // Register Media services
 builder.Services.AddScoped<IPhotoService, PhotoService>();
@@ -321,7 +330,6 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddHttpClient<ILlmService, LlmService>();
 builder.Services.AddScoped<ILlmService, LlmService>();
 
-// Visibility check is now handled by IPromptTrackingService - no separate service needed
 
 // Register LLM Provider services
 builder.Services.AddHttpClient<AppBackendBasic.Infrastructure.Services.LlmProviders.OpenAIProvider>();
@@ -339,24 +347,11 @@ builder.Services.AddScoped<ILlmProviderConfigService, AppBackendBasic.Infrastruc
 builder.Services.AddScoped<ILlmProviderService, AppBackendBasic.Infrastructure.Services.LlmProviderService>();
 builder.Services.AddScoped<AppBackendBasic.Core.Interfaces.ILlmJobConfigService, AppBackendBasic.Infrastructure.Services.LlmJobConfigService>();
 
-// Register AI SEO Services
-builder.Services.AddScoped<IAutoBlogService, AutoBlogService>();
-builder.Services.AddScoped<IAiTrackingService, AiTrackingService>();
-builder.Services.AddScoped<ISocialMonitoringService, SocialMonitoringService>();
-builder.Services.AddScoped<ISiteAuditService, SiteAuditService>();
-builder.Services.AddScoped<IUserTaskService, UserTaskService>();
-builder.Services.AddScoped<IPromptTrackingService, AppBackendBasic.Infrastructure.Services.PromptTrackingService>();
-builder.Services.AddScoped<ICitationTrackingService, AppBackendBasic.Infrastructure.Services.CitationTrackingService>();
-builder.Services.AddScoped<ISiteAuditorService, AppBackendBasic.Infrastructure.Services.SiteAuditorService>();
-builder.Services.AddScoped<IOpportunityDiscoveryService, AppBackendBasic.Infrastructure.Services.OpportunityDiscoveryService>();
-builder.Services.AddScoped<IOpportunityDetectionService, AppBackendBasic.Infrastructure.Services.OpportunityDetectionService>();
-builder.Services.AddScoped<IVisibilityDashboardService, AppBackendBasic.Infrastructure.Services.VisibilityDashboardService>();
+// Register application services
 builder.Services.AddScoped<IAdminMonitoringService, AppBackendBasic.Infrastructure.Services.AdminMonitoringService>();
 builder.Services.AddScoped<IFeatureFlagService, AppBackendBasic.Infrastructure.Services.FeatureFlagService>();
 builder.Services.AddScoped<IPaymentService, AppBackendBasic.Infrastructure.Services.StripePaymentService>();
 builder.Services.AddScoped<IEmailTemplateService, AppBackendBasic.Infrastructure.Services.EmailTemplateService>();
-builder.Services.AddScoped<IBrandProfileService, AppBackendBasic.Infrastructure.Services.BrandProfileService>();
-builder.Services.AddScoped<ICompetitorService, AppBackendBasic.Infrastructure.Services.CompetitorService>();
 builder.Services.AddScoped<IAnalyticsService, AppBackendBasic.Infrastructure.Services.AnalyticsService>();
 builder.Services.AddHttpClient();
 // Configure Anti-Forgery tokens
@@ -461,69 +456,8 @@ if (app.Environment.IsDevelopment())
 
     app.UseSwagger();
     app.UseSwaggerUI();
-// ============================================================================
-// CONSOLIDATED BACKGROUND JOB CONFIGURATION
-// Uses DI-based IRecurringJobManager (not static RecurringJob) so startup
-// never crashes if Hangfire storage isn't ready yet.
-// ============================================================================
-using (var scope = app.Services.CreateScope())
-{
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    try
-    {
-        var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-        logger.LogInformation("Configuring recurring background jobs...");
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.PromptVisibilityCheckJob>(
-            "ai-visibility-citation-check",
-            job => job.ExecuteAsync(),
-            Cron.Daily(1),
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.DashboardMetricsUpdateJob>(
-            "update-dashboard-metrics",
-            job => job.ExecuteAsync(),
-            "0 */6 * * *",
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.VisibilityTrendAggregationJob>(
-            "aggregate-visibility-trends",
-            job => job.ExecuteAsync(),
-            Cron.Daily(2),
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.CitationAggregationJob>(
-            "aggregate-citations",
-            job => job.ExecuteAsync(),
-            Cron.Daily(3),
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.OpportunityDetectionJob>(
-            "detect-opportunities",
-            job => job.ExecuteAsync(),
-            Cron.Daily(4),
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.PromptResearchGenerationJob>(
-            "generate-prompt-research",
-            job => job.ExecuteAsync(),
-            "0 5 * * 1",
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        jobManager.AddOrUpdate<AppBackendBasic.Infrastructure.BackgroundJobs.SiteCrawlJob>(
-            "crawl-sites",
-            job => job.ExecuteAsync(),
-            "0 3 * * 0",
-            new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-        logger.LogInformation("Successfully configured 7 recurring background jobs");
-    }
-    catch (Exception ex)
-    {
-        // Log but do NOT rethrow — a Hangfire storage failure must not prevent the app from starting
-        logger.LogWarning(ex, "Failed to configure recurring background jobs. The app will start without them.");
-    }
-}
+// Recurring Hangfire jobs: none are registered by default (the AI-SEO jobs were removed).
+// Add jobs here with IRecurringJobManager.AddOrUpdate<T>(...) when needed.
 
 // CORS - MUST be first so preflight OPTIONS requests get CORS headers before
 // any other middleware can redirect or reject them

@@ -23,6 +23,14 @@ public class RequestResponseLoggingMiddleware
         var requestId = Guid.NewGuid().ToString();
         context.Items["RequestId"] = requestId;
 
+        // File / media streaming endpoints (video with HTTP Range, SRT, rendered MP4) must NOT be buffered into memory:
+        // buffering would hold whole videos in RAM and breaks Range responses.
+        if (IsStreamingPath(context.Request.Path))
+        {
+            await _next(context);
+            return;
+        }
+
         // Start timing
         var stopwatch = Stopwatch.StartNew();
         var startTime = DateTime.UtcNow;
@@ -48,7 +56,8 @@ public class RequestResponseLoggingMiddleware
             // Log response end
             await LogResponseAsync(context, requestId, startTime, endTime, stopwatch.ElapsedMilliseconds);
 
-            // Copy response body back to original stream
+            // Copy response body back to original stream (rewind first: logging may have moved the position)
+            responseBody.Seek(0, SeekOrigin.Begin);
             await responseBody.CopyToAsync(originalBodyStream);
         }
         catch (Exception ex)
@@ -72,6 +81,14 @@ public class RequestResponseLoggingMiddleware
         {
             context.Response.Body = originalBodyStream;
         }
+    }
+
+    private static bool IsStreamingPath(PathString path)
+    {
+        var value = path.Value ?? string.Empty;
+        return value.StartsWith("/api/captions/media/", StringComparison.OrdinalIgnoreCase)
+            || (value.StartsWith("/api/captions/projects/", StringComparison.OrdinalIgnoreCase)
+                && (value.EndsWith("/download", StringComparison.OrdinalIgnoreCase) || value.EndsWith("/srt", StringComparison.OrdinalIgnoreCase)));
     }
 
     private async Task LogRequestAsync(HttpContext context, string requestId, DateTime startTime)

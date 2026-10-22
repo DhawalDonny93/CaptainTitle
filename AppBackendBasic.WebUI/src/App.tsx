@@ -1,8 +1,8 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import OnboardingFlow from './pages/OnboardingFlowNew'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import Features from './pages/Features'
@@ -15,25 +15,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import LoginHistory from './pages/LoginHistory'
 import Settings from './pages/Settings'
-import Projects from './pages/Projects'
-import ProjectAudits from './pages/ProjectAudits'
 import NotificationsPage from './pages/NotificationsPage'
-import VisibilityDashboards from './pages/VisibilityDashboards'
-import ContentListing from './pages/ContentListing'
-import ContentCreation from './pages/ContentCreation'
-import ContentEditor from './pages/ContentEditor'
-import ActionPlanWorkflow from './pages/ActionPlanWorkflow'
-import ToDoTasks from './pages/ToDoTasks'
-import OpportunitiesScanner from './pages/OpportunitiesScanner'
-import OpportunitiesFound from './pages/OpportunitiesFound'
-import PromptResearch from './pages/PromptResearch'
-import YourPrompts from './pages/YourPrompts';
-import Sources from './pages/Sources';
-import Mentions from './pages/Mentions';
-import BrandProfile from './pages/BrandProfile';
-import Competitors from './pages/Competitors';
-import LLMsTxtGenerator from './pages/LLMsTxtGenerator'
-import AICrawlabilityChecker from './pages/AICrawlabilityChecker'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancelled from './pages/PaymentCancelled'
 import OnboardingPlans from './pages/OnboardingPlans'
@@ -42,12 +24,16 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AuthRedirect from './components/AuthRedirect'
 import MainLayout from './components/layout/MainLayout'
 import { AuthProvider } from './contexts/AuthContext'
-import { ProjectProvider } from './contexts/ProjectContext'
 import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext'
 import { UserProfileProvider } from './contexts/UserProfileContext'
 import { WaitlistProvider } from './contexts/WaitlistContext'
 import UpgradeModal from './components/UpgradeModal'
 import ErrorBoundary from './components/ErrorBoundary'
+
+// Captain Title caption studio - lazy so its (scoped) stylesheet only loads when the studio is opened
+const StudioPage = lazy(() => import('./features/captions/pages/StudioPage'))
+const CaptionPaymentSuccess = lazy(() => import('./features/captions/pages/CaptionPaymentResultPage').then((m) => ({ default: m.CaptionPaymentSuccess })))
+const CaptionPaymentCancel = lazy(() => import('./features/captions/pages/CaptionPaymentResultPage').then((m) => ({ default: m.CaptionPaymentCancel })))
 
 function GlobalUpgradeModal() {
   const { showUpgradeModal, upgradeReason, closeUpgradeModal } = useSubscription();
@@ -68,9 +54,8 @@ function App() {
         <AuthProvider>
           <UserProfileProvider>
             <SubscriptionProvider>
-              <ProjectProvider>
-                <AuthRedirect />
-                <SessionManager idleTimeout={30}>
+              <AuthRedirect />
+              <SessionManager idleTimeout={30}>
               <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
@@ -83,57 +68,32 @@ function App() {
               <Route path="/features" element={<Features />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/about" element={<About />} />
-              <Route path="/tools/llms-txt-generator" element={<LLMsTxtGenerator />} />
-              <Route path="/tools/ai-crawlability-checker" element={<AICrawlabilityChecker />} />
               <Route path="/onboarding/plans" element={<OnboardingPlans />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route path="/auth/google/callback" element={<GoogleCallback />} />
               <Route path="/auth/apple/callback" element={<AppleCallback />} />
 
-              {/* Protected Routes with Main Layout */}
+              {/* Captain Title (caption generator) - full-screen, no sidebar */}
+              <Route path="/studio" element={<ProtectedRoute><Suspense fallback={null}><StudioPage /></Suspense></ProtectedRoute>} />
+              <Route path="/payment/success" element={<ProtectedRoute><Suspense fallback={null}><CaptionPaymentSuccess /></Suspense></ProtectedRoute>} />
+              <Route path="/payment/cancel" element={<ProtectedRoute><Suspense fallback={null}><CaptionPaymentCancel /></Suspense></ProtectedRoute>} />
+
+              {/* Account pages inside the sidebar layout */}
               <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/projects" element={<Projects />} />
-                <Route path="/projects/:id/audits" element={<ProjectAudits />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/login-history" element={<LoginHistory />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/todo-tasks" element={<ToDoTasks />} />
-                
-                {/* Unified pages - work both standalone and project-specific */}
-                <Route path="/visibility-dashboards" element={<VisibilityDashboards />} />
-                <Route path="/projects/:id/visibility" element={<VisibilityDashboards />} />
-                <Route path="/content" element={<ContentListing />} />
-                <Route path="/projects/:id/content" element={<ContentListing />} />
-                <Route path="/projects/:id/content/create" element={<ContentCreation />} />
-                <Route path="/projects/:id/content/edit/:articleId" element={<ContentEditor />} />
-                <Route path="/action-plan-workflow" element={<ActionPlanWorkflow />} />
-                <Route path="/projects/:id/action-plan-workflow" element={<ActionPlanWorkflow />} />
-                <Route path="/opportunities" element={<OpportunitiesScanner />} />
-                <Route path="/opportunities/results" element={<OpportunitiesFound />} />
-                <Route path="/projects/:id/opportunities" element={<OpportunitiesScanner />} />
-                <Route path="/projects/:id/opportunities/results" element={<OpportunitiesFound />} />
-                <Route path="/prompt-research" element={<PromptResearch />} />
-                <Route path="/projects/:id/prompt-research" element={<PromptResearch />} />
-                <Route path="/your-prompts" element={<YourPrompts />} />
-                <Route path="/projects/:id/your-prompts" element={<YourPrompts />} />
-                <Route path="/sources" element={<Sources />} />
-                <Route path="/projects/:id/sources" element={<Sources />} />
-                <Route path="/mentions" element={<Mentions />} />
-                <Route path="/projects/:id/mentions" element={<Mentions />} />
-                <Route path="/brand-profile" element={<BrandProfile />} />
-                <Route path="/projects/:id/brand-profile" element={<BrandProfile />} />
-                <Route path="/competitors" element={<Competitors />} />
-                <Route path="/projects/:id/competitors" element={<Competitors />} />
               </Route>
+
+              {/* The old AI-SEO dashboard is gone: legacy links land in the studio */}
+              <Route path="/dashboard" element={<Navigate to="/studio" replace />} />
 
               {/* Onboarding Flow (No Sidebar) */}
               <Route path="/onboarding" element={<OnboardingFlow />} />
               </Routes>
             </SessionManager>
             <GlobalUpgradeModal />
-              </ProjectProvider>
             </SubscriptionProvider>
           </UserProfileProvider>
         </AuthProvider>

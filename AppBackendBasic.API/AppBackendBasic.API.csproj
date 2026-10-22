@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AppBackendBasic.Core\AppBackendBasic.Core.csproj" />
     <ProjectReference Include="..\AppBackendBasic.Infrastructure\AppBackendBasic.Infrastructure.csproj" />
     <ProjectReference Include="..\AppBackendBasic.Services\AppBackendBasic.Services.csproj" />

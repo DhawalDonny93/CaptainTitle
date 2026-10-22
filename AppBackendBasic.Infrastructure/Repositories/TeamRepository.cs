@@ -33,7 +33,6 @@ namespace AppBackendBasic.Infrastructure.Repositories
         {
             return await _context.Teams
                 .Include(t => t.UserMappings)
-                .Include(t => t.Projects)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 

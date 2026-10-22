@@ -1,0 +1,87 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Captions.IndexModel
+@using AppBackendBasic.AdminUI.Pages.Captions
+@using Newtonsoft.Json.Linq
+@{
+    ViewData["Title"] = "Captain Title";
+    string Stat(string name) => Model.Overview[name]?.ToString() ?? "—";
+}
+
+<div class="container-fluid">
+    @if (Model.SuccessMessage != null) { <div class="alert alert-success alert-dismissible fade show">@Model.SuccessMessage<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+    @if (Model.ErrorMessage != null) { <div class="alert alert-danger alert-dismissible fade show">@Model.ErrorMessage<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="mb-1">Captain Title</h2><p class="text-muted mb-0">Caption generator controls: everything that used to be hardcoded in the old app.</p></div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Projects</div><div class="fs-3">@Stat("projects")</div><div class="small text-muted">@Stat("projectsLast7Days") in last 7 days</div></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Failed projects</div><div class="fs-3">@Stat("failed")</div></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Paid transactions</div><div class="fs-3">@Stat("paidTransactions")</div></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Active subscribers</div><div class="fs-3">@Stat("activeSubscribers")</div></div></div></div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Catalogs</div>
+        <div class="list-group list-group-flush">
+            @foreach (var k in CaptionCatalogSchema.Kinds)
+            {
+                <a class="list-group-item list-group-item-action d-flex justify-content-between" asp-page="Catalog" asp-route-kind="@k.Slug"><span><strong>@k.Title</strong> <span class="text-muted">- @k.Description</span></span><i class="fas fa-chevron-right"></i></a>
+            }
+            <a class="list-group-item list-group-item-action" asp-page="Projects"><strong>Projects &amp; credits</strong> <span class="text-muted">- support tools: re-queue failed jobs, adjust a user's credits</span></a>
+            <a class="list-group-item list-group-item-action" asp-page="/LlmProviders/Index"><strong>LLM providers (OpenAI key)</strong> <span class="text-muted">- the Whisper and Hinglish calls use the OpenAI key stored here</span></a>
+            <a class="list-group-item list-group-item-action" asp-page="/Settings/Index"><strong>LLM job models</strong> <span class="text-muted">- jobs CaptionHinglishConversion / CaptionEmphasisAssignment (provider, model, max tokens)</span></a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Language models (Hinglish conversion &amp; emphasis)</div>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Job</th><th>Provider</th><th>Model</th><th>Max tokens</th><th>Temp</th><th>Active</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var (j, i) in Model.Jobs.Select((j, i) => (j, i)))
+            {
+                var fid = $"jobform-{i}";
+                <tr>
+                    <td><strong>@j["jobName"]</strong><div class="small text-muted">@j["description"]</div>
+                        <input form="@fid" type="hidden" name="jobKey" value="@j["jobKey"]" /><input form="@fid" type="hidden" name="jobName" value="@j["jobName"]" /><input form="@fid" type="hidden" name="description" value="@j["description"]" /></td>
+                    <td><select form="@fid" name="provider" class="form-select form-select-sm">@foreach (var pr in new[] { "OpenAI", "Anthropic", "Google" }) { <option value="@pr" selected="@((string?)j["provider"] == pr)">@pr</option> }</select></td>
+                    <td><input form="@fid" name="model" class="form-control form-control-sm" value="@j["model"]" /></td>
+                    <td><input form="@fid" name="maxTokens" type="number" class="form-control form-control-sm" value="@j["maxTokens"]" /></td>
+                    <td><input form="@fid" name="temperature" type="number" step="0.1" class="form-control form-control-sm" value="@j["temperature"]" /></td>
+                    <td><select form="@fid" name="isActive" class="form-select form-select-sm"><option value="true" selected="@((bool?)j["isActive"] == true)">yes</option><option value="false" selected="@((bool?)j["isActive"] != true)">no</option></select></td>
+                    <td><form id="@fid" method="post" asp-page-handler="Job"><button class="btn btn-sm btn-primary">Save</button></form></td>
+                </tr>
+            }
+            @if (!Model.Jobs.Any()) { <tr><td colspan="7" class="text-muted text-center py-3">Seeded on first API start.</td></tr> }
+            </tbody></table></div>
+        <div class="card-footer small text-muted">Whisper timing always uses OpenAI. The API key for the selected provider is managed under LLM Providers. If a job is inactive the hardcoded fallback (OpenAI gpt-4o) is used.</div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Limits &amp; switches (SystemSettings, category "captions")</div>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Key</th><th>Description</th><th style="width:260px">Value</th></tr></thead>
+            <tbody>
+            @foreach (var s in Model.Settings.OfType<JObject>())
+            {
+                <tr>
+                    <td><code>@s["key"]</code></td><td class="text-muted">@s["description"]</td>
+                    <td>
+                        <form method="post" asp-page-handler="Setting" class="d-flex gap-2">
+                            <input type="hidden" name="key" value="@s["key"]" />
+                            @if ((string?)s["type"] == "bool")
+                            {
+                                <select name="value" class="form-select form-select-sm"><option value="true" selected="@((string?)s["value"] == "true")">true</option><option value="false" selected="@((string?)s["value"] != "true")">false</option></select>
+                            }
+                            else { <input name="value" class="form-control form-control-sm" value="@s["value"]" /> }
+                            <button class="btn btn-sm btn-primary">Save</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table></div>
+    </div>
+</div>

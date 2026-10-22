@@ -45,19 +45,11 @@ Edit the `appsettings.json` file in the `AppBackendBasic.API` project and update
 }
 ```
 
-### 3. Apply database migrations
+### 3. Set up the database (manually)
 
-Make the migration script executable:
-
-```bash
-chmod +x migrate.sh
-```
-
-Create and apply the initial migration:
-
-```bash
-./migrate.sh InitialCreate
-```
+The application never creates or changes the database. Run the SQL scripts in `Database_Migrations/` yourself (for example in the
+Supabase SQL editor): `22_generic_template_schema.sql`, then `21_captain_title_captions.sql`. See
+`Database_Migrations/RUN_ORDER.md` for the full order and for upgrading an existing database.
 
 ### 4. Run the application
 

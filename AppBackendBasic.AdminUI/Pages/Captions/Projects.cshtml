@@ -1,0 +1,60 @@
+@page
+@model AppBackendBasic.AdminUI.Pages.Captions.ProjectsModel
+@using Newtonsoft.Json.Linq
+@{
+    ViewData["Title"] = "Caption projects & credits";
+    var total = Model.Result["total"]?.Value<int>() ?? 0;
+}
+<div class="container-fluid">
+    @if (Model.SuccessMessage != null) { <div class="alert alert-success alert-dismissible fade show">@Model.SuccessMessage<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+    @if (Model.ErrorMessage != null) { <div class="alert alert-danger alert-dismissible fade show">@Model.ErrorMessage<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div><h2 class="mb-1">Caption projects &amp; credits</h2><p class="text-muted mb-0">@total project(s)</p></div>
+        <a asp-page="Index" class="btn btn-outline-secondary">Captain Title home</a>
+    </div>
+
+    <form method="get" class="mb-3 d-flex gap-2">
+        <select name="Status" class="form-select w-auto">
+            <option value="">All statuses</option>
+            @foreach (var s in new[] { "queued", "processing", "ready", "failed", "rendered" }) { <option value="@s" selected="@(Model.Status == s)">@s</option> }
+        </select>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+
+    <div class="card mb-4"><div class="table-responsive"><table class="table table-hover align-middle mb-0">
+        <thead><tr><th>#</th><th>User</th><th>Name</th><th>Sec</th><th>Template</th><th>Credit</th><th>Status</th><th>Created</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var p in (Model.Result["items"] as JArray ?? new JArray()).OfType<JObject>())
+        {
+            <tr>
+                <td>@p["id"]</td><td>@p["userEmail"] <span class="text-muted">(#@p["userId"])</span></td><td class="text-truncate" style="max-width:220px">@p["name"]</td>
+                <td>@p["duration"]</td><td>@p["theme"]</td><td>@p["creditType"]</td>
+                <td><span class="badge @((string?)p["status"] == "failed" ? "bg-danger" : (string?)p["status"] == "ready" || (string?)p["status"] == "rendered" ? "bg-success" : "bg-secondary")">@p["status"]</span>
+                    @if (!string.IsNullOrEmpty((string?)p["errorMessage"])) { <div class="small text-danger">@p["errorMessage"]</div> }</td>
+                <td>@(((DateTime?)p["createdAt"])?.ToString("yyyy-MM-dd HH:mm"))</td>
+                <td><form method="post" asp-page-handler="Requeue" asp-route-id="@p["id"]"><button class="btn btn-sm btn-outline-primary">Re-queue</button></form></td>
+            </tr>
+        }
+        </tbody></table></div>
+        <div class="card-footer d-flex gap-2">
+            @if (Model.PageNumber > 1) { <a class="btn btn-sm btn-outline-secondary" asp-page="Projects" asp-route-Status="@Model.Status" asp-route-PageNumber="@(Model.PageNumber - 1)">Previous</a> }
+            @if (Model.PageNumber * 25 < total) { <a class="btn btn-sm btn-outline-secondary" asp-page="Projects" asp-route-Status="@Model.Status" asp-route-PageNumber="@(Model.PageNumber + 1)">Next</a> }
+        </div>
+    </div>
+
+    <div class="card"><div class="card-header">User credits</div><div class="card-body">
+        <form method="get" class="d-flex gap-2 mb-3"><input name="UserId" type="number" class="form-control w-auto" placeholder="User id" value="@Model.UserId" /><button class="btn btn-primary">Look up</button></form>
+        @if (Model.Usage != null)
+        {
+            <p>Free: <b>@Model.Usage["free_remaining"]</b> · Single-pass credits: <b>@Model.Usage["oneoff_credits"]</b> (purchases: @Model.Usage["oneoff_purchase_count"]) · Basic credits: <b>@Model.Usage["basic_credits"]</b> · Subscription: <b>@Model.Usage["subscription_active"]</b> · Videos created: <b>@Model.Usage["videos_created"]</b></p>
+            <form method="post" asp-page-handler="Grant" class="row g-2 align-items-end">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                <div class="col-auto"><label class="form-label">Free (+/-)</label><input name="free" type="number" value="0" class="form-control" /></div>
+                <div class="col-auto"><label class="form-label">Single pass (+/-)</label><input name="oneoff" type="number" value="0" class="form-control" /></div>
+                <div class="col-auto"><label class="form-label">Basic (+/-)</label><input name="basic" type="number" value="0" class="form-control" /></div>
+                <div class="col-auto"><button class="btn btn-warning">Adjust credits</button></div>
+            </form>
+        }
+    </div></div>
+</div>

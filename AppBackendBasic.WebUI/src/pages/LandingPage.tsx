@@ -286,10 +286,8 @@ export default function LandingPage() {
   const { openWaitlist } = useWaitlist()
 
   const handleScan = () => {
-    const url = scanUrl.trim()
-    if (isAuthenticated && url) navigate(`/projects?scanUrl=${encodeURIComponent(url)}`)
-    else if (isAuthenticated)   navigate('/projects')
-    else                        openWaitlist()
+    if (isAuthenticated) navigate('/studio')
+    else                 openWaitlist()
   }
 
   return (

@@ -1,0 +1,2583 @@
+{
+ "tables": {
+  "themes": {
+   "viral": {
+    "base": "#FFFFFF",
+    "accent": "#FF3B30",
+    "accent_font": "Anton"
+   },
+   "cinematic": {
+    "base": "#FFF7DB",
+    "accent": "#FFB800",
+    "accent_font": "Caveat"
+   },
+   "minimal": {
+    "base": "#FFFFFF",
+    "accent": "#007AFF",
+    "accent_font": null
+   },
+   "podcast": {
+    "base": "#FFFFFF",
+    "accent": "#A855F7",
+    "accent_font": null
+   },
+   "meme_mix": {
+    "base": "#FFFFFF",
+    "accent": "#FFEB3B",
+    "accent_font": "Permanent Marker"
+   },
+   "street_pop": {
+    "base": "#FFFFFF",
+    "accent": "#FF6EC7",
+    "accent_font": "Caveat"
+   },
+   "editorial_pop": {
+    "tiers": {
+     "support": {
+      "font": "Poppins",
+      "color": "#FFFFFF",
+      "size": 40
+     },
+     "feature": {
+      "font": "Playfair Display SemiBold",
+      "color": "#FFFFFF",
+      "size": 58
+     },
+     "key": {
+      "font": "Anton",
+      "color": "#FFEB3B",
+      "size": 82
+     }
+    }
+   },
+   "clean_vogue": {
+    "tiers": {
+     "support": {
+      "font": "Poppins",
+      "color": "#E4E4E7",
+      "size": 38
+     },
+     "feature": {
+      "font": "Playfair Display SemiBold",
+      "color": "#FF8FC7",
+      "size": 56
+     },
+     "key": {
+      "font": "Bebas Neue",
+      "color": "#FFFFFF",
+      "size": 86
+     }
+    }
+   },
+   "street_heat": {
+    "tiers": {
+     "support": {
+      "font": "Poppins",
+      "color": "#FFFFFF",
+      "size": 40
+     },
+     "feature": {
+      "font": "Permanent Marker",
+      "color": "#FFFFFF",
+      "size": 54
+     },
+     "key": {
+      "font": "Anton",
+      "color": "#FF4D00",
+      "size": 84
+     }
+    }
+   }
+  },
+  "fonts": {
+   "poppins": {
+    "label": "Poppins",
+    "family": "Poppins"
+   },
+   "anton": {
+    "label": "Anton",
+    "family": "Anton"
+   },
+   "bebas": {
+    "label": "Bebas Neue",
+    "family": "Bebas Neue"
+   },
+   "classic": {
+    "label": "Classic",
+    "family": "DejaVu Sans"
+   }
+  },
+  "variants": {
+   "rock": {
+    "font": "Anton",
+    "bord": 3,
+    "outline": "#000000",
+    "shad": 0,
+    "blur": 0,
+    "accent": "#FF4D00"
+   },
+   "glow": {
+    "font": "Outfit",
+    "bord": 3,
+    "outline": null,
+    "shad": 0,
+    "blur": 4,
+    "accent": "#22D3EE"
+   },
+   "swiss": {
+    "font": "IBM Plex Sans",
+    "bord": 0,
+    "outline": null,
+    "shad": 0,
+    "blur": 0,
+    "accent": "#007AFF"
+   },
+   "clean": {
+    "font": "Poppins",
+    "bord": 0,
+    "outline": "#000000",
+    "shad": 2,
+    "blur": 1,
+    "accent": "#EAB308"
+   }
+  },
+  "sfx": {
+   "whoosh": {
+    "freq": 180,
+    "sweep_to": 540,
+    "duration": 0.2
+   },
+   "bass_drop": {
+    "freq": 90,
+    "sweep_to": 27,
+    "duration": 0.4
+   },
+   "pop": {
+    "freq": 880,
+    "sweep_to": 880,
+    "duration": 0.2
+   },
+   "cash": {
+    "freq": 660,
+    "sweep_to": 990,
+    "duration": 0.2
+   },
+   "shutter": {
+    "freq": 1400,
+    "sweep_to": 1400,
+    "duration": 0.08
+   }
+  },
+  "positions": {
+   "top": [
+    8,
+    150
+   ],
+   "middle": [
+    5,
+    0
+   ],
+   "bottom": [
+    2,
+    210
+   ]
+  },
+  "quality": {
+   "high": {
+    "preset": "slow",
+    "crf": "17"
+   },
+   "draft": {
+    "preset": "veryfast",
+    "crf": "26"
+   }
+  }
+ },
+ "ratio": [
+  {
+   "a": "hello",
+   "b": "hallo",
+   "ratio": 0.8
+  },
+  {
+   "a": "kya",
+   "b": "kyaa",
+   "ratio": 0.8571428571428571
+  },
+  {
+   "a": "",
+   "b": "",
+   "ratio": 1.0
+  },
+  {
+   "a": "a",
+   "b": "",
+   "ratio": 0.0
+  },
+  {
+   "a": "matlab",
+   "b": "matlab",
+   "ratio": 1.0
+  },
+  {
+   "a": "toh",
+   "b": "to",
+   "ratio": 0.8
+  },
+  {
+   "a": "iPhone",
+   "b": "iphone",
+   "ratio": 1.0
+  },
+  {
+   "a": "bahut",
+   "b": "bohot",
+   "ratio": 0.6
+  },
+  {
+   "a": "abcde",
+   "b": "xabcdey",
+   "ratio": 0.8333333333333334
+  },
+  {
+   "a": "नमस्ते",
+   "b": "namaste",
+   "ratio": 0.0
+  }
+ ],
+ "stitch": [
+  {
+   "whisper": [
+    {
+     "index": 0,
+     "original": "Hello",
+     "text": "Hello",
+     "start": 0.0,
+     "end": 0.4
+    },
+    {
+     "index": 1,
+     "original": "world",
+     "text": "world",
+     "start": 0.5,
+     "end": 0.9
+    },
+    {
+     "index": 2,
+     "original": "this",
+     "text": "this",
+     "start": 1.0,
+     "end": 1.2
+    },
+    {
+     "index": 3,
+     "original": "is",
+     "text": "is",
+     "start": 1.3,
+     "end": 1.4
+    }
+   ],
+   "sarvam": "Hello duniya this is great",
+   "result": [
+    {
+     "original": "Hello",
+     "start": 0.0,
+     "end": 0.4
+    },
+    {
+     "original": "duniya",
+     "start": 0.5,
+     "end": 0.9
+    },
+    {
+     "original": "this",
+     "start": 1.0,
+     "end": 1.2
+    },
+    {
+     "original": "is",
+     "start": 1.3,
+     "end": 1.4
+    },
+    {
+     "original": "great",
+     "start": 1.4,
+     "end": 1.5
+    }
+   ]
+  },
+  {
+   "whisper": [
+    {
+     "index": 0,
+     "original": "kya",
+     "text": "kya",
+     "start": 0.1,
+     "end": 0.3
+    },
+    {
+     "index": 1,
+     "original": "haal",
+     "text": "haal",
+     "start": 0.4,
+     "end": 0.7
+    },
+    {
+     "index": 2,
+     "original": "hai",
+     "text": "hai",
+     "start": 0.8,
+     "end": 1.0
+    }
+   ],
+   "sarvam": "kya haal hai bhai",
+   "result": [
+    {
+     "original": "kya",
+     "start": 0.1,
+     "end": 0.3
+    },
+    {
+     "original": "haal",
+     "start": 0.4,
+     "end": 0.7
+    },
+    {
+     "original": "hai",
+     "start": 0.8,
+     "end": 1.0
+    },
+    {
+     "original": "bhai",
+     "start": 1.0,
+     "end": 1.1
+    }
+   ]
+  },
+  {
+   "whisper": [
+    {
+     "index": 0,
+     "original": "extra",
+     "text": "extra",
+     "start": 0.0,
+     "end": 0.2
+    },
+    {
+     "index": 1,
+     "original": "kya",
+     "text": "kya",
+     "start": 0.3,
+     "end": 0.5
+    },
+    {
+     "index": 2,
+     "original": "haal",
+     "text": "haal",
+     "start": 0.6,
+     "end": 0.9
+    }
+   ],
+   "sarvam": "kya haal",
+   "result": [
+    {
+     "original": "kya",
+     "start": 0.3,
+     "end": 0.5
+    },
+    {
+     "original": "haal",
+     "start": 0.6,
+     "end": 0.9
+    }
+   ]
+  },
+  {
+   "whisper": [
+    {
+     "index": 0,
+     "original": "a",
+     "text": "a",
+     "start": 0.0,
+     "end": 0.1
+    }
+   ],
+   "sarvam": "completely different many words here now",
+   "result": [
+    {
+     "original": "completely",
+     "start": 0.0,
+     "end": 0.08
+    },
+    {
+     "original": "different",
+     "start": 0.08,
+     "end": 0.1
+    },
+    {
+     "original": "many",
+     "start": 0.0,
+     "end": 0.1
+    },
+    {
+     "original": "words",
+     "start": 0.1,
+     "end": 0.2
+    },
+    {
+     "original": "here",
+     "start": 0.2,
+     "end": 0.3
+    },
+    {
+     "original": "now",
+     "start": 0.3,
+     "end": 0.4
+    }
+   ]
+  },
+  {
+   "whisper": [
+    {
+     "index": 0,
+     "original": "one",
+     "text": "one",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "index": 1,
+     "original": "two",
+     "text": "two",
+     "start": 1,
+     "end": 2
+    },
+    {
+     "index": 2,
+     "original": "three",
+     "text": "three",
+     "start": 2,
+     "end": 3
+    },
+    {
+     "index": 3,
+     "original": "four",
+     "text": "four",
+     "start": 3,
+     "end": 4
+    },
+    {
+     "index": 4,
+     "original": "five",
+     "text": "five",
+     "start": 4,
+     "end": 5
+    }
+   ],
+   "sarvam": "one three five six seven",
+   "result": [
+    {
+     "original": "one",
+     "start": 0,
+     "end": 1
+    },
+    {
+     "original": "three",
+     "start": 1,
+     "end": 2
+    },
+    {
+     "original": "five",
+     "start": 2,
+     "end": 3
+    },
+    {
+     "original": "six",
+     "start": 3,
+     "end": 4
+    },
+    {
+     "original": "seven",
+     "start": 4,
+     "end": 5
+    }
+   ]
+  }
+ ],
+ "align": [
+  {
+   "whisper": [
+    "Hello",
+    "world",
+    "this",
+    "is"
+   ],
+   "sarvam": [
+    "Hello",
+    "duniya",
+    "this",
+    "is",
+    "great"
+   ],
+   "ops": [
+    [
+     "match",
+     0,
+     0
+    ],
+    [
+     "match",
+     1,
+     1
+    ],
+    [
+     "match",
+     2,
+     2
+    ],
+    [
+     "match",
+     3,
+     3
+    ],
+    [
+     "skip_sarvam",
+     4
+    ]
+   ]
+  },
+  {
+   "whisper": [
+    "kya",
+    "haal",
+    "hai"
+   ],
+   "sarvam": [
+    "kya",
+    "haal",
+    "hai",
+    "bhai"
+   ],
+   "ops": [
+    [
+     "match",
+     0,
+     0
+    ],
+    [
+     "match",
+     1,
+     1
+    ],
+    [
+     "match",
+     2,
+     2
+    ],
+    [
+     "skip_sarvam",
+     3
+    ]
+   ]
+  },
+  {
+   "whisper": [
+    "extra",
+    "kya",
+    "haal"
+   ],
+   "sarvam": [
+    "kya",
+    "haal"
+   ],
+   "ops": [
+    [
+     "skip_whisper",
+     0
+    ],
+    [
+     "match",
+     1,
+     0
+    ],
+    [
+     "match",
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "whisper": [
+    "a"
+   ],
+   "sarvam": [
+    "completely",
+    "different",
+    "many",
+    "words",
+    "here",
+    "now"
+   ],
+   "ops": [
+    [
+     "skip_sarvam",
+     0
+    ],
+    [
+     "skip_sarvam",
+     1
+    ],
+    [
+     "match",
+     0,
+     2
+    ],
+    [
+     "skip_sarvam",
+     3
+    ],
+    [
+     "skip_sarvam",
+     4
+    ],
+    [
+     "skip_sarvam",
+     5
+    ]
+   ]
+  },
+  {
+   "whisper": [
+    "one",
+    "two",
+    "three",
+    "four",
+    "five"
+   ],
+   "sarvam": [
+    "one",
+    "three",
+    "five",
+    "six",
+    "seven"
+   ],
+   "ops": [
+    [
+     "match",
+     0,
+     0
+    ],
+    [
+     "match",
+     1,
+     1
+    ],
+    [
+     "match",
+     2,
+     2
+    ],
+    [
+     "match",
+     3,
+     3
+    ],
+    [
+     "match",
+     4,
+     4
+    ]
+   ]
+  }
+ ],
+ "tokens": [
+  {
+   "text": "Hello, world! Yeh kya HAI?",
+   "tokens": [
+    "hello",
+    "world",
+    "yeh",
+    "kya",
+    "hai"
+   ],
+   "metrics": {
+    "unique_ratio": 1.0,
+    "bigram_ratio": 0.25,
+    "ngram_repeat": 1,
+    "penalty": 0.0
+   }
+  },
+  {
+   "text": "नमस्ते दुनिया kya",
+   "tokens": [
+    "नमस्ते",
+    "दुनिया",
+    "kya"
+   ],
+   "metrics": {
+    "unique_ratio": 1.0,
+    "bigram_ratio": 0.5,
+    "ngram_repeat": 0,
+    "penalty": 0.0
+   }
+  },
+  {
+   "text": "a a a a a a a a a a a a a a",
+   "tokens": [
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a"
+   ],
+   "metrics": {
+    "unique_ratio": 0.07142857142857142,
+    "bigram_ratio": 1.0,
+    "ngram_repeat": 11,
+    "penalty": 6.892857142857142
+   }
+  },
+  {
+   "text": "one two one two one two one two one two one two one two",
+   "tokens": [
+    "one",
+    "two",
+    "one",
+    "two",
+    "one",
+    "two",
+    "one",
+    "two",
+    "one",
+    "two",
+    "one",
+    "two",
+    "one",
+    "two"
+   ],
+   "metrics": {
+    "unique_ratio": 0.14285714285714285,
+    "bigram_ratio": 0.5384615384615384,
+    "ngram_repeat": 6,
+    "penalty": 5.1510989010989015
+   }
+  },
+  {
+   "text": "x",
+   "tokens": [
+    "x"
+   ],
+   "metrics": {
+    "unique_ratio": 1.0,
+    "bigram_ratio": 0.0,
+    "ngram_repeat": 0,
+    "penalty": 0.0
+   }
+  },
+  {
+   "text": "",
+   "tokens": [],
+   "metrics": {
+    "unique_ratio": 0.0,
+    "bigram_ratio": 1.0,
+    "ngram_repeat": 99,
+    "penalty": 4.0
+   }
+  }
+ ],
+ "chunks": [
+  {
+   "total": 65.0,
+   "silence": [
+    10.2,
+    19.5,
+    21.0,
+    39.0,
+    44.4,
+    61.0
+   ],
+   "seconds": 20,
+   "snap": 2.0,
+   "result": [
+    0.0,
+    19.5,
+    39.0,
+    61.0,
+    65.0
+   ]
+  },
+  {
+   "total": 12.0,
+   "silence": [],
+   "seconds": 20,
+   "snap": 2.0,
+   "result": [
+    0.0,
+    12.0
+   ]
+  },
+  {
+   "total": 45.5,
+   "silence": [
+    18.1,
+    22.3,
+    41.7
+   ],
+   "seconds": 20,
+   "snap": 2.0,
+   "result": [
+    0.0,
+    18.1,
+    38.1,
+    45.5
+   ]
+  }
+ ],
+ "silence_midpoints": {
+  "stderr": "silence_start: 1.5\nsilence_end: 2.5 | silence_duration: 1\nsilence_start: 10.25\nsilence_end: 11.75",
+  "result": [
+   2.0,
+   11.0
+  ]
+ },
+ "normalize": {
+  "input": [
+   {
+    "index": 0,
+    "original": "a",
+    "text": "a",
+    "start": 0.5,
+    "end": 0.5
+   },
+   {
+    "index": 1,
+    "original": "b",
+    "text": "b",
+    "start": 0.5,
+    "end": 0.55
+   },
+   {
+    "index": 2,
+    "original": "c",
+    "text": "c",
+    "start": 0.4,
+    "end": 0.9
+   },
+   {
+    "index": 3,
+    "original": "d",
+    "text": "d",
+    "start": 1.0,
+    "end": 1.0
+   }
+  ],
+  "result": [
+   {
+    "index": 0,
+    "original": "a",
+    "text": "a",
+    "start": 0.5,
+    "end": 0.56
+   },
+   {
+    "index": 1,
+    "original": "b",
+    "text": "b",
+    "start": 0.5,
+    "end": 0.56
+   },
+   {
+    "index": 2,
+    "original": "c",
+    "text": "c",
+    "start": 0.5,
+    "end": 0.9
+   },
+   {
+    "index": 3,
+    "original": "d",
+    "text": "d",
+    "start": 1.0,
+    "end": 1.06
+   }
+  ]
+ },
+ "whisper": [
+  {
+   "response": {
+    "words": [
+     {
+      "word": " Hello",
+      "start": 0.0,
+      "end": 0.4
+     },
+     {
+      "word": "world.",
+      "start": 0.5,
+      "end": 0.9
+     },
+     {
+      "word": "late",
+      "start": 9.0,
+      "end": 9.4
+     }
+    ],
+    "segments": [
+     {
+      "text": " Hello world.",
+      "start": 0.0,
+      "end": 1.0,
+      "avg_logprob": -0.3,
+      "no_speech_prob": 0.9
+     },
+     {
+      "text": "",
+      "start": 1.0,
+      "end": 2.0
+     },
+     {
+      "text": "ignored",
+      "start": 3,
+      "end": 4,
+      "avg_logprob": -0.5,
+      "no_speech_prob": 0.8
+     }
+    ]
+   },
+   "skip": 0.0,
+   "result": {
+    "words": [
+     {
+      "index": 0,
+      "original": "Hello",
+      "text": "Hello",
+      "start": 0.0,
+      "end": 0.4
+     },
+     {
+      "index": 1,
+      "original": "world.",
+      "text": "world.",
+      "start": 0.5,
+      "end": 0.9
+     }
+    ],
+    "trustworthy": true,
+    "average_logprob": -0.3
+   }
+  },
+  {
+   "response": {
+    "words": [
+     {
+      "word": " Hello",
+      "start": 0.0,
+      "end": 0.4
+     },
+     {
+      "word": "world.",
+      "start": 0.5,
+      "end": 0.9
+     },
+     {
+      "word": "late",
+      "start": 9.0,
+      "end": 9.4
+     }
+    ],
+    "segments": [
+     {
+      "text": " Hello world.",
+      "start": 0.0,
+      "end": 1.0,
+      "avg_logprob": -0.3,
+      "no_speech_prob": 0.9
+     },
+     {
+      "text": "",
+      "start": 1.0,
+      "end": 2.0
+     },
+     {
+      "text": "ignored",
+      "start": 3,
+      "end": 4,
+      "avg_logprob": -0.5,
+      "no_speech_prob": 0.8
+     }
+    ]
+   },
+   "skip": 0.45,
+   "result": {
+    "words": [
+     {
+      "index": 0,
+      "original": "Hello",
+      "text": "Hello",
+      "start": 0.0,
+      "end": 0.4
+     },
+     {
+      "index": 1,
+      "original": "world.",
+      "text": "world.",
+      "start": 0.5,
+      "end": 0.9
+     }
+    ],
+    "trustworthy": true,
+    "average_logprob": -0.3
+   }
+  },
+  {
+   "response": {
+    "words": [
+     {
+      "word": "x",
+      "start": 1,
+      "end": 2
+     }
+    ]
+   },
+   "skip": 0.0,
+   "result": {
+    "words": [
+     {
+      "index": 0,
+      "original": "x",
+      "text": "x",
+      "start": 1.0,
+      "end": 2.0
+     }
+    ],
+    "trustworthy": true,
+    "average_logprob": -0.55
+   }
+  },
+  {
+   "response": {
+    "segments": [
+     {
+      "text": "alpha beta gamma",
+      "start": 0,
+      "end": 3,
+      "avg_logprob": -0.2
+     }
+    ]
+   },
+   "skip": 0.0,
+   "result": {
+    "words": [
+     {
+      "index": 0,
+      "original": "alpha",
+      "text": "alpha",
+      "start": 0.0,
+      "end": 1.0
+     },
+     {
+      "index": 1,
+      "original": "beta",
+      "text": "beta",
+      "start": 1.0,
+      "end": 2.0
+     },
+     {
+      "index": 2,
+      "original": "gamma",
+      "text": "gamma",
+      "start": 2.0,
+      "end": 3.0
+     }
+    ],
+    "trustworthy": true,
+    "average_logprob": -0.2
+   }
+  },
+  {
+   "response": {
+    "words": [],
+    "segments": [
+     {
+      "text": "bad",
+      "start": 0,
+      "end": 1,
+      "avg_logprob": -2.0
+     }
+    ]
+   },
+   "skip": 0.0,
+   "result": {
+    "words": [
+     {
+      "index": 0,
+      "original": "bad",
+      "text": "bad",
+      "start": 0.0,
+      "end": 1.0
+     }
+    ],
+    "trustworthy": false,
+    "average_logprob": -2.0
+   }
+  }
+ ],
+ "group": [
+  {
+   "words_per_caption": null,
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4
+    ],
+    [
+     5
+    ],
+    [
+     6,
+     7
+    ],
+    [
+     8
+    ],
+    [
+     9
+    ]
+   ]
+  },
+  {
+   "words_per_caption": 1,
+   "groups": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ],
+    [
+     3
+    ],
+    [
+     4
+    ],
+    [
+     5
+    ],
+    [
+     6
+    ],
+    [
+     7
+    ],
+    [
+     8
+    ],
+    [
+     9
+    ]
+   ]
+  },
+  {
+   "words_per_caption": 2,
+   "groups": [
+    [
+     0,
+     1
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     4
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     7,
+     8
+    ],
+    [
+     9
+    ]
+   ]
+  },
+  {
+   "words_per_caption": 4,
+   "groups": [
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     4
+    ],
+    [
+     5,
+     6,
+     7,
+     8
+    ],
+    [
+     9
+    ]
+   ]
+  }
+ ],
+ "ass": {
+  "words": [
+   {
+    "index": 0,
+    "text": "Yeh",
+    "original": "Yeh",
+    "start": 0.0,
+    "end": 0.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 1,
+    "text": "BAHUT",
+    "original": "BAHUT",
+    "start": 0.25,
+    "end": 0.6,
+    "important": true,
+    "emphasis": "key",
+    "uncertain": false,
+    "color": "#FF3B30",
+    "font_size": 62,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 2,
+    "text": "acchi",
+    "original": "acchi",
+    "start": 0.65,
+    "end": 0.9,
+    "important": true,
+    "emphasis": "feature",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 3,
+    "text": "video",
+    "original": "video.",
+    "start": 0.95,
+    "end": 1.3,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 4,
+    "text": "hai",
+    "original": "hai",
+    "start": 1.35,
+    "end": 1.6,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": true,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 5,
+    "text": "{bold}",
+    "original": "{bold}",
+    "start": 2.5,
+    "end": 2.9,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": true
+   },
+   {
+    "index": 6,
+    "text": "x",
+    "original": "x",
+    "start": 3.0,
+    "end": 3.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 80,
+    "pos_x": 40.5,
+    "pos_y": 70.25,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 7,
+    "text": "y",
+    "original": "y",
+    "start": 3.25,
+    "end": 3.5,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 8,
+    "text": "z",
+    "original": "z",
+    "start": 3.55,
+    "end": 3.9,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 9,
+    "text": "w",
+    "original": "w",
+    "start": 4.0,
+    "end": 4.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   }
+  ],
+  "elements": [
+   {
+    "id": "e1",
+    "kind": "sticker",
+    "char": "★",
+    "font_id": "poppins",
+    "color": "#FF00AA",
+    "font_size": 120,
+    "start": 0,
+    "end": 2,
+    "pos_x": 50,
+    "pos_y": 30
+   },
+   {
+    "id": "e2",
+    "kind": "text",
+    "char": "Hi {x}",
+    "font_id": "anton",
+    "color": "#00FF00",
+    "font_size": 48,
+    "start": 1,
+    "end": 1,
+    "pos_x": 10,
+    "pos_y": 90
+   },
+   {
+    "id": "e3",
+    "kind": "text",
+    "char": "Title",
+    "font_id": "bogus",
+    "color": "#12",
+    "font_size": 60,
+    "start": 1.5,
+    "end": 3.25,
+    "pos_x": 33.3,
+    "pos_y": 66.6
+   }
+  ],
+  "cases": [
+   {
+    "theme": "viral",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold\\N{\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnAnton\\c&H00303BFF&\\fs62}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "viral",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold\\N{\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT {\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "cinematic",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H00FFFFFF&\\fs52}Yeh {\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H00FFFFFF&\\fs52}acchi {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnBebas Neue\\c&H00FFFFFF&\\fs80}x {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnBebas Neue\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnBebas Neue\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H0008B3EA&\\fs61}bold\\N{\\fnBebas Neue\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H00FFFFFF&\\fs52}y\\N{\\fnBebas Neue\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnBebas Neue\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnBebas Neue\\c&H00FFFFFF&\\fs52}Yeh {\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}acchi {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnBebas Neue\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnBebas Neue\\c&H0008B3EA&\\fs61}bold {\\fnBebas Neue\\c&H00FFFFFF&\\fs80}x {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}y {\\fnBebas Neue\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnBebas Neue\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "minimal",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "bebas",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Bebas Neue,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnPoppins\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnPoppins\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold\\N{\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnPoppins\\c&H00303BFF&\\fs62}BAHUT {\\fnPoppins\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "podcast",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnPermanent Marker\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnPermanent Marker\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold\\N{\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnPermanent Marker\\c&H00303BFF&\\fs62}BAHUT {\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "meme_mix",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold\\N{\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh {\\fnCaveat\\c&H00303BFF&\\fs62}BAHUT {\\fnCaveat\\c&H00FFFFFF&\\fs52}acchi {\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\\N{\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh {\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\\N{\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_pop",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh {\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\\N{\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "editorial_pop",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnBebas Neue\\c&H00303BFF&\\fs62}BAHUT\\N{\\fnPlayfair Display SemiBold\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "clean_vogue",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": null,
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H0008B3EA&\\fs61}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": null,
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": null,
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62}BAHUT\\N{\\fnPermanent Marker\\c&H00FFFFFF&\\fs52}acchi\\N{\\fnPoppins\\c&H00FFFFFF&\\fs52}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H0008B3EA&\\fs61}bold {\\fnPoppins\\c&H00FFFFFF&\\fs80}x {\\fnPoppins\\c&H00FFFFFF&\\fs52}y {\\fnPoppins\\c&H00FFFFFF&\\fs52}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnPoppins\\c&H00FFFFFF&\\fs52}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "rock",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "rock",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "rock",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}Yeh\\N{\\fnAnton\\c&H00303BFF&\\fs62\\3c&H00000000&\\bord3\\shad0\\blur0}BAHUT\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}acchi\\N{\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00004DFF&\\fs61\\3c&H00000000&\\bord3\\shad0\\blur0}bold {\\fnAnton\\c&H00FFFFFF&\\fs80\\3c&H00000000&\\bord3\\shad0\\blur0}x {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}y {\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnAnton\\c&H00FFFFFF&\\fs52\\3c&H00000000&\\bord3\\shad0\\blur0}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "glow",
+    "lines": 1,
+    "position": "bottom",
+    "wpc": null,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:02.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold\nDialogue: 0,0:00:03.00,0:00:03.50,Default,,0,0,0,,{\\an5\\pos(437,1349)\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y\nDialogue: 0,0:00:03.55,0:00:03.90,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,210,,{\\an2\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "glow",
+    "lines": 2,
+    "position": "top",
+    "wpc": 2,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:00.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\nDialogue: 0,0:00:00.65,0:00:01.30,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x\nDialogue: 0,0:00:03.25,0:00:03.90,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,150,,{\\an8\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   },
+   {
+    "theme": "street_heat",
+    "variant": "glow",
+    "lines": 1,
+    "position": "middle",
+    "wpc": 4,
+    "font": "poppins",
+    "ass": "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\nFormat: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\nStyle: Default,Poppins,52,&H00FFFFFF,&H00007AFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,1,2,70,70,210,1\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\nDialogue: 0,0:00:00.00,0:00:01.30,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}Yeh\\N{\\fnOutfit\\c&H00303BFF&\\fs62\\3c&H00303BFF&\\bord3\\shad0\\blur4}BAHUT\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}acchi\\N{\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}video\nDialogue: 0,0:00:01.35,0:00:01.60,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}hai\nDialogue: 0,0:00:02.50,0:00:03.90,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00EED322&\\fs61\\3c&H00EED322&\\bord3\\shad0\\blur4}bold {\\fnOutfit\\c&H00FFFFFF&\\fs80\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}x {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}y {\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}z\nDialogue: 0,0:00:04.00,0:00:04.20,Default,,0,0,0,,{\\an5\\fnOutfit\\c&H00FFFFFF&\\fs52\\3c&H00FFFFFF&\\bord3\\shad0\\blur4}w\nDialogue: 1,0:00:00.00,0:00:02.00,Default,,0,0,0,,{\\an5\\pos(540,576)\\fs120\\c&H00AA00FF&}★\nDialogue: 1,0:00:01.50,0:00:03.25,Default,,0,0,0,,{\\fnPoppins\\an5\\pos(360,1279)\\fs60\\c&H00FFFF12&}Title\n"
+   }
+  ]
+ },
+ "srt": {
+  "words": [
+   {
+    "index": 0,
+    "text": "Yeh",
+    "original": "Yeh",
+    "start": 0.0,
+    "end": 0.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 1,
+    "text": "BAHUT",
+    "original": "BAHUT",
+    "start": 0.25,
+    "end": 0.6,
+    "important": true,
+    "emphasis": "key",
+    "uncertain": false,
+    "color": "#FF3B30",
+    "font_size": 62,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 2,
+    "text": "acchi",
+    "original": "acchi",
+    "start": 0.65,
+    "end": 0.9,
+    "important": true,
+    "emphasis": "feature",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 3,
+    "text": "video",
+    "original": "video.",
+    "start": 0.95,
+    "end": 1.3,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 4,
+    "text": "hai",
+    "original": "hai",
+    "start": 1.35,
+    "end": 1.6,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": true,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 5,
+    "text": "{bold}",
+    "original": "{bold}",
+    "start": 2.5,
+    "end": 2.9,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": true
+   },
+   {
+    "index": 6,
+    "text": "x",
+    "original": "x",
+    "start": 3.0,
+    "end": 3.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 80,
+    "pos_x": 40.5,
+    "pos_y": 70.25,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 7,
+    "text": "y",
+    "original": "y",
+    "start": 3.25,
+    "end": 3.5,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 8,
+    "text": "z",
+    "original": "z",
+    "start": 3.55,
+    "end": 3.9,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   },
+   {
+    "index": 9,
+    "text": "w",
+    "original": "w",
+    "start": 4.0,
+    "end": 4.2,
+    "important": false,
+    "emphasis": "support",
+    "uncertain": false,
+    "color": "#FFFFFF",
+    "font_size": 52,
+    "pos_x": null,
+    "pos_y": null,
+    "new_line": null,
+    "box_width": null,
+    "box_height": null,
+    "kinetic": null,
+    "emphasize": false
+   }
+  ],
+  "srt": "1\n00:00:00,000 --> 00:00:00,200\nYeh\n\n2\n00:00:00,250 --> 00:00:00,600\nBAHUT\n\n3\n00:00:00,650 --> 00:00:00,900\nacchi\n\n4\n00:00:00,950 --> 00:00:01,300\nvideo\n\n5\n00:00:01,350 --> 00:00:01,600\nhai\n\n6\n00:00:02,500 --> 00:00:02,900\n{bold}\n\n7\n00:00:03,000 --> 00:00:03,200\nx\n\n8\n00:00:03,250 --> 00:00:03,500\ny\n\n9\n00:00:03,550 --> 00:00:03,900\nz\n\n10\n00:00:04,000 --> 00:00:04,200\nw\n"
+ },
+ "ass_time": [
+  {
+   "s": 0,
+   "r": "0:00:00.00"
+  },
+  {
+   "s": 0.005,
+   "r": "0:00:00.01"
+  },
+  {
+   "s": 1.994,
+   "r": "0:00:01.99"
+  },
+  {
+   "s": 59.999,
+   "r": "0:00:60.00"
+  },
+  {
+   "s": 61.5,
+   "r": "0:01:01.50"
+  },
+  {
+   "s": 3599.5,
+   "r": "0:59:59.50"
+  },
+  {
+   "s": 3661.234,
+   "r": "1:01:01.23"
+  }
+ ],
+ "ass_color": [
+  {
+   "h": "#FF3B30",
+   "r": "&H00303BFF&"
+  },
+  {
+   "h": "#12",
+   "r": "&H00FFFF12&"
+  },
+  {
+   "h": "FFF",
+   "r": "&H00FFFFFF&"
+  },
+  {
+   "h": "#abcdef01",
+   "r": "&H00efcdab&"
+  }
+ ],
+ "render": [
+  {
+   "muted": false,
+   "volume": 100,
+   "quality": "high",
+   "sfx": [],
+   "args": [
+    "ffmpeg",
+    "-y",
+    "-i",
+    "/tmp/w/source.mp4",
+    "-vf",
+    "eq=brightness=-0.1:contrast=1.2:saturation=0.9,subtitles=captions.ass:fontsdir=../../opt/fonts",
+    "-af",
+    "volume=1.0",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-crf",
+    "17",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "192k",
+    "-movflags",
+    "+faststart",
+    "/tmp/w/out.mp4"
+   ]
+  },
+  {
+   "muted": true,
+   "volume": 150,
+   "quality": "draft",
+   "sfx": [],
+   "args": [
+    "ffmpeg",
+    "-y",
+    "-i",
+    "/tmp/w/source.mp4",
+    "-vf",
+    "eq=brightness=-0.1:contrast=1.2:saturation=0.9,subtitles=captions.ass:fontsdir=../../opt/fonts",
+    "-af",
+    "volume=0",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "veryfast",
+    "-crf",
+    "26",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "192k",
+    "-movflags",
+    "+faststart",
+    "/tmp/w/out.mp4"
+   ]
+  },
+  {
+   "muted": false,
+   "volume": 80,
+   "quality": "high",
+   "sfx": [
+    {
+     "type": "whoosh",
+     "time": 1.5
+    },
+    {
+     "type": "pop",
+     "time": 0.123
+    },
+    {
+     "type": "unknown",
+     "time": 2
+    }
+   ],
+   "args": [
+    "ffmpeg",
+    "-y",
+    "-i",
+    "/tmp/w/source.mp4",
+    "-filter_complex",
+    "[0:v]eq=brightness=-0.1:contrast=1.2:saturation=0.9,subtitles=captions.ass:fontsdir=../../opt/fonts[vout];[0:a]volume=0.8[main_a];aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(180+(540-180)*min(t/0.2,1))*t)':s=44100:d=0.2[sfxsrc0];[sfxsrc0]pan=stereo|c0=c0|c1=c0,adelay=1500|1500,volume=0.7[sfx0];aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(880+(880-880)*min(t/0.2,1))*t)':s=44100:d=0.2[sfxsrc1];[sfxsrc1]pan=stereo|c0=c0|c1=c0,adelay=123|123,volume=0.7[sfx1];aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(880+(880-880)*min(t/0.2,1))*t)':s=44100:d=0.2[sfxsrc2];[sfxsrc2]pan=stereo|c0=c0|c1=c0,adelay=2000|2000,volume=0.7[sfx2];[main_a][sfx0][sfx1][sfx2]amix=inputs=4:duration=first:dropout_transition=0:normalize=0[aout]",
+    "-map",
+    "[vout]",
+    "-map",
+    "[aout]",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-crf",
+    "17",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "192k",
+    "-movflags",
+    "+faststart",
+    "/tmp/w/out.mp4"
+   ]
+  }
+ ],
+ "sfx_filter": [
+  {
+   "type": "whoosh",
+   "filter": "aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(180+(540-180)*min(t/0.2,1))*t)':s=44100:d=0.2[L]"
+  },
+  {
+   "type": "bass_drop",
+   "filter": "aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.24)))*sin(2*PI*(90+(27-90)*min(t/0.4,1))*t)':s=44100:d=0.4[L]"
+  },
+  {
+   "type": "pop",
+   "filter": "aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(880+(880-880)*min(t/0.2,1))*t)':s=44100:d=0.2[L]"
+  },
+  {
+   "type": "cash",
+   "filter": "aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.12)))*sin(2*PI*(660+(990-660)*min(t/0.2,1))*t)':s=44100:d=0.2[L]"
+  },
+  {
+   "type": "shutter",
+   "filter": "aevalsrc=exprs='(if(lt(t,0.015),t/0.015,exp(-5*(t-0.015)/0.048)))*sin(2*PI*(1400+(1400-1400)*min(t/0.08,1))*t)':s=44100:d=0.08[L]"
+  }
+ ]
+}

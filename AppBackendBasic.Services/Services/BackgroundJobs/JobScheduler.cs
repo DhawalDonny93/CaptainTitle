@@ -73,30 +73,6 @@ public class JobScheduler
                 job => job.RunAllCleanupTasksAsync(),
                 Cron.Weekly(DayOfWeek.Monday, 3));
 
-            // AI SEO: Auto-Blog Publishing - Daily at 9 AM
-            _recurringJobManager.AddOrUpdate<IAutoBlogService>(
-                "auto-blog-publishing",
-                job => job.PublishScheduledArticlesAsync(),
-                Cron.Daily(9));
-
-            // AI SEO: AI Visibility Tracking - Daily at 10 AM
-            _recurringJobManager.AddOrUpdate<IAiTrackingService>(
-                "ai-visibility-tracking",
-                job => job.TrackAllActivePromptsAsync(),
-                Cron.Daily(10));
-
-            // Social Signal Engine: Opportunity Scan - Daily at 11 AM
-            _recurringJobManager.AddOrUpdate<ISocialMonitoringService>(
-                "social-monitoring-scan",
-                job => job.ScanOpportunitiesAsync(),
-                Cron.Daily(11));
-
-            // Agentic Auditor: Weekly Site Audit - Mondays at 9 AM
-            _recurringJobManager.AddOrUpdate<ISiteAuditService>(
-                "site-audit-scan",
-                job => job.RunAllProjectAuditsAsync(),
-                Cron.Weekly(DayOfWeek.Monday, 9));
-
             _logger.LogInformation("Recurring background jobs configured successfully");
         }
         catch (Exception ex)

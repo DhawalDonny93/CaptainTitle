@@ -40,11 +40,7 @@ namespace AppBackendBasic.API.Middleware
             // Only check quota for POST/PUT operations that consume resources
             if (method == "POST" || method == "PUT")
             {
-                if (path.Contains("/prompts/") && path.Contains("/check-visibility"))
-                    quotaType = "VisibilityChecks";
-                else if (path.Contains("/site-audits/start") || path.Contains("/site-audits/create"))
-                    quotaType = "SiteAudits";
-                else if (path.Contains("/llm/") || path.Contains("/llmproviders/generate"))
+                if (path.Contains("/llm/") || path.Contains("/llmproviders/generate"))
                     quotaType = "LlmRequests";
             }
 

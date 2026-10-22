@@ -98,6 +98,5 @@ namespace AppBackendBasic.Core.Entities
 
         // Navigation properties
         public virtual User User { get; set; } = null!;
-        public virtual Project? Project { get; set; }
     }
 }

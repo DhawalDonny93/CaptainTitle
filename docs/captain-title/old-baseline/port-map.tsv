@@ -1,0 +1,70 @@
+# old path (exact file, or directory prefix ending in /)	status	new location(s)	notes
+# status: PORTED = behaviour reproduced | REPLACED = intentionally swapped for the template's equivalent | DROPPED = not carried over | PENDING = still to do | N/A = tooling/test artefact
+backend/server.py	REPLACED	AppBackendBasic.API/Program.cs; AppBackendBasic.Services/Captions/CaptionJobQueue.cs	FastAPI app+Mongo indexes -> ASP.NET Core + EF indexes (Database_Migrations/21_*.sql). Startup resume of queued/processing projects ported into CaptionJobWorker. Health = template /health.
+backend/auth.py	REPLACED	Template AuthController/AuthService (JWT + refresh tokens, Google/Apple, email verify, password reset)	Cookie sessions + bcrypt replaced wholesale by template auth. Old per-user usage bootstrap (_ensure_usage) -> CaptionEntitlementService.GetOrCreateUsageAsync.
+backend/caption_ai.py	PORTED	AppBackendBasic.Services/Captions/TranscriptionAlgorithms.cs, DifflibRatio.cs, WavAudio.cs, CaptionTranscriptionService.cs, SpeechClients.cs, HinglishService.cs	Golden-tested against Python output (AppBackendBasic.Captions.Tests). Prompts copied verbatim. LLM model now admin-configurable.
+backend/captions.py	PORTED	AppBackendBasic.Services/Captions/{CaptionLayout,SubtitleWriters,FfmpegRenderArgs,CaptionProjectService,CaptionJobRunner,CaptionEntitlementService,FfmpegService}.cs; AppBackendBasic.API/Controllers/CaptionsController.cs	THEMES/FONTS/VARIANTS/SFX tables moved to DB (CaptionSeedData.cs). Golden-tested ASS/SRT/ffmpeg args.
+backend/payments.py	PORTED	AppBackendBasic.Services/Captions/CaptionBillingService.cs; CaptionPaymentsController.cs	CATALOG moved to CaptionPlans table. See DECISIONS D-07/D-08 for hardening deltas.
+backend/storage_service.py	PORTED	AppBackendBasic.Services/Captions/CaptionStorage.cs	Local disk preserved; path-traversal guard added. Swap ICaptionStorage for S3/R2 later.
+backend/fonts/	PORTED	AppBackendBasic.API/Assets/captions/fonts/	Copied byte-for-byte. NOTE: 'Playfair Display SemiBold' (theme tiers) has no matching file (only PlayfairDisplay-Italic.ttf) - inherited quirk, see CUSTOM_CODE_REGISTER.
+backend/fonts-license.md	PORTED	AppBackendBasic.API/Assets/captions/fonts/LICENSE.md	
+backend/requirements.txt	N/A	-	Python dependency pins; replaced by NuGet refs. Only sarvamai/openai/stripe/imageio-ffmpeg were relevant (now HTTP clients / Stripe.net / system ffmpeg).
+backend/.env.example	PORTED	AppBackendBasic.API/appsettings.example.json ("Captions", "Stripe" sections); docs/captain-title/CONFIGURATION.md	Env vars -> config keys, see CONFIGURATION.md mapping table.
+backend/tests/	PENDING	AppBackendBasic.Captions.Tests (golden parity done); live HTTP integration tests not ported	Old pytest files were live-deployment smoke tests. Replace with API integration tests once a test DB + keys exist.
+backend/pytest.ini	N/A	-	
+frontend/src/App.css	PORTED	AppBackendBasic.WebUI/src/features/captions/studio.css	CSS vars namespaced --ct-*, global element rules scoped under .ct-scope.
+frontend/src/App.js	REPLACED	AppBackendBasic.WebUI/src/App.tsx (routes /studio, /payment/success, /payment/cancel)	Auth gating via template ProtectedRoute.
+frontend/src/index.js	REPLACED	AppBackendBasic.WebUI/src/main.tsx	react-query not used by the ported code.
+frontend/src/index.css	REPLACED	AppBackendBasic.WebUI/src/index.css	Theme tokens differ; studio styles are self-contained.
+frontend/src/lib/api.js	PORTED	AppBackendBasic.WebUI/src/features/captions/captionsApi.ts	Uses the template axios client (bearer JWT) instead of cookie sessions.
+frontend/src/lib/sfx.js	PORTED	AppBackendBasic.WebUI/src/features/captions/lib/sfx.ts	Tone params now come from the catalog (shared with export).
+frontend/src/lib/utils.js	REPLACED	AppBackendBasic.WebUI/src/lib/utils.ts (cn)	
+frontend/src/components/AuthScreen.jsx	PENDING	Template pages/Login.tsx (functional) - Captain Title branding/copy still to do	Google error query handling (google_error) replaced by template Google flow.
+frontend/src/components/EditorPage.jsx	PORTED	features/captions/pages/StudioPage.tsx	
+frontend/src/components/EditorHeader.jsx	PORTED	features/captions/components/EditorHeader.tsx	
+frontend/src/components/UploadStage.jsx	PORTED	features/captions/components/UploadStage.tsx	Limits/formats read from catalog.
+frontend/src/components/CaptionStudio.jsx	PORTED	features/captions/components/CaptionStudio.tsx	Authenticated media via signed URL (DECISIONS D-05).
+frontend/src/components/ThemePanel.jsx	PORTED	features/captions/components/ThemePanel.tsx	templates/fonts/variants now from catalog.
+frontend/src/components/TranscriptPanel.jsx	PORTED	features/captions/components/TranscriptPanel.tsx	
+frontend/src/components/MomentPopover.jsx	PORTED	features/captions/components/MomentPopover.tsx	
+frontend/src/components/Timeline.jsx	PORTED	features/captions/components/Timeline.tsx	
+frontend/src/components/LeftRail.jsx	PORTED	features/captions/components/LeftRail.tsx	
+frontend/src/components/MediaPanel.jsx	PORTED	features/captions/components/MediaPanel.tsx	
+frontend/src/components/AudioPanel.jsx	PORTED	features/captions/components/AudioPanel.tsx	
+frontend/src/components/AdjustmentPanel.jsx	PORTED	features/captions/components/AdjustmentPanel.tsx	
+frontend/src/components/AiToolsPanel.jsx	PORTED	features/captions/components/AiToolsPanel.tsx	Filler list from catalog.
+frontend/src/components/ElementsPanel.jsx	PORTED	features/captions/components/ElementsPanel.tsx	Stickers from catalog.
+frontend/src/components/TextPanel.jsx	PORTED	features/captions/components/TextPanel.tsx	
+frontend/src/components/PaywallDialog.jsx	PORTED	features/captions/components/PaywallDialog.tsx	Plans from /usage (DB).
+frontend/src/components/PaymentResult.jsx	PORTED	features/captions/components/PaymentResult.tsx	
+frontend/src/components/ui/	REPLACED	features/captions/components/ui.tsx (CtButton, CtInput, CtSlider, CtDialog)	shadcn/Radix primitives not carried over; only the four used were re-implemented. Unused shadcn files intentionally dropped.
+frontend/src/hooks/use-toast.js	REPLACED	WebUI/src/utils/toast.tsx	sonner -> template toast.
+frontend/src/constants/testIds/	DROPPED	-	Emergent qabot registry. data-testid attributes are kept inline in the components.
+frontend/public/index.html	DROPPED	-	Emergent/PostHog scripts intentionally not carried over. Google Fonts are @imported by studio.css.
+frontend/craco.config.js	DROPPED	-	CRA -> Vite.
+frontend/plugins/	DROPPED	-	Emergent health-check webpack plugin.
+frontend/package.json	REPLACED	AppBackendBasic.WebUI/package.json	Only new dep: @phosphor-icons/react.
+frontend/tailwind.config.js	REPLACED	AppBackendBasic.WebUI/tailwind.config.js	
+frontend/	N/A	-	Remaining frontend config/readme files.
+design_guidelines.json	PENDING	docs/captain-title/DESIGN_NOTES.md (not yet written)	Design intent; applied through studio.css. Landing/auth restyle pending.
+memory/PRD.md	PORTED	docs/captain-title/PRODUCT_REQUIREMENTS.md (copy) + MIGRATION_STATUS.md backlog	
+README.md	PORTED	docs/captain-title/README.md	
+auth_testing.md	DROPPED	-	Emergent Google-session notes; template auth differs.
+.emergent/	DROPPED	-	Emergent hosting cron/webhook scaffolding.
+test_reports/	N/A	-	Emergent test run outputs.
+tests/	N/A	-	
+test_result.md	N/A	-	
+.gitignore	N/A	-	
+.gitconfig	N/A	-	
+.test_cookie.txt	N/A	-	Test artefact.
+.test_cookie2.txt	N/A	-	Test artefact.
+captain-rendered.mp4	N/A	-	Sample media / debug artefacts at repo root (not source).
+captain-sample.mp4	N/A	-	
+captain-speech.wav	N/A	-	
+flying-beast-source.mp4	N/A	-	
+hindi-	N/A	-	Debug artefacts (hindi-*).
+longfix-	N/A	-	Debug artefacts (longfix-*).
+pipeline-	N/A	-	Debug artefacts (pipeline-*).
+toe-	N/A	-	Debug artefacts (toe-*).
+range-	N/A	-	Debug artefacts (range-*).
+project-update.json	N/A	-	

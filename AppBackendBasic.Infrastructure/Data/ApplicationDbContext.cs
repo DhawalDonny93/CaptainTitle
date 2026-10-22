@@ -42,7 +42,6 @@ public class ApplicationDbContext : DbContext
     // Team Management Entities
     public DbSet<Team> Teams { get; set; }
     public DbSet<UserTeamMapping> UserTeamMappings { get; set; }
-    public DbSet<PromptEditHistory> PromptEditHistories { get; set; }
 
     public DbSet<LlmConversation> LlmConversations { get; set; }
     public DbSet<LlmMessage> LlmMessages { get; set; }
@@ -56,16 +55,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<UsageQuota> UsageQuotas { get; set; }
     public DbSet<QuotaUsageLog> QuotaUsageLogs { get; set; }
 
-    // AI SEO Platform Entities
-    public DbSet<Project> Projects { get; set; }
-    public DbSet<BrandProfile> BrandProfiles { get; set; }
-    public DbSet<Competitor> Competitors { get; set; }
-    public DbSet<ContentArticle> ContentArticles { get; set; }
-    public DbSet<AiTrackingResult> AiTrackingResults { get; set; }
-    public DbSet<Keyword> Keywords { get; set; }
-    public DbSet<CommunityOpportunity> CommunityOpportunities { get; set; }
-    public DbSet<SiteAudit> SiteAudits { get; set; }
-    public DbSet<UserTask> UserTasks { get; set; }
+    // Notifications
     public DbSet<Notification> Notifications { get; set; }
     
     // LLM Provider Entities
@@ -73,48 +63,13 @@ public class ApplicationDbContext : DbContext
     public DbSet<LlmRequest> LlmRequests { get; set; }
     public DbSet<LlmCostTracking> LlmCostTrackings { get; set; }
     
-    // Prompt Management Entities
-    public DbSet<PromptTracking> PromptTrackings { get; set; }
-    public DbSet<PromptPlatformTracking> PromptPlatformTrackings { get; set; }
-    public DbSet<PromptVisibilityMetrics> PromptVisibilityMetrics { get; set; }
-    public DbSet<PromptResearchData> PromptResearchDatas { get; set; }
-    
-    // Citations & Mentions Entities
-    public DbSet<Citation> Citations { get; set; }
-    public DbSet<CitationMetric> CitationMetrics { get; set; }
-    public DbSet<BrandMention> BrandMentions { get; set; }
-    public DbSet<CitationAggregation> CitationAggregations { get; set; }
-    
-    // Site Auditor Entities
-    public DbSet<SiteAuditRun> SiteAuditRuns { get; set; }
-    public DbSet<SiteAuditDetail> SiteAuditDetails { get; set; }
-    public DbSet<SiteAuditHistory> SiteAuditHistories { get; set; }
-    public DbSet<SiteAuditIssue> SiteAuditIssues { get; set; }
-    
-    // Opportunities Auditor Entities
-    public DbSet<OpportunityScan> OpportunityScans { get; set; }
-    public DbSet<ContentGapOpportunity> ContentGapOpportunities { get; set; }
-    public DbSet<SeoOpportunity> SeoOpportunities { get; set; }
-    public DbSet<VisibilityOpportunity> VisibilityOpportunities { get; set; }
-    public DbSet<CompetitorAnalysis> CompetitorAnalyses { get; set; }
-    public DbSet<OpportunityImpact> OpportunityImpacts { get; set; }
-    
-    // Visibility Dashboard Entities
-    public DbSet<VisibilityDashboardMetrics> VisibilityDashboardMetrics { get; set; }
-    public DbSet<VisibilityGoal> VisibilityGoals { get; set; }
-    public DbSet<VisibilityAlert> VisibilityAlerts { get; set; }
-    public DbSet<VisibilityTrend> VisibilityTrends { get; set; }
-    public DbSet<CompetitiveIntelligence> CompetitiveIntelligence { get; set; }
-    
     // LLM Provider Tracking
     public DbSet<LlmProviderConfig> LlmProviderConfigs { get; set; }
-    public DbSet<PromptTemplate> PromptTemplates { get; set; }
     
     // LLM Job Configuration (admin-controlled provider+model per job)
     public DbSet<LlmJobConfig> LlmJobConfigs { get; set; }
     
     // Background Job Tracking
-    public DbSet<JobExecutionLog> JobExecutionLogs { get; set; }
     
     // Admin Console Entities
     public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
@@ -122,9 +77,22 @@ public class ApplicationDbContext : DbContext
     public DbSet<SystemHealthMetrics> SystemHealthMetrics { get; set; }
     public DbSet<EmailTemplate> EmailTemplates { get; set; }
     
+    // Captain Title (caption generator) entities
+    public DbSet<CaptionProject> CaptionProjects { get; set; }
+    public DbSet<CaptionUsage> CaptionUsages { get; set; }
+    public DbSet<CaptionPaymentTransaction> CaptionPaymentTransactions { get; set; }
+    public DbSet<CaptionTheme> CaptionThemes { get; set; }
+    public DbSet<CaptionFont> CaptionFonts { get; set; }
+    public DbSet<CaptionVariant> CaptionVariants { get; set; }
+    public DbSet<CaptionSfxType> CaptionSfxTypes { get; set; }
+    public DbSet<CaptionSticker> CaptionStickers { get; set; }
+    public DbSet<CaptionPlan> CaptionPlans { get; set; }
+    public DbSet<CaptionFillerWord> CaptionFillerWords { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        ConfigureCaptionEntities(modelBuilder);
 
         // User entity configuration
         modelBuilder.Entity<User>(entity =>
@@ -132,7 +100,7 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.ToTable("User");
             entity.HasIndex(e => e.Email).IsUnique().HasFilter("\"Email\" IS NOT NULL");
-            entity.HasIndex(e => e.PhoneNumber).IsUnique().HasFilter("\"phoneNumber\" IS NOT NULL");
+            entity.HasIndex(e => e.PhoneNumber).IsUnique().HasFilter("\"PhoneNumber\" IS NOT NULL");
             entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -762,59 +730,8 @@ public class ApplicationDbContext : DbContext
         });
 
         // ==========================================
-        // AI SEO Platform Entity Configurations
+        // LLM provider / request tracking configuration
         // ==========================================
-
-        // Project entity configuration
-        modelBuilder.Entity<Project>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("Projects");
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.Domain);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(p => p.User)
-                  .WithMany() // Assuming User doesn't have a navigation property back to Projects yet
-                  .HasForeignKey(p => p.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // ContentArticle entity configuration
-        modelBuilder.Entity<ContentArticle>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("ContentArticles");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Slug);
-            entity.HasIndex(e => e.Status);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(a => a.Project)
-                  .WithMany(p => p.ContentArticles)
-                  .HasForeignKey(a => a.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // AiTrackingResult entity configuration
-        modelBuilder.Entity<AiTrackingResult>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("AiTrackingResults");
-            entity.HasIndex(e => e.PromptId);
-            entity.HasIndex(e => e.ExecutedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(r => r.Prompt)
-                  .WithMany(p => p.AiTrackingResults)
-                  .HasForeignKey(r => r.PromptId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
 
         // LlmProvider entity configuration
         modelBuilder.Entity<LlmProvider>(entity =>
@@ -900,11 +817,6 @@ public class ApplicationDbContext : DbContext
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.SetNull);
 
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.SetNull);
-
             entity.HasOne(e => e.Provider)
                   .WithMany(p => p.Requests)
                   .HasForeignKey(e => e.ProviderId)
@@ -929,526 +841,10 @@ public class ApplicationDbContext : DbContext
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
             entity.HasOne(e => e.Provider)
                   .WithMany()
                   .HasForeignKey(e => e.ProviderId)
                   .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        // PromptTracking entity configuration
-        modelBuilder.Entity<PromptTracking>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("PromptTrackings");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.IsActive);
-            entity.HasIndex(e => e.Topic);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => new { e.ProjectId, e.IsCompetitor });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.PromptText).IsRequired();
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Topic).HasMaxLength(200);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(e => e.User)
-                  .WithMany()
-                  .HasForeignKey(e => e.UserId)
-                  .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        // PromptPlatformTracking entity configuration
-        modelBuilder.Entity<PromptPlatformTracking>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("PromptPlatformTrackings");
-            entity.HasIndex(e => e.PromptId);
-            entity.HasIndex(e => e.Platform);
-            entity.HasIndex(e => e.IsEnabled);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => new { e.Platform, e.IsCompetitor });
-            entity.HasIndex(e => new { e.PromptId, e.Platform }).IsUnique();
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Prompt)
-                  .WithMany(p => p.PlatformTrackings)
-                  .HasForeignKey(e => e.PromptId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // PromptVisibilityMetrics entity configuration
-        modelBuilder.Entity<PromptVisibilityMetrics>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("PromptVisibilityMetrics");
-            entity.HasIndex(e => e.PromptPlatformId);
-            entity.HasIndex(e => e.CheckDate);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => new { e.CheckDate, e.IsCompetitor });
-            entity.HasIndex(e => new { e.PromptPlatformId, e.CheckDate });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Sentiment).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.PromptPlatform)
-                  .WithMany(p => p.VisibilityMetrics)
-                  .HasForeignKey(e => e.PromptPlatformId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // PromptResearchData entity configuration
-        modelBuilder.Entity<PromptResearchData>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("PromptResearchDatas");
-            entity.HasIndex(e => e.Topic);
-            entity.HasIndex(e => e.Source);
-            entity.HasIndex(e => e.DiscoveredAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.PromptText).IsRequired();
-            entity.Property(e => e.Topic).HasMaxLength(200);
-            entity.Property(e => e.Difficulty).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Source).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        });
-
-        // Citation entity configuration
-        modelBuilder.Entity<Citation>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("Citations");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.SourceDomain);
-            entity.HasIndex(e => e.Platform);
-            entity.HasIndex(e => e.DiscoveredAt);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => e.CompetitorId);
-            entity.HasIndex(e => e.CompetitorType);
-            entity.HasIndex(e => new { e.ProjectId, e.IsCompetitor });
-            entity.HasIndex(e => new { e.Platform, e.IsCompetitor });
-            entity.HasIndex(e => new { e.ProjectId, e.CompetitorType });
-            entity.HasIndex(e => new { e.ProjectId, e.SourceUrl, e.Platform });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.SourceUrl).IsRequired();
-            entity.Property(e => e.SourceDomain).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.SourceTitle).IsRequired().HasMaxLength(500);
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CitationType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CompetitorType).HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-                  
-            entity.HasOne(e => e.Competitor)
-                  .WithMany()
-                  .HasForeignKey(e => e.CompetitorId)
-                  .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        // CitationMetric entity configuration
-        modelBuilder.Entity<CitationMetric>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("CitationMetrics");
-            entity.HasIndex(e => e.CitationId);
-            entity.HasIndex(e => e.CheckDate);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => new { e.CheckDate, e.IsCompetitor });
-            entity.HasIndex(e => new { e.CitationId, e.CheckDate });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Citation)
-                  .WithMany(c => c.Metrics)
-                  .HasForeignKey(e => e.CitationId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // BrandMention entity configuration
-        modelBuilder.Entity<BrandMention>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("BrandMentions");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Platform);
-            entity.HasIndex(e => e.CheckDate);
-            entity.HasIndex(e => e.IsMentioned);
-            entity.HasIndex(e => e.IsCompetitor);
-            entity.HasIndex(e => e.CompetitorId);
-            entity.HasIndex(e => e.CompetitorType);
-            entity.HasIndex(e => new { e.ProjectId, e.IsCompetitor });
-            entity.HasIndex(e => new { e.Platform, e.IsCompetitor });
-            entity.HasIndex(e => new { e.ProjectId, e.CompetitorType });
-            entity.HasIndex(e => new { e.ProjectId, e.Platform, e.CheckDate });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.PromptText).IsRequired();
-            entity.Property(e => e.MentionType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Sentiment).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.CompetitorType).HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-                  
-            entity.HasOne(e => e.Competitor)
-                  .WithMany()
-                  .HasForeignKey(e => e.CompetitorId)
-                  .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        // CitationAggregation entity configuration
-        modelBuilder.Entity<CitationAggregation>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("CitationAggregations");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.SourceDomain);
-            entity.HasIndex(e => e.Platform);
-            entity.HasIndex(e => e.AggregationDate);
-            entity.HasIndex(e => new { e.ProjectId, e.SourceDomain, e.Platform, e.AggregationDate }).IsUnique();
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.SourceDomain).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // SiteAudit entity configuration (legacy table)
-        modelBuilder.Entity<SiteAudit>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("SiteAudits");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.AuditDate);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.AuditDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // SiteAuditRun entity configuration
-        modelBuilder.Entity<SiteAuditRun>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("SiteAuditRuns");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.CreatedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Url).IsRequired();
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // SiteAuditDetail entity configuration
-        modelBuilder.Entity<SiteAuditDetail>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("SiteAuditDetails");
-            entity.HasIndex(e => e.SiteAuditRunId);
-            entity.HasIndex(e => e.CheckType);
-            entity.HasIndex(e => e.Status);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CheckName).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.CheckType).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.DetailsJson).HasColumnType("text");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Ignore(e => e.Details);
-
-            entity.HasOne(e => e.SiteAuditRun)
-                  .WithMany(r => r.Details)
-                  .HasForeignKey(e => e.SiteAuditRunId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // SiteAuditHistory entity configuration
-        modelBuilder.Entity<SiteAuditHistory>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("SiteAuditHistories");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.CheckDate);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // OpportunityScan entity configuration
-        modelBuilder.Entity<OpportunityScan>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("OpportunityScans");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.ScanType);
-            entity.HasIndex(e => e.CreatedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.ScanType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // ContentGapOpportunity entity configuration
-        modelBuilder.Entity<ContentGapOpportunity>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("ContentGapOpportunities");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.EstimatedImpact);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Topic).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.RecommendedContentType).HasMaxLength(50);
-            entity.Property(e => e.EstimatedImpact).HasMaxLength(20);
-            entity.Property(e => e.Status).HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(e => e.OpportunityScan)
-                  .WithMany(s => s.ContentGapOpportunities)
-                  .HasForeignKey(e => e.OpportunityScanId)
-                  .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        // VisibilityOpportunity entity configuration
-        modelBuilder.Entity<VisibilityOpportunity>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("VisibilityOpportunities");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.Priority);
-            entity.HasIndex(e => e.PromptTrackingId);
-            // Unique constraint: one active opportunity per (ProjectId, PromptTrackingId, OpportunityType, Platform)
-            // Enforced at DB level via migration script; EF index mirrors it for query planning
-            entity.HasIndex(e => new { e.ProjectId, e.PromptTrackingId, e.OpportunityType, e.Platform })
-                  .HasDatabaseName("idx_visibility_opportunities_unique_prompt");
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.PromptTrackingId).IsRequired(false);
-            entity.Property(e => e.PromptText).IsRequired();
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.OpportunityType).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Status).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.DiscoveredAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(e => e.PromptTracking)
-                  .WithMany()
-                  .HasForeignKey(e => e.PromptTrackingId)
-                  .OnDelete(DeleteBehavior.SetNull)
-                  .IsRequired(false);
-        });
-
-        // CompetitorAnalysis entity configuration
-        modelBuilder.Entity<CompetitorAnalysis>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("CompetitorAnalyses");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.CompetitorDomain);
-            entity.HasIndex(e => new { e.ProjectId, e.CompetitorDomain }).IsUnique();
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CompetitorDomain).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.CompetitorName).HasMaxLength(255);
-            entity.Property(e => e.CitationShare).HasPrecision(5, 2);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // OpportunityImpact entity configuration
-        modelBuilder.Entity<OpportunityImpact>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("OpportunityImpacts");
-            entity.HasIndex(e => e.OpportunityType);
-            entity.HasIndex(e => e.OpportunityId);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.OpportunityType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.ImpactType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.EstimatedValue).HasPrecision(10, 2);
-            entity.Property(e => e.ActualValue).HasPrecision(10, 2);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        });
-
-        // CommunityOpportunity entity configuration
-        modelBuilder.Entity<CommunityOpportunity>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("CommunityOpportunities");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Platform);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.Priority);
-            entity.HasIndex(e => e.EngagementScore);
-            entity.HasIndex(e => e.IsArchived);
-            entity.HasIndex(e => e.CreatedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Platform).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Title).IsRequired().HasMaxLength(300);
-            entity.Property(e => e.Url).IsRequired();
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Sentiment).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(e => e.Keyword)
-                  .WithMany()
-                  .HasForeignKey(e => e.KeywordId)
-                  .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        // VisibilityDashboardMetrics entity configuration
-        modelBuilder.Entity<VisibilityDashboardMetrics>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("VisibilityDashboardMetrics");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.MetricDate);
-            entity.HasIndex(e => e.Period);
-            entity.HasIndex(e => new { e.ProjectId, e.MetricDate, e.Period }).IsUnique();
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Period).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.AveragePromptScore).HasPrecision(5, 2);
-            entity.Property(e => e.MentionRate).HasPrecision(5, 2);
-            entity.Property(e => e.CitationShare).HasPrecision(5, 2);
-            entity.Property(e => e.VisibilityChange).HasPrecision(5, 2);
-            entity.Property(e => e.PlatformMetrics).HasColumnType("jsonb");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // VisibilityGoal entity configuration
-        modelBuilder.Entity<VisibilityGoal>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("VisibilityGoals");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.TargetDate);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.GoalType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Status).HasMaxLength(20);
-            entity.Property(e => e.TargetValue).HasPrecision(10, 2);
-            entity.Property(e => e.CurrentValue).HasPrecision(10, 2);
-            entity.Property(e => e.Progress).HasPrecision(5, 2);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // VisibilityAlert entity configuration
-        modelBuilder.Entity<VisibilityAlert>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("VisibilityAlerts");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.IsRead);
-            entity.HasIndex(e => e.Severity);
-            entity.HasIndex(e => e.CreatedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.AlertType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Severity).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Message).IsRequired();
-            entity.Property(e => e.Platform).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // CompetitiveIntelligence entity configuration
-        modelBuilder.Entity<CompetitiveIntelligence>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("CompetitiveIntelligence");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.MetricDate);
-            entity.HasIndex(e => e.CompetitorDomain);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.CompetitorDomain).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.CitationShare).HasPrecision(5, 2);
-            entity.Property(e => e.AverageMentionPosition).HasPrecision(4, 2);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // AdminAuditLog entity configuration
@@ -1499,30 +895,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
-        // UserTask entity configuration
-        modelBuilder.Entity<UserTask>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("UserTasks");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Status);
-            entity.HasIndex(e => e.Priority);
-            entity.HasIndex(e => e.IsCompleted);
-            entity.HasIndex(e => e.DueDate);
-            entity.HasIndex(e => e.CreatedAt);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Priority).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.Source).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
         // EmailTemplate entity configuration
         modelBuilder.Entity<EmailTemplate>(entity =>
         {
@@ -1537,45 +909,6 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.HtmlBody).IsRequired();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-        });
-
-        // BrandProfile entity configuration
-        modelBuilder.Entity<BrandProfile>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("BrandProfiles");
-            entity.HasIndex(e => e.ProjectId).IsUnique();
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Overview).HasMaxLength(120);
-            entity.Property(e => e.LogoUrl).HasMaxLength(500);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // Competitor entity configuration
-        modelBuilder.Entity<Competitor>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("Competitors");
-            entity.HasIndex(e => e.ProjectId);
-            entity.HasIndex(e => e.Domain);
-            entity.HasIndex(e => e.CompetitorType);
-            entity.HasIndex(e => new { e.ProjectId, e.CompetitorType });
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Domain).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.LogoUrl).HasMaxLength(500);
-            entity.Property(e => e.CompetitorType).IsRequired().HasMaxLength(20);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-            
-            entity.HasOne(e => e.Project)
-                  .WithMany()
-                  .HasForeignKey(e => e.ProjectId)
-                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Team entity configuration
@@ -1597,10 +930,6 @@ public class ApplicationDbContext : DbContext
                   .HasForeignKey(m => m.TeamId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasMany(t => t.Projects)
-                  .WithOne(p => p.Team)
-                  .HasForeignKey(p => p.TeamId)
-                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // UserTeamMapping entity configuration
@@ -1627,33 +956,6 @@ public class ApplicationDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // PromptEditHistory entity configuration
-        modelBuilder.Entity<PromptEditHistory>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.ToTable("PromptEditHistory");
-            entity.HasIndex(e => e.PromptTrackingId);
-            entity.HasIndex(e => e.UserId);
-            entity.HasIndex(e => e.ChangedAt);
-            entity.HasIndex(e => e.ChangeType);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.FieldName).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.ChangeType).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Reason).HasMaxLength(500);
-            entity.Property(e => e.IpAddress).HasMaxLength(45);
-            entity.Property(e => e.ChangedAt).HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-
-            entity.HasOne(h => h.PromptTracking)
-                  .WithMany()
-                  .HasForeignKey(h => h.PromptTrackingId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(h => h.User)
-                  .WithMany()
-                  .HasForeignKey(h => h.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
-        });
     }
 
     public override int SaveChanges()
@@ -1695,5 +997,35 @@ public class ApplicationDbContext : DbContext
                 }
             }
         }
+    }
+
+    private static void ConfigureCaptionEntities(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<CaptionProject>(e =>
+        {
+            e.ToTable("CaptionProjects");
+            e.HasOne(p => p.User).WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(p => new { p.UserId, p.CreatedAt });
+            e.HasIndex(p => p.Status);
+        });
+        modelBuilder.Entity<CaptionUsage>(e =>
+        {
+            e.ToTable("CaptionUsages");
+            e.HasOne(u => u.User).WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(u => u.UserId).IsUnique();
+        });
+        modelBuilder.Entity<CaptionPaymentTransaction>(e =>
+        {
+            e.ToTable("CaptionPaymentTransactions");
+            e.HasIndex(t => t.SessionId).IsUnique();
+            e.HasIndex(t => t.UserId);
+        });
+        modelBuilder.Entity<CaptionTheme>(e => { e.ToTable("CaptionThemes"); e.HasIndex(x => x.Key).IsUnique(); });
+        modelBuilder.Entity<CaptionFont>(e => { e.ToTable("CaptionFonts"); e.HasIndex(x => x.Key).IsUnique(); });
+        modelBuilder.Entity<CaptionVariant>(e => { e.ToTable("CaptionVariants"); e.HasIndex(x => x.Key).IsUnique(); });
+        modelBuilder.Entity<CaptionSfxType>(e => { e.ToTable("CaptionSfxTypes"); e.HasIndex(x => x.Key).IsUnique(); });
+        modelBuilder.Entity<CaptionSticker>(e => { e.ToTable("CaptionStickers"); e.HasIndex(x => x.Glyph).IsUnique(); });
+        modelBuilder.Entity<CaptionPlan>(e => { e.ToTable("CaptionPlans"); e.HasIndex(x => x.Key).IsUnique(); });
+        modelBuilder.Entity<CaptionFillerWord>(e => { e.ToTable("CaptionFillerWords"); e.HasIndex(x => x.Word).IsUnique(); });
     }
 }

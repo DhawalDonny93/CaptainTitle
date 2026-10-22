@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, X } from 'lucide-react';
-import { aiSeoService, Notification } from '../services/aiSeoService';
+import { api } from '../lib/api';
+
+interface Notification {
+  id: number;
+  message: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+}
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +41,7 @@ const NotificationDropdown = () => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const data = await aiSeoService.getNotifications();
+      const data = (await api.get<Notification[]>('/notifications')).data;
       setNotifications(data);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
@@ -44,7 +52,7 @@ const NotificationDropdown = () => {
 
   const markAllAsRead = async () => {
     try {
-      await aiSeoService.markNotificationsRead();
+      await api.put('/notifications/read');
       setNotifications(notifications.map(n => ({ ...n, isRead: true })));
     } catch (error) {
       console.error('Failed to mark notifications as read:', error);

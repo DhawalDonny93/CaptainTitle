@@ -22,12 +22,10 @@ namespace AppBackendBasic.Core.DTOs
     {
         public int TotalUsers { get; set; }
         public int ActiveUsers { get; set; }
-        public int TotalProjects { get; set; }
-        public int ActiveProjects { get; set; }
-        public int TotalPrompts { get; set; }
-        public int TotalCitations { get; set; }
-        public int TotalAudits { get; set; }
-        public int TotalOpportunities { get; set; }
+        public int TotalCaptionProjects { get; set; }
+        public int CompletedCaptionProjects { get; set; }
+        public int FailedCaptionProjects { get; set; }
+        public int PaidCaptionTransactions { get; set; }
         public decimal TotalLlmCost { get; set; }
         public int TotalLlmRequests { get; set; }
     }

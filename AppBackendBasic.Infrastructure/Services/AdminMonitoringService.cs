@@ -91,12 +91,10 @@ namespace AppBackendBasic.Infrastructure.Services
         {
             var totalUsers = await _context.Users.CountAsync();
             var activeUsers = await _context.Users.CountAsync(u => !u.IsDeleted);
-            var totalProjects = await _context.Projects.CountAsync();
-            var activeProjects = await _context.Projects.CountAsync(p => p.IsActive);
-            var totalPrompts = await _context.PromptTrackings.CountAsync();
-            var totalCitations = await _context.Citations.CountAsync();
-            var totalAudits = await _context.SiteAuditRuns.CountAsync();
-            var totalOpportunities = await _context.CommunityOpportunities.CountAsync();
+            var totalCaptionProjects = await _context.CaptionProjects.CountAsync();
+            var completedCaptionProjects = await _context.CaptionProjects.CountAsync(p => p.Status == CaptionProjectStatus.Ready || p.Status == CaptionProjectStatus.Rendered);
+            var failedCaptionProjects = await _context.CaptionProjects.CountAsync(p => p.Status == CaptionProjectStatus.Failed);
+            var paidCaptionTransactions = await _context.CaptionPaymentTransactions.CountAsync(t => t.PaymentStatus == "paid");
 
             var totalLlmCost = await _context.LlmCostTrackings
                 .Where(c => c.CreatedAt >= dateRange.StartDate && c.CreatedAt <= dateRange.EndDate)
@@ -110,12 +108,10 @@ namespace AppBackendBasic.Infrastructure.Services
             {
                 TotalUsers = totalUsers,
                 ActiveUsers = activeUsers,
-                TotalProjects = totalProjects,
-                ActiveProjects = activeProjects,
-                TotalPrompts = totalPrompts,
-                TotalCitations = totalCitations,
-                TotalAudits = totalAudits,
-                TotalOpportunities = totalOpportunities,
+                TotalCaptionProjects = totalCaptionProjects,
+                CompletedCaptionProjects = completedCaptionProjects,
+                FailedCaptionProjects = failedCaptionProjects,
+                PaidCaptionTransactions = paidCaptionTransactions,
                 TotalLlmCost = totalLlmCost,
                 TotalLlmRequests = totalLlmRequests
             };

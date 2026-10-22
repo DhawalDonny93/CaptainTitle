@@ -27,7 +27,6 @@ namespace AppBackendBasic.Core.Entities
 
         // Navigation properties
         public virtual User? User { get; set; }
-        public virtual Project? Project { get; set; }
         public virtual LlmProvider Provider { get; set; } = null!;
     }
 }

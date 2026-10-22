@@ -100,46 +100,6 @@ public static class DatabaseExtensions
     }
 
     /// <summary>
-    /// Ensures database is created and migrations are applied
-    /// </summary>
-    public static async Task<IApplicationBuilder> EnsureDatabaseAsync(
-        this IApplicationBuilder app,
-        ILogger logger)
-    {
-        using var scope = app.ApplicationServices.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        try
-        {
-            logger.LogInformation("Checking database connection...");
-
-            // Test connection
-            await context.Database.CanConnectAsync();
-            logger.LogInformation("Database connection successful");
-
-            // Apply pending migrations in production
-            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-            if (pendingMigrations.Any())
-            {
-                logger.LogWarning("Found {Count} pending migrations. Applying...", pendingMigrations.Count());
-                await context.Database.MigrateAsync();
-                logger.LogInformation("Migrations applied successfully");
-            }
-            else
-            {
-                logger.LogInformation("Database is up to date");
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while ensuring database");
-            throw;
-        }
-
-        return app;
-    }
-
-    /// <summary>
     /// Adds database health checks with detailed diagnostics
     /// </summary>
     public static IHealthChecksBuilder AddDatabaseHealthChecks(

@@ -27,6 +27,5 @@ namespace AppBackendBasic.Core.Entities
 
         // Navigation properties
         public virtual ICollection<UserTeamMapping> UserMappings { get; set; } = new List<UserTeamMapping>();
-        public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
     }
 }

@@ -5,7 +5,6 @@ import { authService } from '../services/authService'
 import { useAuth } from '../contexts/AuthContext'
 import { useUserProfile } from '../contexts/UserProfileContext'
 import { toast } from '../utils/toast'
-import { OnboardingPromptsModal } from '../components/OnboardingPromptsModal'
 import { GradientWave } from '../components/ui/gradient-wave'
 
 export default function Login() {
@@ -21,26 +20,18 @@ export default function Login() {
   const [acceptsTerms, setAcceptsTerms] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showOnboardingPrompts, setShowOnboardingPrompts] = useState(false)
-  const [userProjectId, setUserProjectId] = useState<number | null>(null)
   
   // Check for session expiry message and scan URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const reason = params.get('reason');
-    const scanUrl = params.get('scan');
 
     if (reason === 'session_expired') {
       toast.error('Your session has expired. Please log in again.');
     }
 
-    // Store scan URL for post-login redirect
-    if (scanUrl) {
-      localStorage.setItem('pendingScanUrl', scanUrl);
-    }
-
     // Clear the query parameters but keep the page clean
-    if (reason || scanUrl) {
+    if (reason) {
       window.history.replaceState({}, '', '/login');
     }
   }, [])
@@ -70,53 +61,8 @@ export default function Login() {
 
           toast.success('Welcome back!');
 
-          // Check if this is first login
-          if (response.isFirstLogin) {
-            // Check if there's a pending scan URL
-            const scanUrl = localStorage.getItem('pendingScanUrl');
-
-            if (scanUrl) {
-              // User came from landing page with a scan URL - go to projects page
-              localStorage.removeItem('pendingScanUrl');
-              navigate(`/projects?scanUrl=${encodeURIComponent(scanUrl)}`, { replace: true });
-            } else {
-              // Get user's first project (or create one if needed)
-              try {
-                const projectsResponse = await fetch('/api/projects', {
-                  headers: { Authorization: `Bearer ${response.accessToken}` }
-                });
-                const projectsData = await projectsResponse.json();
-
-                if (projectsData.length > 0) {
-                  setUserProjectId(projectsData[0].id);
-                  setShowOnboardingPrompts(true);
-                } else {
-                  // No projects yet, skip onboarding prompts
-                  navigate('/dashboard', { replace: true });
-                }
-              } catch (err) {
-                console.error('Error fetching projects:', err);
-                navigate('/dashboard', { replace: true });
-              }
-            }
-          } else {
-            // Not first login - normal flow
-            // Check if there's a pending scan URL
-            const scanUrl = localStorage.getItem('pendingScanUrl');
-
-            if (scanUrl) {
-              // User came from landing page with a scan URL
-              localStorage.removeItem('pendingScanUrl');
-              navigate(`/projects?scanUrl=${encodeURIComponent(scanUrl)}`, { replace: true });
-            } else if (response.requiresSubscription) {
-              // No subscription - go to pricing
-              toast.info('Please select a subscription plan to continue');
-              navigate('/pricing', { replace: true });
-            } else {
-              // Has subscription - go to dashboard
-              navigate('/dashboard', { replace: true });
-            }
-          }
+          // Captain Title: every new or returning user lands in the studio (a free video is included)
+          navigate('/studio', { replace: true });
         }
       } else {
         // Register
@@ -144,7 +90,7 @@ export default function Login() {
           navigate('/verify-email');
         } else {
           // Direct login without verification
-          navigate('/onboarding');
+          navigate('/studio');
         }
       }
     } catch (err: any) {
@@ -204,18 +150,7 @@ export default function Login() {
         // UPDATE AUTHCONTEXT - Critical for proper redirect
         setUser({ ...response.user, isSubscribed: response.user.isSubscribed || false }, response.teamId);
 
-        // Check if user needs subscription first
-        if (response.requiresSubscription) {
-          console.log('➡️ Redirecting to pricing (no subscription)');
-          toast.info('Please select a subscription plan to continue');
-          navigate('/pricing', { replace: true });
-        } else if (!response.user.onboardingCompleted) {
-          console.log('➡️ Redirecting to onboarding (not completed)');
-          navigate('/onboarding', { replace: true });
-        } else {
-          console.log('➡️ Redirecting to dashboard (onboarding completed)');
-          navigate('/dashboard', { replace: true });
-        }
+        navigate('/studio', { replace: true });
       } catch (err: any) {
         console.error('❌ Backend authentication failed:', err);
         console.error('Error details:', {
@@ -594,19 +529,6 @@ export default function Login() {
           animation: fadeIn 0.3s ease-out;
         }
       `}</style>
-
-      {/* Onboarding Prompts Modal for First-Time Users */}
-      {showOnboardingPrompts && userProjectId && (
-        <OnboardingPromptsModal
-          isOpen={showOnboardingPrompts}
-          onClose={() => {
-            setShowOnboardingPrompts(false);
-            navigate('/dashboard', { replace: true });
-          }}
-          projectId={userProjectId}
-          companyName={formData.name}
-        />
-      )}
     </div>
   )
 }
