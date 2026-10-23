@@ -1,10 +1,11 @@
 -- ============================================================================
 -- Migration 23: SCHEMA DRIFT CHECK  (READ-ONLY - safe to run any time, changes nothing)
 -- Compares the live "public" schema with every table/column the current code expects
--- (60 tables / 733 columns: generic template schema from 22 + Captain Title tables from 21).
+-- (60 tables / 736 columns: generic template schema from 22 + Captain Title tables from 21 + columns added by 25).
 -- Run it in the Supabase SQL editor. Result sets:
 --   1) MISSING TABLE    -> run 22_generic_template_schema.sql and/or 21_captain_title_captions.sql
---   2) MISSING COLUMN   -> an existing table lacks a column the code reads/writes (add it with ALTER TABLE ... ADD COLUMN)
+--   2) MISSING COLUMN   -> an existing table lacks a column the code reads/writes (for the Razorpay columns run 25_...sql;
+--                          otherwise add it with ALTER TABLE ... ADD COLUMN)
 --   3) LEFTOVER AI-SEO  -> old AI-SEO tables still present (data count shown): remove with 24_remove_ai_seo_tables.sql
 --   4) "User"."Id" TYPE -> must be integer (21 references it as INTEGER); uuid means an old UUID-based schema
 -- ============================================================================
@@ -679,6 +680,8 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionPaymentTransactions','PaymentStatus'),
   ('CaptionPaymentTransactions','CreatedAt'),
   ('CaptionPaymentTransactions','UpdatedAt'),
+  ('CaptionPaymentTransactions','Provider'),
+  ('CaptionPaymentTransactions','ProviderPaymentId'),
   ('CaptionThemes','Id'),
   ('CaptionThemes','Key'),
   ('CaptionThemes','Name'),
@@ -739,6 +742,7 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionPlans','IsFeatured'),
   ('CaptionPlans','IsActive'),
   ('CaptionPlans','SortOrder'),
+  ('CaptionPlans','RazorpayPlanId'),
   ('CaptionFillerWords','Id'),
   ('CaptionFillerWords','Word'),
   ('CaptionFillerWords','IsActive')
@@ -1419,6 +1423,8 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionPaymentTransactions','PaymentStatus'),
   ('CaptionPaymentTransactions','CreatedAt'),
   ('CaptionPaymentTransactions','UpdatedAt'),
+  ('CaptionPaymentTransactions','Provider'),
+  ('CaptionPaymentTransactions','ProviderPaymentId'),
   ('CaptionThemes','Id'),
   ('CaptionThemes','Key'),
   ('CaptionThemes','Name'),
@@ -1479,6 +1485,7 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionPlans','IsFeatured'),
   ('CaptionPlans','IsActive'),
   ('CaptionPlans','SortOrder'),
+  ('CaptionPlans','RazorpayPlanId'),
   ('CaptionFillerWords','Id'),
   ('CaptionFillerWords','Word'),
   ('CaptionFillerWords','IsActive')

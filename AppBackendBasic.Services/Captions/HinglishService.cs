@@ -95,8 +95,18 @@ public class HinglishService : IHinglishService
         foreach (var word in words)
         {
             converted.TryGetValue(word.Index, out var item);
-            var text = item.ValueKind == JsonValueKind.Object ? Str(item, "text") : null;
-            word.Text = (string.IsNullOrEmpty(text) ? word.Original : text).Trim();
+            var gptText = ((item.ValueKind == JsonValueKind.Object ? Str(item, "text") : null) ?? "").Trim();
+            // Precedence: (1) the high-frequency-word table, checked against the raw ASR source - GPT can misspell these in Roman script just as
+            // easily as leave them in Devanagari ("maim" for मैं), and Roman output never reaches the Devanagari fallback below. It only overrides
+            // GPT when GPT's answer is a close match (ratio >= 0.5): a wildly different answer means GPT deliberately corrected an ASR mishearing.
+            // (2) Otherwise GPT's text (or the source if the index was dropped), always routed through the fallback romanizer so Devanagari
+            // never leaks into word.text.
+            var common = DevanagariRomanizer.CommonHindiSpelling(word.Original);
+            if (common != null && (gptText.Length == 0 || DevanagariRomanizer.ContainsDevanagari(gptText)
+                                   || DifflibRatio.Ratio(gptText.ToLowerInvariant(), common.ToLowerInvariant()) >= 0.5))
+                word.Text = common;
+            else
+                word.Text = DevanagariRomanizer.RomanizeFallback(gptText.Length > 0 ? gptText : word.Original).Trim();
             var emphasis = item.ValueKind == JsonValueKind.Object ? Str(item, "emphasis") : null;
             if (emphasis == null || !Tiers.Contains(emphasis)) emphasis = "support";
             word.Emphasis = emphasis;

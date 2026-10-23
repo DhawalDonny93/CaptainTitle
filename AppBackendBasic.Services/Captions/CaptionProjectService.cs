@@ -16,7 +16,8 @@ public interface ICaptionProjectService
     Task<string> ExportSrtAsync(int userId, int projectId, CancellationToken ct = default);
     Task<CaptionProjectDto> RetranscribeAsync(int userId, int projectId, string speechLanguage, CancellationToken ct = default);
     Task<List<CaptionWordDto>> ReassignEmphasisAsync(int userId, int projectId, CancellationToken ct = default);
-    Task<string> RenderAsync(int userId, int projectId, CancellationToken ct = default);
+    /// <summary>Marks the project as rendering and queues the export; poll the project status for the result.</summary>
+    Task<CaptionProjectDto> RequestRenderAsync(int userId, int projectId, CancellationToken ct = default);
     Task<(Stream Stream, string ContentType)> OpenMediaAsync(int userId, int projectId, CancellationToken ct = default);
     Task<Stream> OpenRenderAsync(int userId, int projectId, CancellationToken ct = default);
 }
@@ -47,6 +48,11 @@ public class CaptionProjectService : ICaptionProjectService
         Theme = p.Theme, FontId = p.FontId, WordsPerCaption = p.WordsPerCaption, CaptionLines = p.CaptionLines,
         CaptionPosition = p.CaptionPosition, AudioVolume = p.AudioVolume, AudioMuted = p.AudioMuted, Brightness = p.Brightness,
         Contrast = p.Contrast, Saturation = p.Saturation, RenderQuality = p.RenderQuality, Variant = p.Variant,
+        ScriptMode = p.ScriptMode, OutlineEnabled = p.OutlineEnabled, OutlineWidth = p.OutlineWidth, OutlineColor = p.OutlineColor,
+        ShadowEnabled = p.ShadowEnabled, ShadowAngle = p.ShadowAngle, ShadowDistance = p.ShadowDistance, ShadowBlur = p.ShadowBlur,
+        ShadowOpacity = p.ShadowOpacity, ShadowColor = p.ShadowColor, GlowEnabled = p.GlowEnabled, GlowColor = p.GlowColor,
+        GlowBlur = p.GlowBlur, GlowOpacity = p.GlowOpacity, BackgroundEnabled = p.BackgroundEnabled, BackgroundColor = p.BackgroundColor,
+        BackgroundOpacity = p.BackgroundOpacity, Bold = p.Bold, Italic = p.Italic,
         Elements = CaptionJson.ParseList<CaptionElementDto>(p.ElementsJson),
         SfxMarkers = CaptionJson.ParseList<CaptionSfxMarkerDto>(p.SfxMarkersJson),
         Words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson),
@@ -144,6 +150,11 @@ public class CaptionProjectService : ICaptionProjectService
         p.Brightness = edit.Brightness; p.Contrast = edit.Contrast; p.Saturation = edit.Saturation; p.RenderQuality = edit.RenderQuality;
         p.WordsJson = CaptionJson.Serialize(edit.Words); p.ElementsJson = CaptionJson.Serialize(edit.Elements);
         p.SfxMarkersJson = CaptionJson.Serialize(edit.SfxMarkers); p.Variant = edit.Variant; p.UpdatedAt = DateTime.UtcNow;
+        p.ScriptMode = edit.ScriptMode; p.OutlineEnabled = edit.OutlineEnabled; p.OutlineWidth = edit.OutlineWidth; p.OutlineColor = edit.OutlineColor;
+        p.ShadowEnabled = edit.ShadowEnabled; p.ShadowAngle = edit.ShadowAngle; p.ShadowDistance = edit.ShadowDistance; p.ShadowBlur = edit.ShadowBlur;
+        p.ShadowOpacity = edit.ShadowOpacity; p.ShadowColor = edit.ShadowColor; p.GlowEnabled = edit.GlowEnabled; p.GlowColor = edit.GlowColor;
+        p.GlowBlur = edit.GlowBlur; p.GlowOpacity = edit.GlowOpacity; p.BackgroundEnabled = edit.BackgroundEnabled;
+        p.BackgroundColor = edit.BackgroundColor; p.BackgroundOpacity = edit.BackgroundOpacity; p.Bold = edit.Bold; p.Italic = edit.Italic;
         await _db.SaveChangesAsync(ct);
     }
 
@@ -152,7 +163,7 @@ public class CaptionProjectService : ICaptionProjectService
         var p = await OwnedAsync(userId, projectId, false, ct);
         var words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson);
         if (words.Count == 0) throw new CaptionServiceException(422, "No captions to export yet");
-        return SrtWriter.Build(words);
+        return SrtWriter.Build(words, p.ScriptMode);
     }
 
     public async Task<CaptionProjectDto> RetranscribeAsync(int userId, int projectId, string speechLanguage, CancellationToken ct = default)
@@ -182,46 +193,20 @@ public class CaptionProjectService : ICaptionProjectService
         return words;
     }
 
-    public async Task<string> RenderAsync(int userId, int projectId, CancellationToken ct = default)
+    public async Task<CaptionProjectDto> RequestRenderAsync(int userId, int projectId, CancellationToken ct = default)
     {
         var p = await OwnedAsync(userId, projectId, true, ct);
-        var styles = await _catalog.GetStyleSetAsync(ct);
-        var tones = (await _catalog.GetSfxTonesAsync(ct)).ToDictionary(t => t.Key);
-        SfxTone ToneFor(string type) => tones.TryGetValue(type, out var t) ? t : tones.TryGetValue("pop", out var pop) ? pop : new SfxTone("pop", 880, 880, 0.2);
+        if (p.Status == CaptionProjectStatus.Queued || p.Status == CaptionProjectStatus.Processing)
+            throw new CaptionServiceException(409, "Captions are still being generated. Please wait until they are ready.");
+        if (p.Status == CaptionProjectStatus.Failed)
+            throw new CaptionServiceException(409, "Caption generation failed. Use Re-listen before exporting.");
+        if (p.Status == CaptionProjectStatus.Rendering) return ToDto(p); // already running
 
-        var tempDir = Path.Combine(Path.GetTempPath(), "captain-render-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(tempDir);
-        try
-        {
-            var source = Path.Combine(tempDir, "source.mp4");
-            var ass = Path.Combine(tempDir, "captions.ass");
-            var output = Path.Combine(tempDir, "captain-title.mp4");
-            await using (var src = (await _storage.OpenAsync(p.SourcePath, ct)).Stream)
-            await using (var dst = File.Create(source))
-                await src.CopyToAsync(dst, ct);
-
-            var words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson);
-            var elements = CaptionJson.ParseList<CaptionElementDto>(p.ElementsJson);
-            var markers = CaptionJson.ParseList<CaptionSfxMarkerDto>(p.SfxMarkersJson).Select(m => (m.Type, m.Time)).ToList();
-            await File.WriteAllTextAsync(ass, AssSubtitleWriter.Build(words, p.Theme, p.FontId, p.WordsPerCaption, p.CaptionLines,
-                p.CaptionPosition, elements, p.Variant, styles), new System.Text.UTF8Encoding(false), ct);
-
-            var args = FfmpegRenderArgs.Build(source, ass, output, _options.ResolveFontsDir(), p.AudioVolume, p.AudioMuted,
-                p.Brightness, p.Contrast, p.Saturation, p.RenderQuality, markers, ToneFor);
-            var result = await _ffmpeg.RunAsync(args, tempDir, ct);
-            if (result.ExitCode != 0)
-                throw new CaptionServiceException(500, "Video rendering failed");
-
-            var outputPath = $"captain-title/renders/{userId}/{Guid.NewGuid():N}.mp4";
-            await _storage.PutFileAsync(outputPath, output, "video/mp4", ct);
-            p.RenderPath = outputPath; p.Status = CaptionProjectStatus.Rendered; p.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync(ct);
-            return $"/api/captions/projects/{projectId}/download";
-        }
-        finally
-        {
-            try { Directory.Delete(tempDir, true); } catch { /* best effort */ }
-        }
+        p.Status = CaptionProjectStatus.Rendering; p.Progress = 5; p.ProcessingLabel = "Rendering video";
+        p.ErrorMessage = null; p.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
+        _queue.EnqueueRender(p.Id);
+        return ToDto(p);
     }
 
     public async Task<(Stream Stream, string ContentType)> OpenMediaAsync(int userId, int projectId, CancellationToken ct = default)

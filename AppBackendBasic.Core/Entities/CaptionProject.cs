@@ -24,7 +24,7 @@ public class CaptionProject
     public long SizeBytes { get; set; }
 
     [Required, MaxLength(50)]
-    public string Theme { get; set; } = "viral";
+    public string Theme { get; set; } = "street_glow";
 
     [Required, MaxLength(50)]
     public string FontId { get; set; } = "poppins";
@@ -44,8 +44,34 @@ public class CaptionProject
     [Required, MaxLength(10)]
     public string RenderQuality { get; set; } = "high";
 
+    /// <summary>Legacy style-variant id. The old app removed variants (replaced by the granular styling below); kept for old rows, ignored by the export.</summary>
     [MaxLength(50)]
     public string? Variant { get; set; }
+
+    /// <summary>roman = word.text (Hinglish), native = word.original (Devanagari from the ASR).</summary>
+    [Required, MaxLength(10)]
+    public string ScriptMode { get; set; } = "roman";
+
+    // Project-wide typography (old ProjectEdit outline/shadow/glow/background/bold/italic fields).
+    public bool OutlineEnabled { get; set; }
+    public double OutlineWidth { get; set; } = 2;
+    [Required, MaxLength(9)] public string OutlineColor { get; set; } = "#000000";
+    public bool ShadowEnabled { get; set; } = true;
+    public double ShadowAngle { get; set; }
+    public double ShadowDistance { get; set; } = 2;
+    public double ShadowBlur { get; set; } = 2;
+    public double ShadowOpacity { get; set; } = 0.5;
+    [Required, MaxLength(9)] public string ShadowColor { get; set; } = "#000000";
+    public bool GlowEnabled { get; set; }
+    /// <summary>Null = use each word's own colour.</summary>
+    [MaxLength(9)] public string? GlowColor { get; set; }
+    public double GlowBlur { get; set; } = 8;
+    public double GlowOpacity { get; set; } = 0.6;
+    public bool BackgroundEnabled { get; set; }
+    [Required, MaxLength(9)] public string BackgroundColor { get; set; } = "#000000";
+    public double BackgroundOpacity { get; set; } = 0.6;
+    public bool Bold { get; set; } = true;
+    public bool Italic { get; set; }
 
     [Column(TypeName = "jsonb")]
     public string WordsJson { get; set; } = "[]";
@@ -86,7 +112,7 @@ public class CaptionProject
     [MaxLength(500)]
     public string? RenderPath { get; set; }
 
-    /// <summary>queued | processing | ready | failed | rendered</summary>
+    /// <summary>queued | processing | ready | failed | rendering | rendered</summary>
     [Required, MaxLength(20)]
     public string Status { get; set; } = CaptionProjectStatus.Queued;
 
@@ -108,5 +134,6 @@ public static class CaptionProjectStatus
     public const string Processing = "processing";
     public const string Ready = "ready";
     public const string Failed = "failed";
+    public const string Rendering = "rendering";
     public const string Rendered = "rendered";
 }

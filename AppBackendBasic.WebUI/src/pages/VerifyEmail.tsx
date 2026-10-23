@@ -264,7 +264,7 @@ export default function VerifyEmail() {
       </div>
 
       {/* Right Side - Visual */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-gray-900 to-black p-16 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 bg-cherry to-black p-16 items-center justify-center relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl"></div>

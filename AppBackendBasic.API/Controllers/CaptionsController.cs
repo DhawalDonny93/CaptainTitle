@@ -39,7 +39,7 @@ public class CaptionsController : CaptionsControllerBase
     [Authorize]
     [DisableRequestSizeLimit]
     [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
-    public Task<IActionResult> Process(IFormFile file, [FromForm] string theme = "viral", [FromForm(Name = "font_id")] string fontId = "poppins",
+    public Task<IActionResult> Process(IFormFile file, [FromForm] string theme = "street_glow", [FromForm(Name = "font_id")] string fontId = "poppins",
         [FromForm(Name = "speech_language")] string speechLanguage = "auto") => RunAsync(async () =>
     {
         if (file == null || file.Length == 0) return BadRequest(new { message = "Video file is required" });
@@ -83,8 +83,10 @@ public class CaptionsController : CaptionsControllerBase
     [Authorize]
     public Task<IActionResult> Render(int id) => RunAsync(async () =>
     {
-        var url = await _projects.RenderAsync(CurrentUserId, id, HttpContext.RequestAborted);
-        return Ok(new { status = "rendered", download_url = url });
+        // The export runs as a background job (ffmpeg can take minutes); the editor polls GET projects/{id} until the status
+        // is "rendered" (download via /download) or back to "ready" with error_message.
+        var project = await _projects.RequestRenderAsync(CurrentUserId, id, HttpContext.RequestAborted);
+        return Accepted(project);
     });
 
     [HttpGet("projects/{id:int}/download")]

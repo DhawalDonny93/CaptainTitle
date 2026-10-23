@@ -1,22 +1,29 @@
 import { Crown, Lightning, X } from '@phosphor-icons/react'
 import { toast } from '@/utils/toast'
 import { CtButton, CtDialog } from './ui'
-import { captionsApi, errorMessage } from '../captionsApi'
+import { errorMessage } from '../captionsApi'
+import { startCheckout } from '../lib/checkout'
 import type { CaptionPlan, CaptionUsage } from '../types'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   usage: CaptionUsage | null
+  /** Called after a payment is confirmed in-page (Razorpay) so the usage meter can refresh. */
+  onPaid?: () => void
 }
 
 const price = (plan: CaptionPlan) => `${plan.currency === 'INR' ? '₹' : plan.currency + ' '}${plan.price}`
 
-export const PaywallDialog = ({ open, onOpenChange, usage }: Props) => {
+export const PaywallDialog = ({ open, onOpenChange, usage, onPaid }: Props) => {
   const checkout = async (packageId: string) => {
     try {
-      const data = await captionsApi.checkout(packageId)
-      window.location.href = data.checkout_url
+      const outcome = await startCheckout(packageId)
+      if (outcome === 'paid') {
+        toast.success('Payment received - your credits are ready')
+        onPaid?.()
+        onOpenChange(false)
+      }
     } catch (error) { toast.error(errorMessage(error)) }
   }
   const plans = usage?.plans ?? []

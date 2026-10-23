@@ -15,6 +15,24 @@
         <div><h2 class="mb-1">Captain Title</h2><p class="text-muted mb-0">Caption generator controls: everything that used to be hardcoded in the old app.</p></div>
     </div>
 
+    @{
+        bool Ok(string name) => (bool?)Model.Health[name] == true;
+        var ff = Model.Health["ffmpeg"] as JObject;
+        var ffOk = (bool?)ff?["available"] == true && (bool?)ff?["hasLibx264"] == true && (bool?)ff?["hasLibass"] == true;
+    }
+    <div class="card mb-4">
+        <div class="card-header">Server readiness</div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>ffmpeg (libx264 + libass) <span class="text-muted small">@ff?["version"]</span></span>
+                <span class="badge @(ffOk ? "bg-success" : "bg-danger")">@(ffOk ? "ready" : "NOT READY")</span></li>
+            @if (!ffOk) { <li class="list-group-item text-danger small">@(ff?["problem"] ?? "ffmpeg not found") - install ffmpeg (apt install ffmpeg), bundle it under Tools/ffmpeg/&lt;rid&gt;/, or set Captions:FfmpegPath. Path tried: @ff?["path"]</li> }
+            <li class="list-group-item d-flex justify-content-between"><span>Sarvam API key</span><span class="badge @(Ok("sarvamConfigured") ? "bg-success" : "bg-warning text-dark")">@(Ok("sarvamConfigured") ? "set" : "missing")</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Razorpay keys (India, INR)</span><span class="badge @(Ok("razorpayConfigured") ? "bg-success" : "bg-warning text-dark")">@(Ok("razorpayConfigured") ? "set" : "missing")</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Razorpay webhook secret</span><span class="badge @(Ok("razorpayWebhookConfigured") ? "bg-success" : "bg-warning text-dark")">@(Ok("razorpayWebhookConfigured") ? "set" : "missing")</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Stripe key (outside India)</span><span class="badge @(Ok("stripeConfigured") ? "bg-success" : "bg-secondary")">@(Ok("stripeConfigured") ? "set" : "not set")</span></li>
+        </ul>
+    </div>
+
     <div class="row g-3 mb-4">
         <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Projects</div><div class="fs-3">@Stat("projects")</div><div class="small text-muted">@Stat("projectsLast7Days") in last 7 days</div></div></div></div>
         <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted small">Failed projects</div><div class="fs-3">@Stat("failed")</div></div></div></div>

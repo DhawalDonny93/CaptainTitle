@@ -24,7 +24,7 @@ export default function Privacy() {
           {/* Introduction */}
           <section className="mb-12">
             <p className="text-gray-700 font-light leading-relaxed mb-6">
-              This Privacy Policy describes how BasicFramework ("we", "us", or "our") collects, uses, and shares your personal information when you use our application and services. We are committed to protecting your privacy and being transparent about our data practices.
+              This Privacy Policy describes how Captain Title ("we", "us", or "our") collects, uses, and shares your personal information when you use our application and services. We are committed to protecting your privacy and being transparent about our data practices.
             </p>
           </section>
 
@@ -48,10 +48,10 @@ export default function Privacy() {
                 <strong className="font-medium text-gray-900">Account</strong> means the unique profile created for You to access the Service.
               </li>
               <li className="text-gray-700 font-light">
-                <strong className="font-medium text-gray-900">Application</strong> refers to BasicFramework, the software program provided by the Company.
+                <strong className="font-medium text-gray-900">Application</strong> refers to Captain Title, the software program provided by the Company.
               </li>
               <li className="text-gray-700 font-light">
-                <strong className="font-medium text-gray-900">Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to BasicFramework.
+                <strong className="font-medium text-gray-900">Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Captain Title.
               </li>
               <li className="text-gray-700 font-light">
                 <strong className="font-medium text-gray-900">Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.
@@ -271,7 +271,7 @@ export default function Privacy() {
             </p>
             <ul className="space-y-2">
               <li className="text-gray-700 font-light">
-                By email: <a href="mailto:privacy@basicframework.com" className="text-black hover:underline">privacy@basicframework.com</a>
+                By email: <a href="mailto:privacy@captaintitle.com" className="text-black hover:underline">privacy@captaintitle.com</a>
               </li>
             </ul>
           </section>

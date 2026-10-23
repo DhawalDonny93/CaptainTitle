@@ -60,14 +60,16 @@ public static class CaptionCatalogSchema
         {
             new CatalogField("word", "Word", Required: true), Active,
         }),
-        new("plans", "Plans & prices", "Passes and subscriptions shown in the paywall. Stripe price must carry the lookup key below.", "/admin/captions/plans", new[]
+        new("plans", "Plans & prices", "Passes and subscriptions shown in the paywall. INR plans are paid with Razorpay (one-off passes need no extra setup; subscriptions need a Razorpay plan id); other currencies use Stripe (the Stripe price must carry the lookup key).", "/admin/captions/plans", new[]
         {
             new CatalogField("key", "Key", Required: true, Help: "e.g. single_45, basic_monthly"), new CatalogField("name", "Name", Required: true),
             new CatalogField("kind", "Kind", FieldType.Select, true, "payment = one-off credits, subscription = monthly credits", new[] { "payment", "subscription" }),
             new CatalogField("price", "Price", FieldType.Number, true), new CatalogField("currency", "Currency", Required: true),
             new CatalogField("videos", "Videos", FieldType.Number, true), new CatalogField("maxSeconds", "Max seconds / video", FieldType.Number, true),
             new CatalogField("maxPurchasesPerUser", "Max purchases / user", FieldType.Number, Help: "Empty = unlimited"),
-            new CatalogField("stripeLookupKey", "Stripe lookup key"), new CatalogField("description", "Description", InTable: false),
+            new CatalogField("stripeLookupKey", "Stripe lookup key", Help: "Used for non-INR plans (Stripe)"),
+            new CatalogField("razorpayPlanId", "Razorpay plan id", Help: "plan_xxx from the Razorpay dashboard - only needed for subscription plans paid in INR"),
+            new CatalogField("description", "Description", InTable: false),
             new CatalogField("isFeatured", "Featured", FieldType.Bool), Sort, Active,
         }),
     };

@@ -105,14 +105,14 @@ public static class TranscriptionAlgorithms
         var acceptedSegments = new List<JsonElement>();
         if (response.TryGetProperty("segments", out var segs) && segs.ValueKind == JsonValueKind.Array)
         {
-            int index = 0;
             foreach (var segment in segs.EnumerateArray())
             {
-                int current = index++;
                 var text = GetString(segment, "text").Trim();
                 if (text.Length == 0) continue;
-                // The very first segment often gets an inflated no_speech_prob; do not drop real opening speech.
-                if (current > 0 && GetDouble(segment, "no_speech_prob", 0) >= 0.65) continue;
+                // Whisper's first stretch of ANY buffer gets an inflated no_speech_prob (no context to calibrate on). The exemption is keyed off
+                // elapsed time vs skipBefore (where real content starts in this chunk: the 0.5s lead-in for chunk 0, the overlap priming audio for
+                // later ones), not segment index 0 - the lead-in can push the genuine opening speech to index 1, which used to get it dropped.
+                if (GetDouble(segment, "start", 0) >= skipBefore + 1.0 && GetDouble(segment, "no_speech_prob", 0) >= 0.65) continue;
                 acceptedSegments.Add(segment);
             }
         }

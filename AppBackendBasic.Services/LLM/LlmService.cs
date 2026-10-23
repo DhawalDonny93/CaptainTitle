@@ -66,30 +66,31 @@ public class LlmService : ILlmService
 
         // Get or create conversation
         LlmConversation conversation;
-        if (request.ConversationId.HasValue)
-        {
-            conversation = await _context.LlmConversations
-                .Include(c => c.Messages)
-                .FirstOrDefaultAsync(c => c.Id == request.ConversationId.Value && c.UserId == userId);
+        // if (request.ConversationId.HasValue)
+        // {
+        //     conversation = await _context.LlmConversations
+        //         .Include(c => c.Messages)
+        //         .FirstOrDefaultAsync(c => c.Id == request.ConversationId.Value && c.UserId == userId);
             
-            if (conversation == null)
-            {
-                throw new InvalidOperationException("Conversation not found.");
-            }
-        }
-        else
-        {
-            conversation = new LlmConversation
-            {
-                UserId = userId,
-                Model = template.Model,
-                Title = template.Name // Use template name as initial title
-            };
-            _context.LlmConversations.Add(conversation);
-            await _context.SaveChangesAsync();
-        }
+        //     if (conversation == null)
+        //     {
+        //         throw new InvalidOperationException("Conversation not found.");
+        //     }
+        // }
+        // else
+        // {
+        //     conversation = new LlmConversation
+        //     {
+        //         UserId = userId,
+        //         Model = template.Model,
+        //         Title = template.Name // Use template name as initial title
+        //     };
+        //     _context.LlmConversations.Add(conversation);
+        //     await _context.SaveChangesAsync();
+        // }
 
         // Create user message (stores user context, not the actual prompt)
+        conversation = new LlmConversation();
         var userMessage = new LlmMessage
         {
             ConversationId = conversation.Id,

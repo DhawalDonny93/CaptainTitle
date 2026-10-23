@@ -6,7 +6,11 @@ public sealed record TierStyle(string Font, string CssFont, string Color, int Si
 public sealed record ThemeStyle(string Key, string? BaseColor, string AccentColor, string? AccentFont,
     IReadOnlyDictionary<string, TierStyle>? Tiers)
 {
-    /// <summary>Colour/size baked into a word when it is first generated or when the theme is switched.</summary>
+    /// <summary>
+    /// Colour/size baked into a word when it is first generated or when the theme is switched (old _apply_theme_defaults).
+    /// A tiered template (Doodle Marker) bakes its tier's colour/size; a line-based one (Street Glow) draws both lines from its own fixed design
+    /// and ignores word colour/size, so it just gets a harmless white/66 placeholder.
+    /// </summary>
     public (string Color, int Size) BakeFor(string? emphasis, bool important)
     {
         if (Tiers != null)
@@ -14,7 +18,7 @@ public sealed record ThemeStyle(string Key, string? BaseColor, string AccentColo
             var tier = emphasis != null && Tiers.TryGetValue(emphasis, out var t) ? t : Tiers["support"];
             return (tier.Color, tier.Size);
         }
-        return important ? (AccentColor, 62) : (BaseColor ?? "#FFFFFF", 52);
+        return ("#FFFFFF", FixedTemplates.DefaultWordSize);
     }
 }
 

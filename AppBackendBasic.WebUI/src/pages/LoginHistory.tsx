@@ -106,11 +106,11 @@ export default function LoginHistory() {
   return (
     <div className="container mx-auto max-w-4xl space-y-6">
       {/* Security Notice */}
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
-        <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+      <div className="bg-butter border border-ink rounded-2xl p-4 flex items-start gap-3">
+        <Shield className="w-5 h-5 text-cherry flex-shrink-0 mt-0.5" />
         <div className="text-sm">
-          <p className="text-blue-900 font-medium mb-1">Security Tip</p>
-          <p className="text-blue-800 font-light">
+          <p className="text-cherry font-medium mb-1">Security Tip</p>
+          <p className="text-cherry font-light">
             If you see any suspicious activity, revoke the session immediately and change your password.
           </p>
         </div>

@@ -64,7 +64,7 @@ public class CaptionCatalogService : ICaptionCatalogService
         var stickers = await _db.CaptionStickers.AsNoTracking().Where(t => t.IsActive).OrderBy(t => t.SortOrder).ToListAsync(ct);
         var fillers = await _db.CaptionFillerWords.AsNoTracking().Where(t => t.IsActive).OrderBy(t => t.Word).ToListAsync(ct);
         var plans = await _db.CaptionPlans.AsNoTracking().Where(t => t.IsActive).OrderBy(t => t.SortOrder).ToListAsync(ct);
-        var defaultTheme = await _settings.GetSettingValueAsync(CaptionSettingKeys.DefaultTheme) ?? "viral";
+        var defaultTheme = await _settings.GetSettingValueAsync(CaptionSettingKeys.DefaultTheme) ?? FixedTemplates.StreetGlow;
         if (themes.Count == 0) throw new InvalidOperationException("No caption templates are configured. Run Database_Migrations/21_captain_title_captions.sql (includes the seed data).");
         if (themes.All(t => t.Key != defaultTheme)) defaultTheme = themes[0].Key;
 

@@ -14,6 +14,14 @@ public class CaptionPaymentTransaction
     [Required, MaxLength(50)]
     public string PackageId { get; set; } = string.Empty;
 
+    /// <summary>stripe | razorpay. SessionId holds the provider's checkout session / order / subscription id.</summary>
+    [Required, MaxLength(20)]
+    public string Provider { get; set; } = "stripe";
+
+    /// <summary>Razorpay payment id once known (verify call or webhook).</summary>
+    [MaxLength(255)]
+    public string? ProviderPaymentId { get; set; }
+
     /// <summary>initiated | completed</summary>
     [Required, MaxLength(20)]
     public string Status { get; set; } = "initiated";

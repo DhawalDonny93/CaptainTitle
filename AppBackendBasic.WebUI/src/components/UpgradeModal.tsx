@@ -12,20 +12,20 @@ interface UpgradeModalProps {
 
 const PLAN_ICONS: Record<string, React.ReactNode> = {
   Starter:      <Zap className="w-4 h-4 text-amber-500" />,
-  Professional: <TrendingUp className="w-4 h-4 text-blue-500" />,
-  Scale:        <Building2 className="w-4 h-4 text-purple-500" />,
+  Professional: <TrendingUp className="w-4 h-4 text-cherry" />,
+  Scale:        <Building2 className="w-4 h-4 text-cherry" />,
 };
 
 const PLAN_ACCENT: Record<string, string> = {
   Starter:      'border-amber-400 bg-amber-50',
-  Professional: 'border-blue-500 bg-blue-50',
-  Scale:        'border-purple-500 bg-purple-50',
+  Professional: 'border-ink bg-butter',
+  Scale:        'border-ink bg-butter',
 };
 
 const PLAN_BTN: Record<string, string> = {
   Starter:      'bg-amber-500 hover:bg-amber-600 text-white',
-  Professional: 'bg-blue-600 hover:bg-blue-700 text-white',
-  Scale:        'bg-purple-600 hover:bg-purple-700 text-white',
+  Professional: 'bg-cherry hover:bg-cherry text-white',
+  Scale:        'bg-cherry hover:bg-cherry text-white',
 };
 
 function buildFeatures(plan: SubscriptionPlan): string[] {
@@ -123,10 +123,10 @@ export default function UpgradeModal({ open, onClose, reason }: UpgradeModalProp
       <div className="relative z-10 w-full max-w-3xl max-h-[92vh] overflow-hidden rounded-2xl shadow-2xl flex bg-white">
 
         {/* ── Left panel ── */}
-        <div className="hidden md:flex flex-col justify-between w-72 flex-shrink-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 text-white">
+        <div className="hidden md:flex flex-col justify-between w-72 flex-shrink-0 bg-cherry p-8 text-white">
           <div>
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mb-6">
-              <Zap className="w-5 h-5 text-blue-400" />
+            <div className="w-10 h-10 rounded-xl bg-cherry border border-ink flex items-center justify-center mb-6">
+              <Zap className="w-5 h-5 text-ink" />
             </div>
             <h2 className="text-2xl font-bold leading-tight mb-3">
               Upgrade to unlock more
@@ -241,7 +241,7 @@ export default function UpgradeModal({ open, onClose, reason }: UpgradeModalProp
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-900 text-sm">{plan.displayName}</span>
                           {isPopular && (
-                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-600 text-white">
+                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cherry text-white">
                               Popular
                             </span>
                           )}
@@ -318,7 +318,7 @@ export default function UpgradeModal({ open, onClose, reason }: UpgradeModalProp
           <div className="px-6 py-3 border-t border-gray-100 flex-shrink-0">
             <p className="text-xs text-center text-gray-400">
               Secure payment · Cancel anytime · Questions?{' '}
-              <a href="mailto:support@aiseo.com" className="text-blue-500 hover:underline">Contact us</a>
+              <a href="mailto:support@aiseo.com" className="text-cherry hover:underline">Contact us</a>
             </p>
           </div>
         </div>

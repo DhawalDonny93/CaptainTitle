@@ -30,7 +30,7 @@ function StudioShell() {
       {project
         ? <CaptionStudio key={project.project_id} initialProject={project} onNew={() => setProject(null)} />
         : <UploadStage onCreated={created} onPaywall={() => setPricing(true)} />}
-      <PaywallDialog open={pricing} onOpenChange={setPricing} usage={usage} />
+      <PaywallDialog open={pricing} onOpenChange={setPricing} usage={usage} onPaid={loadUsage} />
     </div>
   )
 }

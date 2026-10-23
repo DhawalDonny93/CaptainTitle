@@ -33,20 +33,21 @@ public class CaptionJobRunner : ICaptionJobRunner
 
     private Task SetProgressAsync(int id, int progress, string label, CancellationToken ct) =>
         _db.CaptionProjects.Where(p => p.Id == id).ExecuteUpdateAsync(s => s
-            .SetProperty(p => p.Progress, progress).SetProperty(p => p.ProcessingLabel, label), ct);
+            .SetProperty(p => p.Progress, progress).SetProperty(p => p.ProcessingLabel, label).SetProperty(p => p.UpdatedAt, DateTime.UtcNow), ct);
 
     public async Task RunAsync(int projectId, bool consumeCredit, CancellationToken ct = default)
     {
         string? tempDir = null;
         try
         {
-            var project = await _db.CaptionProjects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId, ct);
-            if (project == null) return;
-
-            await _db.CaptionProjects.Where(p => p.Id == projectId).ExecuteUpdateAsync(s => s
+            // Claim the project with a compare-and-set so only ONE instance/worker ever runs it (safe when the API is scaled out).
+            var claimed = await _db.CaptionProjects.Where(p => p.Id == projectId && p.Status == CaptionProjectStatus.Queued).ExecuteUpdateAsync(s => s
                 .SetProperty(p => p.Status, CaptionProjectStatus.Processing).SetProperty(p => p.Progress, 12)
                 .SetProperty(p => p.ProcessingLabel, "Preparing audio").SetProperty(p => p.ErrorMessage, (string?)null)
                 .SetProperty(p => p.UpdatedAt, DateTime.UtcNow), ct);
+            if (claimed == 0) return;
+            var project = await _db.CaptionProjects.AsNoTracking().FirstOrDefaultAsync(p => p.Id == projectId, ct);
+            if (project == null) return;
 
             tempDir = Path.Combine(Path.GetTempPath(), "captain-job-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempDir);
@@ -54,14 +55,16 @@ public class CaptionJobRunner : ICaptionJobRunner
             if (string.IsNullOrEmpty(suffix)) suffix = ".mp4";
             var source = Path.Combine(tempDir, $"source{suffix}");
             var audio = Path.Combine(tempDir, "speech.wav");
-            var previewFile = Path.Combine(tempDir, "preview.webm");
+            var previewFile = Path.Combine(tempDir, "preview.mp4");
 
             await using (var src = (await _storage.OpenAsync(project.SourcePath, ct)).Stream)
             await using (var dst = File.Create(source))
                 await src.CopyToAsync(dst, ct);
 
             await _ffmpeg.ExtractAudioAsync(source, audio, ct);
-            var previewTask = _ffmpeg.CreateBrowserPreviewAsync(source, previewFile, ct);
+            // Only transcode a preview when the browser cannot play the upload (e.g. iPhone HEVC); H.264/AAC plays as-is = zero cost.
+            var probe = await _ffmpeg.ProbeAsync(source, ct);
+            var previewTask = probe.IsBrowserPlayable ? Task.FromResult(false) : _ffmpeg.CreateBrowserPreviewAsync(source, previewFile, ct);
             await SetProgressAsync(projectId, 28, "Listening word by word", ct);
 
             List<CaptionWordDto> words; TranscriptionDiagnostics diagnostics;
@@ -81,8 +84,8 @@ public class CaptionJobRunner : ICaptionJobRunner
             string? previewPath = null;
             if (await previewTask)
             {
-                previewPath = $"captain-title/previews/{project.UserId}/{Guid.NewGuid():N}.webm";
-                await _storage.PutFileAsync(previewPath, previewFile, "video/webm", ct);
+                previewPath = $"captain-title/previews/{project.UserId}/{Guid.NewGuid():N}.mp4";
+                await _storage.PutFileAsync(previewPath, previewFile, "video/mp4", ct);
             }
 
             var styles = await _catalog.GetStyleSetAsync(ct);
@@ -102,7 +105,7 @@ public class CaptionJobRunner : ICaptionJobRunner
                 .SetProperty(p => p.Status, CaptionProjectStatus.Ready).SetProperty(p => p.Progress, 100)
                 .SetProperty(p => p.ProcessingLabel, "Captions ready")
                 .SetProperty(p => p.PreviewPath, previewPath ?? project.PreviewPath)
-                .SetProperty(p => p.PreviewContentType, previewPath != null ? "video/webm" : project.PreviewContentType)
+                .SetProperty(p => p.PreviewContentType, previewPath != null ? "video/mp4" : project.PreviewContentType)
                 .SetProperty(p => p.UpdatedAt, DateTime.UtcNow), ct);
 
             if (consumeCredit && project.CreditType != null)

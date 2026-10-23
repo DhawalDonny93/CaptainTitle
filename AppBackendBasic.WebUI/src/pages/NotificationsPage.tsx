@@ -117,7 +117,7 @@ const NotificationsPage = () => {
                                     <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded whitespace-nowrap ${notification.type === 'Warning' ? 'bg-yellow-100 text-yellow-800' :
                                             notification.type === 'Error' ? 'bg-red-100 text-red-800' :
                                             notification.type === 'Success' ? 'bg-green-100 text-green-800' :
-                                                'bg-blue-100 text-blue-800'
+                                                'bg-butter text-cherry'
                                         }`}>
                                         {notification.type}
                                     </span>

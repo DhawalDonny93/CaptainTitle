@@ -24,7 +24,7 @@ export default function Terms() {
           {/* Introduction */}
           <section className="mb-12">
             <p className="text-gray-700 font-light leading-relaxed mb-6">
-              Please read these terms and conditions carefully before using Our Service. Your access to and use of the Service is conditioned upon Your acceptance of and compliance with these Terms and the BasicFramework Privacy Policy. By accessing or using the Service, You acknowledge that You have read, understood, and agreed to be bound by these Terms.
+              Please read these terms and conditions carefully before using Our Service. Your access to and use of the Service is conditioned upon Your acceptance of and compliance with these Terms and the Captain Title Privacy Policy. By accessing or using the Service, You acknowledge that You have read, understood, and agreed to be bound by these Terms.
             </p>
           </section>
 
@@ -48,10 +48,10 @@ export default function Terms() {
                 <strong className="font-medium text-gray-900">Affiliate</strong> means any entity that controls, is controlled by, or is under common control with the Company.
               </li>
               <li className="text-gray-700 font-light">
-                <strong className="font-medium text-gray-900">Application</strong> means the software program provided by the Company, named BasicFramework, including all related features, tools, content, and updates.
+                <strong className="font-medium text-gray-900">Application</strong> means the software program provided by the Company, named Captain Title, including all related features, tools, content, and updates.
               </li>
               <li className="text-gray-700 font-light">
-                <strong className="font-medium text-gray-900">Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to BasicFramework.
+                <strong className="font-medium text-gray-900">Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Captain Title.
               </li>
               <li className="text-gray-700 font-light">
                 <strong className="font-medium text-gray-900">Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.
@@ -301,7 +301,7 @@ export default function Terms() {
             </p>
             <ul className="space-y-2">
               <li className="text-gray-700 font-light">
-                By email: <a href="mailto:legal@basicframework.com" className="text-black hover:underline">legal@basicframework.com</a>
+                By email: <a href="mailto:legal@captaintitle.com" className="text-black hover:underline">legal@captaintitle.com</a>
               </li>
             </ul>
           </section>

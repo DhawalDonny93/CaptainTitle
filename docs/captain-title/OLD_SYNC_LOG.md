@@ -24,12 +24,14 @@ The old repo will keep changing. Everything needed to import those changes (and 
 | Date | Old commit | Direction | Summary | Done by |
 |---|---|---|---|---|
 | 2026-10-21 | `4ee2eea` | Baseline | Initial full port (185 tracked files, see port-map) | Claude |
+| 2026-10-23 | `c3dc0e6` | Old -> new | 24 changed files (20 commits). Two fixed templates (Street Glow, Doodle Marker) replace the 9 templates + variants; granular Outline/Shadow/Glow/Background/Bold/Italic; real-gblur Shadow/Glow export; Transform panel (scale/position/rotation); caption split/merge; Native-script toggle; element layer; filmstrip; new SFX synthesis; 6 new fonts; Hinglish romanization table; Whisper opening-speech fix; 300 s render timeout. New SQL: `26_captions_templates_and_text_styling.sql`. | Claude |
 
 ### Deleted in old (after baseline)
 _none yet_
 
 ### New in old, intentionally not ported
-_none yet_
+- Python-only dependencies (`requirements.txt`: indic_transliteration, roman, toml, ...) - replaced by `DevanagariRomanizer.cs`.
+- Rotation is applied by the editor preview for Street Glow but NOT by the old export (`_emit_street_glow_group` ignores it) - ported as-is (preview/export mismatch inherited, see DECISIONS D-24).
 
 ### Old-side files intentionally NOT carried over at baseline
 Emergent scaffolding (`.emergent/`, `frontend/plugins/`, `craco.config.js`, PostHog/emergent scripts in `public/index.html`), shadcn components the editor never imported (≈45 files in `components/ui/`), test IDs registry, debug media/JSON/cookie artefacts at repo root, 90 MB `flying-beast-source.mp4`.

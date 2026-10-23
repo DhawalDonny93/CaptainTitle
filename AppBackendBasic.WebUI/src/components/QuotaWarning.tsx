@@ -105,7 +105,7 @@ export const QuotaWarning: React.FC = () => {
                 className={`mt-3 inline-flex items-center px-3 py-1.5 text-white text-sm rounded font-medium transition ${
                   quota.isExceeded
                     ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    : 'bg-cherry hover:bg-cherry'
                 }`}
               >
                 <TrendingUp className="h-4 w-4 mr-1" />

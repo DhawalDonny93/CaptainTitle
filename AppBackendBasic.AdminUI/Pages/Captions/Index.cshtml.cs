@@ -15,6 +15,7 @@ public class IndexModel : PageModel
 
     public JObject Overview { get; private set; } = new();
     public JArray Settings { get; private set; } = new();
+    public JObject Health { get; private set; } = new();
     public List<JObject> Jobs { get; private set; } = new();
     [TempData] public string? SuccessMessage { get; set; }
     [TempData] public string? ErrorMessage { get; set; }
@@ -26,6 +27,7 @@ public class IndexModel : PageModel
         {
             Overview = await _api.GetAsync<JObject>("/admin/captions/overview") ?? new JObject();
             Settings = await _api.GetAsync<JArray>("/admin/captions/settings") ?? new JArray();
+            Health = await _api.GetAsync<JObject>("/admin/captions/health") ?? new JObject();
             var jobs = await _api.GetAsync<JArray>("/admin/llm-job-configs") ?? new JArray();
             Jobs = jobs.OfType<JObject>().Where(j => ((string?)j["jobKey"] ?? "").StartsWith("Caption")).ToList();
         }

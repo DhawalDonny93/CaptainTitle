@@ -135,7 +135,7 @@ public class GoldenParityTests
         foreach (var c in Golden.GetProperty("group").EnumerateArray())
         {
             int? n = c.GetProperty("words_per_caption").ValueKind == JsonValueKind.Null ? null : c.GetProperty("words_per_caption").GetInt32();
-            var groups = CaptionLayout.GroupWordsForDisplay(words, maxWords: n ?? 3, strictCount: n != null);
+            var groups = CaptionLayout.GroupWordsForDisplay(words, minDisplay: c.GetProperty("min_display").GetDouble(), maxWords: n ?? 3, strictCount: n != null);
             var exp = c.GetProperty("groups").EnumerateArray().Select(g => g.EnumerateArray().Select(x => x.GetInt32()).ToList()).ToList();
             Assert.Equal(exp, groups.Select(g => g.Select(w => w.Index).ToList()).ToList());
         }
@@ -150,31 +150,94 @@ public class GoldenParityTests
             Assert.Equal(c.GetProperty("r").GetString(), AssSubtitleWriter.AssColor(c.GetProperty("h").GetString()!));
     }
 
+    private static readonly string FontsDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "AppBackendBasic.API", "Assets", "captions", "fonts"));
+
+    private static AssStyleOptions StyleFrom(JsonElement args)
+    {
+        double D(string n, double d) => args.TryGetProperty(n, out var v) ? v.GetDouble() : d;
+        bool B(string n, bool d) => args.TryGetProperty(n, out var v) ? v.GetBoolean() : d;
+        string S(string n, string d) => args.TryGetProperty(n, out var v) ? v.GetString()! : d;
+        return new AssStyleOptions
+        {
+            ScriptMode = S("script_mode", "roman"), Bold = B("bold", true), Italic = B("italic", false),
+            OutlineEnabled = B("outline_enabled", false), OutlineWidth = D("outline_width", 2), OutlineColor = S("outline_color", "#000000"),
+            ShadowEnabled = B("shadow_enabled", true), ShadowAngle = D("shadow_angle", 0), ShadowDistance = D("shadow_distance", 2),
+            ShadowBlur = D("shadow_blur", 2), ShadowOpacity = D("shadow_opacity", 0.5), ShadowColor = S("shadow_color", "#000000"),
+            GlowEnabled = B("glow_enabled", false), GlowColor = args.TryGetProperty("glow_color", out var gc) && gc.ValueKind == JsonValueKind.String ? gc.GetString() : null,
+            GlowBlur = D("glow_blur", 8), GlowOpacity = D("glow_opacity", 0.6),
+            BackgroundEnabled = B("background_enabled", false), BackgroundColor = S("background_color", "#000000"), BackgroundOpacity = D("background_opacity", 0.6),
+        };
+    }
+
     [Fact]
-    public void AssScript_matches_python_for_every_theme_variant_layout()
+    public void AssScript_matches_python_for_every_template_style_layout()
     {
         var styles = CaptionStyleFactory.FromSeed();
         var ass = Golden.GetProperty("ass");
         var words = Words(ass.GetProperty("words"));
         var elements = JsonSerializer.Deserialize<List<CaptionElementDto>>(ass.GetProperty("elements").GetRawText(), Opts)!;
+        var measurer = new TrueTypeTextMeasurer(FontsDir);
         int count = 0;
         foreach (var c in ass.GetProperty("cases").EnumerateArray())
         {
             int? wpc = c.GetProperty("wpc").ValueKind == JsonValueKind.Null ? null : c.GetProperty("wpc").GetInt32();
-            string? variant = c.GetProperty("variant").ValueKind == JsonValueKind.Null ? null : c.GetProperty("variant").GetString();
             var actual = AssSubtitleWriter.Build(words, c.GetProperty("theme").GetString()!, c.GetProperty("font").GetString()!, wpc,
-                c.GetProperty("lines").GetInt32(), c.GetProperty("position").GetString()!, elements, variant, styles);
-            Assert.Equal(c.GetProperty("ass").GetString(), actual);
+                c.GetProperty("lines").GetInt32(), c.GetProperty("position").GetString()!, elements, StyleFrom(c.GetProperty("style_args")), styles, measurer);
+            var label = $"{c.GetProperty("theme").GetString()}/{c.GetProperty("style").GetString()}/{c.GetProperty("lines").GetInt32()}/{c.GetProperty("position").GetString()}";
+            string? Exp(string n) => c.GetProperty(n).ValueKind == JsonValueKind.Null ? null : NormNum(c.GetProperty(n).GetString()!);
+            Assert.True(Exp("ass") == NormNum(actual.Main), "main " + label);
+            Assert.True(Exp("shadow_alpha") == (actual.ShadowAlpha == null ? null : NormNum(actual.ShadowAlpha)), "shadow_alpha " + label);
+            Assert.True(Exp("shadow_color") == (actual.ShadowColor == null ? null : NormNum(actual.ShadowColor)), "shadow_color " + label);
+            Assert.True(Exp("glow_alpha") == (actual.GlowAlpha == null ? null : NormNum(actual.GlowAlpha)), "glow_alpha " + label);
+            Assert.True(Exp("glow_color") == (actual.GlowColor == null ? null : NormNum(actual.GlowColor)), "glow_color " + label);
             count++;
         }
-        Assert.Equal(81, count); // 9 themes x 3 variants x 3 layouts
+        Assert.Equal(36, count); // 3 templates x 4 style sets x 3 layouts
+    }
+
+    [Fact]
+    public void Text_measurer_matches_pil()
+    {
+        var measurer = new TrueTypeTextMeasurer(FontsDir);
+        foreach (var c in Golden.GetProperty("measure").EnumerateArray())
+        {
+            // PIL/FreeType hints advances (+/-1px per glyph); the port sums unhinted advances - only used to place a loose decorative pill/loop.
+            var text = c.GetProperty("text").GetString()!;
+            var expected = c.GetProperty("w").GetDouble();
+            Assert.InRange(measurer.MeasureWidth(text, "Caveat", 56), expected - text.Length * 1.5, expected + text.Length * 1.5);
+        }
+    }
+
+    [Fact]
+    public void ColorAlpha_and_ShadowOffset_match_python()
+    {
+        foreach (var c in Golden.GetProperty("ass_color_alpha").EnumerateArray())
+            Assert.Equal(c.GetProperty("r").GetString(), AssSubtitleWriter.AssColorAlpha(c.GetProperty("h").GetString()!, c.GetProperty("o").GetDouble()));
+        foreach (var c in Golden.GetProperty("shadow_offset").EnumerateArray())
+        {
+            var (x, y) = AssSubtitleWriter.ShadowOffset(c.GetProperty("a").GetDouble(), c.GetProperty("d").GetDouble());
+            Assert.Equal(c.GetProperty("r")[0].GetDouble(), x, 9);
+            Assert.Equal(c.GetProperty("r")[1].GetDouble(), y, 9);
+        }
+    }
+
+    [Fact]
+    public void Devanagari_romanization_matches_python()
+    {
+        foreach (var c in Golden.GetProperty("romanize").EnumerateArray())
+        {
+            var text = c.GetProperty("text").GetString()!;
+            Assert.Equal(c.GetProperty("fallback").GetString(), DevanagariRomanizer.RomanizeFallback(text));
+            var common = c.GetProperty("common");
+            Assert.Equal(common.ValueKind == JsonValueKind.Null ? null : common.GetString(), DevanagariRomanizer.CommonHindiSpelling(text));
+        }
     }
 
     [Fact]
     public void Srt_matches_python()
     {
-        var s = Golden.GetProperty("srt");
-        Assert.Equal(s.GetProperty("srt").GetString(), SrtWriter.Build(Words(s.GetProperty("words"))));
+        foreach (var s in Golden.GetProperty("srt").EnumerateArray())
+            Assert.Equal(s.GetProperty("srt").GetString(), SrtWriter.Build(Words(s.GetProperty("words")), s.GetProperty("mode").GetString()!));
     }
 
     [Fact]
@@ -188,7 +251,7 @@ public class GoldenParityTests
     public void Sfx_filters_and_render_args_match_python()
     {
         var tones = CaptionSeedData.SfxTypes().ToDictionary(t => t.Key, t => new SfxTone(t.Key, t.Frequency, t.SweepTo, t.DurationSeconds));
-        SfxTone ToneFor(string type) => tones.TryGetValue(type, out var t) ? t : tones["pop"];
+        SfxTone ToneFor(string type) => tones.TryGetValue(type, out var t) ? t : new SfxTone("bass_drop", 90, 27, 0.4);
 
         foreach (var c in Golden.GetProperty("sfx_filter").EnumerateArray())
             Assert.Equal(NormNum(c.GetProperty("filter").GetString()!), NormNum(FfmpegRenderArgs.SfxSourceFilter(ToneFor(c.GetProperty("type").GetString()!), "L")));
@@ -196,8 +259,12 @@ public class GoldenParityTests
         foreach (var c in Golden.GetProperty("render").EnumerateArray())
         {
             var markers = c.GetProperty("sfx").EnumerateArray().Select(m => (m.GetProperty("type").GetString()!, m.GetProperty("time").GetDouble())).ToList();
-            var args = FfmpegRenderArgs.Build("/tmp/w/source.mp4", "/tmp/w/captions.ass", "/tmp/w/out.mp4", "/opt/fonts",
-                c.GetProperty("volume").GetInt32(), c.GetProperty("muted").GetBoolean(), -10, 120, 90, c.GetProperty("quality").GetString()!, markers, ToneFor);
+            bool masks = c.GetProperty("masks").GetBoolean();
+            var size = c.GetProperty("size");
+            var maskFiles = masks ? new BlurMaskFiles("shadow_alpha.ass", "shadow_color.ass", 3, "glow_alpha.ass", "glow_color.ass", 10) : null;
+            var args = FfmpegRenderArgs.Build("/tmp/w/source.mp4", "/tmp/w/captions.ass", "/tmp/w/out.mp4", "/tmp/w/fonts",
+                c.GetProperty("volume").GetInt32(), c.GetProperty("muted").GetBoolean(), -10, 120, 90, c.GetProperty("quality").GetString()!, markers, ToneFor,
+                masks: maskFiles, videoWidth: masks ? size[0].GetInt32() : null, videoHeight: masks ? size[1].GetInt32() : null);
             var expected = c.GetProperty("args").EnumerateArray().Select(x => x.GetString()!).Skip(1).Select(NormNum).ToList(); // drop the "ffmpeg" exe
             Assert.Equal(expected, args.Select(NormNum).ToList());
         }
@@ -208,58 +275,50 @@ public class GoldenParityTests
     {
         var t = Golden.GetProperty("tables");
         var themes = CaptionSeedData.Themes().ToDictionary(x => x.Key);
-        foreach (var p in t.GetProperty("themes").EnumerateObject())
+        // The old app now has exactly two templates; the seed keeps them plus the retired ones (migration 26 deactivates those).
+        var sg = t.GetProperty("themes").GetProperty("street_glow");
+        Assert.Contains("street_glow", themes.Keys);
+        Assert.Equal(sg.GetProperty("line1").GetProperty("font").GetString(), FixedTemplates.StreetGlowLine1Font);
+        Assert.Equal(sg.GetProperty("line1").GetProperty("color").GetString(), FixedTemplates.StreetGlowLine1Color);
+        Assert.Equal(sg.GetProperty("line1").GetProperty("size").GetInt32(), FixedTemplates.StreetGlowLine1Size);
+        Assert.Equal(sg.GetProperty("line2").GetProperty("font").GetString(), FixedTemplates.StreetGlowLine2Font);
+        Assert.Equal(sg.GetProperty("line2").GetProperty("color").GetString(), FixedTemplates.StreetGlowLine2Color);
+        Assert.Equal(sg.GetProperty("line2").GetProperty("size").GetInt32(), FixedTemplates.StreetGlowLine2Size);
+        var dm = t.GetProperty("themes").GetProperty("doodle_marker");
+        var parsed = CaptionStyleFactory.ParseTiers(themes["doodle_marker"].TiersJson)!;
+        foreach (var tier in dm.GetProperty("tiers").EnumerateObject())
         {
-            var seed = themes[p.Name];
-            if (p.Value.TryGetProperty("tiers", out var tiers))
-            {
-                var parsed = CaptionStyleFactory.ParseTiers(seed.TiersJson)!;
-                foreach (var tier in tiers.EnumerateObject())
-                {
-                    Assert.Equal(tier.Value.GetProperty("font").GetString(), parsed[tier.Name].Font);
-                    Assert.Equal(tier.Value.GetProperty("color").GetString(), parsed[tier.Name].Color);
-                    Assert.Equal(tier.Value.GetProperty("size").GetInt32(), parsed[tier.Name].Size);
-                }
-            }
-            else
-            {
-                Assert.Equal(p.Value.GetProperty("base").GetString(), seed.BaseColor);
-                Assert.Equal(p.Value.GetProperty("accent").GetString(), seed.AccentColor);
-                var af = p.Value.GetProperty("accent_font");
-                Assert.Equal(af.ValueKind == JsonValueKind.Null ? null : af.GetString(), seed.AccentFont);
-            }
+            Assert.Equal(tier.Value.GetProperty("font").GetString(), parsed[tier.Name].Font);
+            Assert.Equal(tier.Value.GetProperty("color").GetString(), parsed[tier.Name].Color);
+            Assert.Equal(tier.Value.GetProperty("size").GetInt32(), parsed[tier.Name].Size);
         }
-        Assert.Equal(t.GetProperty("themes").EnumerateObject().Count(), themes.Count);
+        Assert.Equal(dm.GetProperty("pill_color").GetString(), FixedTemplates.DoodlePillColor);
+        Assert.Equal(dm.GetProperty("loop_color").GetString(), FixedTemplates.DoodleLoopColor);
 
         var fonts = CaptionSeedData.Fonts().ToDictionary(x => x.Key);
         foreach (var p in t.GetProperty("fonts").EnumerateObject())
             Assert.Equal(p.Value.GetProperty("family").GetString(), fonts[p.Name].Family);
 
-        var variants = CaptionSeedData.Variants().ToDictionary(x => x.Key);
-        foreach (var p in t.GetProperty("variants").EnumerateObject())
-        {
-            var v = variants[p.Name]; var e = p.Value;
-            Assert.Equal(e.GetProperty("font").GetString(), v.FontFamily);
-            Assert.Equal(e.GetProperty("bord").GetInt32(), v.Border);
-            var o = e.GetProperty("outline");
-            Assert.Equal(o.ValueKind == JsonValueKind.Null ? null : o.GetString(), v.OutlineColor);
-            Assert.Equal(e.GetProperty("shad").GetInt32(), v.Shadow);
-            Assert.Equal(e.GetProperty("blur").GetInt32(), v.Blur);
-            Assert.Equal(e.GetProperty("accent").GetString(), v.AccentColor);
-        }
-
-        var sfx = CaptionSeedData.SfxTypes().ToDictionary(x => x.Key);
-        foreach (var p in t.GetProperty("sfx").EnumerateObject())
-        {
-            Assert.Equal(p.Value.GetProperty("freq").GetDouble(), sfx[p.Name].Frequency);
-            Assert.Equal(p.Value.GetProperty("sweep_to").GetDouble(), sfx[p.Name].SweepTo);
-            Assert.Equal(p.Value.GetProperty("duration").GetDouble(), sfx[p.Name].DurationSeconds);
-        }
         foreach (var p in t.GetProperty("positions").EnumerateObject())
         {
-            var (a, m) = CaptionLayout.PositionPreset(p.Name);
-            Assert.Equal(p.Value[0].GetInt32(), a);
-            Assert.Equal(p.Value[1].GetInt32(), m);
+            var (x, y) = CaptionLayout.PositionDefaults[p.Name];
+            Assert.Equal(p.Value[0].GetDouble(), x);
+            Assert.Equal(p.Value[1].GetDouble(), y);
         }
+        var k = t.GetProperty("constants");
+        Assert.Equal(k.GetProperty("street_glow_gap_px").GetInt32(), FixedTemplates.StreetGlowGapPx);
+        Assert.Equal(k.GetProperty("street_glow_glow_blur").GetDouble(), FixedTemplates.StreetGlowGlowBlur);
+        Assert.Equal(k.GetProperty("street_glow_shadow_blur").GetDouble(), FixedTemplates.StreetGlowShadowBlur);
+        Assert.Equal(k.GetProperty("street_glow_glow_opacity").GetDouble(), FixedTemplates.StreetGlowGlowOpacity);
+        Assert.Equal(k.GetProperty("street_glow_shadow_opacity").GetDouble(), FixedTemplates.StreetGlowShadowOpacity);
+        Assert.Equal(k.GetProperty("doodle_font_size").GetInt32(), FixedTemplates.DoodleFontSize);
+        Assert.Equal(k.GetProperty("doodle_native_line_height").GetDouble(), FixedTemplates.DoodleNativeLineHeight);
+        Assert.Equal(k.GetProperty("doodle_reveal_steps").GetInt32(), FixedTemplates.DoodleRevealSteps);
+        Assert.Equal(k.GetProperty("pop_in_ms").GetInt32(), AssSubtitleWriter.PopInMs);
+        Assert.Equal(k.GetProperty("pop_out_ms").GetInt32(), AssSubtitleWriter.PopOutMs);
+        Assert.Equal(k.GetProperty("pop_scale").GetInt32(), AssSubtitleWriter.PopScale);
+        Assert.Equal(k.GetProperty("default_emphasize_accent").GetString(), AssSubtitleWriter.DefaultEmphasizeAccent);
+        Assert.Equal(t.GetProperty("quality").GetProperty("high").GetProperty("preset").GetString(), FfmpegRenderArgs.QualityPreset("high").Preset);
+        Assert.Equal(t.GetProperty("quality").GetProperty("draft").GetProperty("crf").GetString(), FfmpegRenderArgs.QualityPreset("draft").Crf);
     }
 }

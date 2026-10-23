@@ -1,6 +1,6 @@
 import { api } from '@/lib/api'
 import type {
-  CaptionCatalog, CaptionPlan, CaptionProject, CaptionUsage, CaptionWord, ProjectEditPayload,
+  CaptionCatalog, CaptionPlan, CaptionProject, CaptionUsage, CaptionWord, CheckoutResponse, PaymentProviders, ProjectEditPayload,
 } from './types'
 
 const base = '/captions'
@@ -31,13 +31,16 @@ export const captionsApi = {
   retranscribe: (id: number, speechLanguage: string) =>
     api.post<CaptionProject>(`${base}/projects/${id}/retranscribe`, { speech_language: speechLanguage }).then((r) => r.data),
   reassignEmphasis: (id: number) => api.post<{ words: CaptionWord[] }>(`${base}/projects/${id}/ai/emphasis`).then((r) => r.data),
-  render: (id: number) => api.post<{ status: string; download_url: string }>(`${base}/projects/${id}/render`, undefined, { timeout: 0 }).then((r) => r.data),
+  /** Queues the export (HTTP 202). Poll get() until status is 'rendered' (or 'ready' with error_message). */
+  render: (id: number) => api.post<CaptionProject>(`${base}/projects/${id}/render`).then((r) => r.data),
   mediaUrl: (id: number) => api.post<{ url: string }>(`${base}/projects/${id}/media-url`).then((r) => r.data.url),
   downloadBlob: (id: number) => api.get<Blob>(`${base}/projects/${id}/download`, { responseType: 'blob' }).then((r) => r.data),
   srtBlob: (id: number) => api.get<Blob>(`${base}/projects/${id}/srt`, { responseType: 'blob' }).then((r) => r.data),
-  paymentCatalog: () => api.get<{ items: CaptionPlan[]; available: boolean }>(`${base}/payments/catalog`).then((r) => r.data),
+  paymentCatalog: () => api.get<{ items: CaptionPlan[]; available: boolean; providers: PaymentProviders }>(`${base}/payments/catalog`).then((r) => r.data),
   checkout: (packageId: string) =>
-    api.post<{ checkout_url: string; session_id: string }>(`${base}/payments/checkout`, { package_id: packageId, origin_url: window.location.origin }).then((r) => r.data),
+    api.post<CheckoutResponse>(`${base}/payments/checkout`, { package_id: packageId, origin_url: window.location.origin }).then((r) => r.data),
+  verifyRazorpay: (payload: { razorpay_order_id?: string; razorpay_subscription_id?: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    api.post<{ session_id: string; status: string; payment_status: string }>(`${base}/payments/razorpay/verify`, payload).then((r) => r.data),
   paymentStatus: (sessionId: string) =>
     api.get<{ session_id: string; status: string; payment_status: string }>(`${base}/payments/status/${encodeURIComponent(sessionId)}`).then((r) => r.data),
 }

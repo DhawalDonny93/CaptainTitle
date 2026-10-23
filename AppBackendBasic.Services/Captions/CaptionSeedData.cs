@@ -19,6 +19,16 @@ public static class CaptionSeedData
 
     public static List<CaptionTheme> Themes() => new()
     {
+        // The two fixed templates of the current old app (migration 26). Their look and motion live in FixedTemplates / AssSubtitleWriter; these rows
+        // only make them selectable (name, order, active flag, card preview). The nine templates below are the pre-sync catalog: migration 26 turns them
+        // off (IsActive = FALSE) but keeps the rows, so existing projects/admin edits are not lost.
+        new() { Key = "street_glow", Name = "Street Glow", BaseColor = "#FFFFFF", AccentColor = "#FF2E2E", AccentFont = "Anton", SortOrder = 0,
+            CardJson = Card(null, "0 0 14px rgba(255,46,46,.95)", "0 0 28px rgba(255,46,46,.6)", false) },
+        new() { Key = "doodle_marker", Name = "Doodle Marker", AccentColor = "#FACC15", SortOrder = 1,
+            TiersJson = Tiers(("support", "Caveat", "'Caveat', cursive", "#FFFFFF", 56),
+                              ("feature", "Caveat", "'Caveat', cursive", "#FFFFFF", 56),
+                              ("key", "Caveat", "'Caveat', cursive", "#111111", 56)),
+            CardJson = Card(null, null, null, true) },
         new() { Key = "viral", Name = "Viral", BaseColor = "#FFFFFF", AccentColor = "#FF3B30", AccentFont = "Anton", SortOrder = 1,
             CardJson = Card("1.5px #000", "0 3px 0 #000", null, false) },
         new() { Key = "cinematic", Name = "Cinematic", BaseColor = "#FFF7DB", AccentColor = "#FFB800", AccentFont = "Caveat", SortOrder = 2,
@@ -54,6 +64,12 @@ public static class CaptionSeedData
         new() { Key = "anton", Label = "Anton", Family = "Anton", SortOrder = 2 },
         new() { Key = "bebas", Label = "Bebas Neue", Family = "Bebas Neue", SortOrder = 3 },
         new() { Key = "classic", Label = "Classic", Family = "DejaVu Sans", SortOrder = 4 },
+        new() { Key = "archivo", Label = "Archivo Black", Family = "Archivo Black", SortOrder = 5 },
+        new() { Key = "space_grotesk", Label = "Space Grotesk", Family = "Space Grotesk", SortOrder = 6 },
+        new() { Key = "baloo2", Label = "Baloo 2", Family = "Baloo 2 ExtraBold", SortOrder = 7 },
+        new() { Key = "hind", Label = "Hind", Family = "Hind", SortOrder = 8 },
+        new() { Key = "mukta", Label = "Mukta", Family = "Mukta ExtraBold", SortOrder = 9 },
+        new() { Key = "kalam", Label = "Kalam", Family = "Kalam", SortOrder = 10 },
     };
 
     public static List<CaptionVariant> Variants() => new()
@@ -108,6 +124,10 @@ public static class CaptionSeedData
         (CaptionSettingKeys.UnlimitedTestingMaxSeconds, "120", "int", "Video length cap while unlimited testing is on"),
         (CaptionSettingKeys.AllowedExtensions, ".mp4,.mov", "string", "Comma-separated allowed upload extensions"),
         (CaptionSettingKeys.DefaultTheme, "viral", "string", "Template applied to freshly generated captions"),
+        (CaptionSettingKeys.RenderHighPreset, "veryfast", "string", "x264 preset for 'High quality' exports (slower = smaller/better but much more CPU; the old app used 'slow')"),
+        (CaptionSettingKeys.RenderHighCrf, "18", "int", "x264 CRF for 'High quality' exports (lower = better; the old app used 17)"),
+        (CaptionSettingKeys.RenderDraftPreset, "ultrafast", "string", "x264 preset for 'Draft' exports (the old app used 'veryfast')"),
+        (CaptionSettingKeys.RenderDraftCrf, "28", "int", "x264 CRF for 'Draft' exports (the old app used 26)"),
     };
 
     /// <summary>SFX job defaults mirroring the old hardcoded OpenAI settings (gpt-4o, temperature 0).</summary>

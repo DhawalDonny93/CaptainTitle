@@ -50,7 +50,7 @@ export default function PaymentSuccess() {
           </h1>
 
           <p className="text-xl text-gray-600 font-light mb-12 leading-relaxed">
-            Thank you for subscribing to ProQuest AI. Your account has been upgraded and you now have access to all premium features.
+            Thank you for subscribing to Captain Title. Your account has been upgraded and you now have access to all premium features.
           </p>
 
           {/* What's Next */}

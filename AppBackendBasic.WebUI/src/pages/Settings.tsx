@@ -444,7 +444,7 @@ export default function Settings() {
           </div>
           <div>
             <h2 className="text-2xl font-normal text-gray-900">Appearance</h2>
-            <p className="text-sm text-gray-600 font-light">Customize how ProQuest AI looks</p>
+            <p className="text-sm text-gray-600 font-light">Customize how Captain Title looks</p>
           </div>
         </div>
 

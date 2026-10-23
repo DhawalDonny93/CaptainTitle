@@ -178,7 +178,7 @@ function showLoading() {
         if (!existingLoader) {
             const loader = document.createElement('div');
             loader.id = 'api-loading-indicator';
-            loader.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#8b5cf6);z-index:9999;';
+            loader.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;background:#FF2D4D;z-index:9999;';
             document.body.appendChild(loader);
         }
     }

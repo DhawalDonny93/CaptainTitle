@@ -24,6 +24,12 @@
 | D-21 | `RequestResponseLoggingMiddleware` (template) no longer buffers `/api/captions/media/*`, `/download`, `/srt`, and rewinds before copying | It buffered every response in memory and copied from the wrong position: file/binary responses came back empty (500) and videos would have been held in RAM. Found by running the API |
 | D-22 | A caption job that cannot start (dependency/config failure) marks the project `failed` instead of leaving it `queued` | Found by running the API without `EncryptionKey` |
 | D-23 | Entitlement reads use `AsNoTracking` | Balances change via set-based UPDATEs; a tracked copy returned stale credits within one request (found when granting credits) |
+| D-24 | Sync of old `c3dc0e6`: templates are **code-defined for the two fixed designs** (`FixedTemplates.cs`, keyed by theme key); the `CaptionThemes` rows only make them selectable. The 9 old templates are deactivated (not deleted) by migration 26 | Old removed the skinnable-template system. Unknown/flat templates fall back to Street Glow in the export, like the old `THEMES.get(..., street_glow)` |
+| D-25 | `CaptionVariants` table and `CaptionProjects.Variant` are kept but **ignored by the export and hidden in the editor** | Old removed variants; keeping the table avoids a destructive change. Drop later if unwanted |
+| D-26 | SFX: the five built-in types use the old fixed synthesis (noise/bell/pitch-drop); an admin-defined extra type keeps the previous tone-sweep from its DB params. Unknown type in a saved project -> bass_drop | Old hardcoded the five in code; this preserves admin flexibility |
+| D-27 | Doodle Marker word width is measured by `TrueTypeTextMeasurer` (sums glyph advances from the .ttf, whole-pixel rounding) instead of PIL | PIL hinted widths differ by about 1px/glyph; only positions a loose decorative pill/loop. Golden fixtures patch the same measurer; real PIL widths are compared with a tolerance |
+| D-28 | Export passes `-map [aout]` only when the source has an audio stream (new `hasAudio`) | The old `filter_complex` rewrite fails on silent videos; the old `-af` form tolerated them |
+| D-29 | Render timeout (`Captions:RenderTimeoutSeconds`, default 300) cancels the background render and stores the friendly timeout message | Port of old `RENDER_TIMEOUT_SECONDS`; "high" quality default preset is now medium/CRF 17 (admin `captions.render_*` settings still override) |
 | D-20 | Public `GET /api/captions/catalog` is anonymous | Contains only presentation data and limits |
 
 ## Old-app issues observed (not silently fixed unless noted)

@@ -100,6 +100,8 @@ public class CaptionPlan
     /// <summary>Cap on purchases per user (old: 3 for the single pass). Null = unlimited.</summary>
     public int? MaxPurchasesPerUser { get; set; }
     [MaxLength(100)] public string? StripeLookupKey { get; set; }
+    /// <summary>Razorpay Plan id (plan_xxx) - required only for Kind = subscription when paying with Razorpay.</summary>
+    [MaxLength(100)] public string? RazorpayPlanId { get; set; }
     [MaxLength(200)] public string? Description { get; set; }
     public bool IsFeatured { get; set; }
     public bool IsActive { get; set; } = true;
@@ -124,6 +126,10 @@ public static class CaptionSettingKeys
     public const string UnlimitedTestingMaxSeconds = "captions.unlimited_testing_max_seconds";
     public const string AllowedExtensions = "captions.allowed_extensions";
     public const string DefaultTheme = "captions.default_theme";
+    public const string RenderHighPreset = "captions.render_high_preset";
+    public const string RenderHighCrf = "captions.render_high_crf";
+    public const string RenderDraftPreset = "captions.render_draft_preset";
+    public const string RenderDraftCrf = "captions.render_draft_crf";
     public const string HinglishModelJobKey = "CaptionHinglishConversion";
     public const string EmphasisJobKey = "CaptionEmphasisAssignment";
 }

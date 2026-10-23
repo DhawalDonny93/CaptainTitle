@@ -1,13 +1,10 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
-import OnboardingFlow from './pages/OnboardingFlowNew'
 import Login from './pages/Login'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
-import Features from './pages/Features'
 import Pricing from './pages/Pricing'
-import About from './pages/About'
 import GoogleCallback from './pages/GoogleCallback'
 import AppleCallback from './pages/AppleCallback'
 import VerifyEmail from './pages/VerifyEmail'
@@ -18,7 +15,6 @@ import Settings from './pages/Settings'
 import NotificationsPage from './pages/NotificationsPage'
 import PaymentSuccess from './pages/PaymentSuccess'
 import PaymentCancelled from './pages/PaymentCancelled'
-import OnboardingPlans from './pages/OnboardingPlans'
 import SessionManager from './components/SessionManager'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthRedirect from './components/AuthRedirect'
@@ -26,7 +22,6 @@ import MainLayout from './components/layout/MainLayout'
 import { AuthProvider } from './contexts/AuthContext'
 import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext'
 import { UserProfileProvider } from './contexts/UserProfileContext'
-import { WaitlistProvider } from './contexts/WaitlistContext'
 import UpgradeModal from './components/UpgradeModal'
 import ErrorBoundary from './components/ErrorBoundary'
 
@@ -50,7 +45,6 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <WaitlistProvider>
         <AuthProvider>
           <UserProfileProvider>
             <SubscriptionProvider>
@@ -65,10 +59,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/features" element={<Features />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/onboarding/plans" element={<OnboardingPlans />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route path="/auth/google/callback" element={<GoogleCallback />} />
@@ -89,15 +80,18 @@ function App() {
               {/* The old AI-SEO dashboard is gone: legacy links land in the studio */}
               <Route path="/dashboard" element={<Navigate to="/studio" replace />} />
 
-              {/* Onboarding Flow (No Sidebar) */}
-              <Route path="/onboarding" element={<OnboardingFlow />} />
+              {/* Old SEO-era routes: send visitors somewhere useful instead of a blank page */}
+              <Route path="/onboarding" element={<Navigate to="/studio" replace />} />
+              <Route path="/onboarding/plans" element={<Navigate to="/pricing" replace />} />
+              <Route path="/features" element={<Navigate to="/#how-it-works" replace />} />
+              <Route path="/about" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </SessionManager>
             <GlobalUpgradeModal />
             </SubscriptionProvider>
           </UserProfileProvider>
         </AuthProvider>
-        </WaitlistProvider>
       </Router>
     </ErrorBoundary>
   )

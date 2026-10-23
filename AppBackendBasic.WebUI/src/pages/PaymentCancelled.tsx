@@ -72,9 +72,9 @@ export default function PaymentCancelled() {
           </div>
 
           {/* Free Plan Notice */}
-          <div className="mt-12 p-6 bg-blue-50 rounded-2xl">
+          <div className="mt-12 p-6 bg-butter rounded-2xl">
             <p className="text-gray-700 font-light">
-              <span className="font-medium">Good news:</span> You can still use ProQuest AI with our free Starter plan. 
+              <span className="font-medium">Good news:</span> You can still use Captain Title with our free Starter plan. 
               Upgrade anytime when you're ready.
             </p>
           </div>

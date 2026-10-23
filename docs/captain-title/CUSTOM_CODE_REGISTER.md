@@ -23,7 +23,12 @@ Everything below is something a future maintainer might need to change. **DB** =
 | Value | File | Why it is code |
 |---|---|---|
 | Export canvas 1080x1920 (`PlayResX/Y`) | `SubtitleWriters.cs` | Design constant; the editor preview scales against 1080 |
-| Position presets top(`\an8`,150) / middle(`\an5`,0) / bottom(`\an2`,210) | `CaptionLayout.PositionPreset` | Layout rule |
+| Position presets top (50,14) / middle (50,50) / bottom (50,80) % of the canvas | `CaptionLayout.PositionDefaults` **and** `CaptionStudio.tsx` `POSITION_DEFAULTS` + `ThemePanel.tsx` `TRANSFORM_Y_PRESETS` | Layout rule; change all three |
+| Street Glow design (fonts, colours, 72/44 px, -8 gap, glow/shadow blur+opacity, motion timings) | `FixedTemplates.cs`, `AssSubtitleWriter.EmitStreetGlowGroup`, `CaptionStudio.tsx` `StreetGlowOverlay`, `studio.css` | Bespoke fixed design; preview and export hand-matched |
+| Doodle Marker design (Caveat 56 px, pill #FACC15, loop #EF4444, 6 reveal steps, line height 1.47) | `FixedTemplates.cs`, `AssSubtitleWriter.EmitDoodleDecorations`, `CaptionStudio.tsx`, `studio.css` | Same |
+| Active-word pop (120/150 ms, 112 %), bold-capable fonts (Poppins, Caveat), Devanagari-capable fonts | `AssSubtitleWriter.cs`, `CaptionStudio.tsx` | Mirrors the preview CSS / glyph coverage |
+| Shadow/Glow blur: gblur sigma = authored blur x (width/1080) x 1.1 | `FfmpegRenderArgs.SigmaToCssBlurRadius` | Calibrated against CSS blur |
+| Hinglish high-frequency word table + OPTITRANS fallback | `DevanagariRomanizer.cs` | Fixes GPT/transliteration mistakes on common Hindi words |
 | Caption grouping: min display 0.35 s, max 3 words (Auto), max gap 0.4 s, sentence-end chars `.!?।॥` | `CaptionLayout.cs` **and** `CaptionStudio.tsx` | Mirrored; change both |
 | Emphasize scale ×1.18, default accent `#EAB308` | `SubtitleWriters.cs`, `studio.css` `.emphasize-accent` | Visual rule |
 | Chunking: 20 s target, ±2 s snap, 1.5 s overlap, 0.5 s lead-in; silence −35 dB / 0.3 s | `CaptionTranscriptionService.cs`, `FfmpegService.cs` | Tuned for Sarvam's 30 s cap (23.5 s worst case) |

@@ -59,7 +59,7 @@ const UserDropdown = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all"
       >
-        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-xs font-medium">
+        <div className="w-8 h-8 bg-cherry rounded-lg flex items-center justify-center text-white text-xs font-medium">
           {getInitials()}
         </div>
         <div className="flex-1 text-left">

@@ -58,6 +58,15 @@ public class SchemaTests
 
         var actual = SqlTables(File.ReadAllText(RepoFile("Database_Migrations/22_generic_template_schema.sql")));
         foreach (var kv in SqlTables(File.ReadAllText(RepoFile("Database_Migrations/21_captain_title_captions.sql")))) actual[kv.Key] = kv.Value;
+        // columns added by later scripts (ALTER TABLE ... ADD COLUMN IF NOT EXISTS)
+        foreach (var m in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/25_razorpay_payments_and_render_settings.sql")),
+                     "ALTER TABLE \"(\\w+)\"\\s+ADD COLUMN IF NOT EXISTS \"(\\w+)\"").Cast<Match>())
+            actual[m.Groups[1].Value].Add(m.Groups[2].Value);
+        // script 26 adds many columns in ONE multi-column ALTER TABLE
+        foreach (Match stmt in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/26_captions_templates_and_text_styling.sql")),
+                     "ALTER TABLE \"(\\w+)\"(.*?);", RegexOptions.Singleline))
+            foreach (Match col in Regex.Matches(stmt.Groups[2].Value, "ADD COLUMN IF NOT EXISTS \"(\\w+)\""))
+                actual[stmt.Groups[1].Value].Add(col.Groups[1].Value);
 
         Assert.Equal(expected.Keys.OrderBy(x => x), actual.Keys.OrderBy(x => x));
         foreach (var (table, cols) in expected)
@@ -85,13 +94,16 @@ public class SchemaTests
 /// <summary>The seed rows in 21_captain_title_captions.sql must equal CaptionSeedData (which the parity tests tie to the old Python tables).</summary>
 public class CaptionSeedSqlTests
 {
-    private static readonly string Sql = File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/21_captain_title_captions.sql"));
+    // seed rows live in 21 (catalog), 25 (render settings) and 26 (new templates/fonts)
+    private static readonly string Sql = File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/21_captain_title_captions.sql"))
+        + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/25_razorpay_payments_and_render_settings.sql"))
+        + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/26_captions_templates_and_text_styling.sql"));
 
     private static string Block(string table)
     {
-        var m = Regex.Match(Sql, $"INSERT INTO \"{table}\" .*?ON CONFLICT", RegexOptions.Singleline);
-        Assert.True(m.Success, $"seed block for {table} missing");
-        return m.Value;
+        var blocks = Regex.Matches(Sql, $"INSERT INTO \"{table}\" .*?ON CONFLICT", RegexOptions.Singleline).Cast<Match>().Select(x => x.Value).ToList();
+        Assert.NotEmpty(blocks);
+        return string.Join("\n", blocks);
     }
 
     [Fact]

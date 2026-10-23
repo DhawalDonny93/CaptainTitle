@@ -41,5 +41,5 @@ public static class CaptionStyleFactory
     }
 
     public static CaptionStyleSet FromSeed() =>
-        Build(CaptionSeedData.Themes(), CaptionSeedData.Fonts(), CaptionSeedData.Variants(), "viral");
+        Build(CaptionSeedData.Themes(), CaptionSeedData.Fonts(), CaptionSeedData.Variants(), FixedTemplates.StreetGlow);
 }

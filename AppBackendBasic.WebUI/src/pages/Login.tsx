@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Mail, Lock, ArrowRight, Atom, TrendingUp, Shield, Zap, AlertCircle } from 'lucide-react'
+import { Mail, Lock, ArrowRight, User, AlertCircle } from 'lucide-react'
 import { authService } from '../services/authService'
 import { useAuth } from '../contexts/AuthContext'
 import { useUserProfile } from '../contexts/UserProfileContext'
 import { toast } from '../utils/toast'
-import { GradientWave } from '../components/ui/gradient-wave'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -25,13 +24,14 @@ export default function Login() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const reason = params.get('reason');
+    if (params.get('mode') === 'signup') setIsLogin(false);
 
     if (reason === 'session_expired') {
       toast.error('Your session has expired. Please log in again.');
     }
 
     // Clear the query parameters but keep the page clean
-    if (reason) {
+    if (reason || params.get('mode')) {
       window.history.replaceState({}, '', '/login');
     }
   }, [])
@@ -185,8 +185,12 @@ export default function Login() {
 
     console.log('🚀 Opening Google OAuth popup');
 
-    // Google OAuth URL
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '864894922252-4dgqu8d3lq1lpscrjsjklnottesihfjk.apps.googleusercontent.com';
+    // Google OAuth URL (client id comes from VITE_GOOGLE_CLIENT_ID)
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setError('Google sign-in is not configured yet. Please use email and password.');
+      return;
+    }
     const redirectUri = `${window.location.origin}/auth/google/callback`;
     const scope = 'openid email profile';
     const responseType = 'token id_token';
@@ -232,303 +236,133 @@ export default function Login() {
   }, [handleGoogleCallback]);
 
   return (
-    <div className="min-h-screen bg-white flex">
-      {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 lg:p-16">
+    <div className="min-h-screen bg-paper text-ink grid lg:grid-cols-2">
+      {/* Form side */}
+      <div className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="mb-12">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 mb-8 group"
-            >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Atom className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-gray-900">
-                ProQuest AI
-              </span>
-            </button>
-            <h1 className="text-4xl font-light tracking-tight text-gray-900 mb-2">
-              {isLogin ? 'Welcome back' : 'Get started'}
-            </h1>
-            <p className="text-gray-600 font-light">
-              {isLogin ? 'Sign in to continue your journey' : 'Create your account to begin'}
-            </p>
-          </div>
+          <button onClick={() => navigate('/')} className="flex items-center gap-2.5 mb-8" aria-label="Captain Title home">
+            <span className="grid h-10 w-10 place-items-center rounded-lg border-2 border-ink bg-cherry text-white font-display text-lg font-extrabold shadow-hard-sm">C</span>
+            <span className="font-display text-xl font-extrabold tracking-tight">Captain Title</span>
+          </button>
 
-          {/* Error Message */}
+          <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">
+            {isLogin ? 'Welcome back' : 'Make your first captions'}
+          </h1>
+          <p className="text-gray-700 mb-8">
+            {isLogin ? 'Sign in to open your studio.' : 'Your first captioned video is free. No card needed.'}
+          </p>
+
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 font-light">{error}</p>
+            <div className="mb-6 flex items-start gap-3 rounded-lg border-2 border-ink bg-blush p-4 shadow-hard-sm" role="alert">
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
+              <p className="text-sm font-medium">{error}</p>
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
-              <div className="animate-fadeIn">
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-black transition-all font-light"
-                  required
-                />
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold" htmlFor="name">Your name</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                  <input id="name" type="text" placeholder="Aarav Sharma" value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full rounded-lg border-2 border-ink bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-cherry" required />
+                </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Email Address
-              </label>
+              <label className="mb-1.5 block text-sm font-semibold" htmlFor="email">Email</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder="john@example.com"
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-black transition-all font-light"
-                  value={formData.email}
+                <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <input id="email" type="email" placeholder="you@example.com" value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
+                  className="w-full rounded-lg border-2 border-ink bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-cherry" required />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Password
-              </label>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="block text-sm font-semibold" htmlFor="password">Password</label>
+                {isLogin && (
+                  <button type="button" onClick={() => navigate('/forgot-password')} className="text-sm font-semibold text-cherry underline underline-offset-4 hover:text-ink">
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-black transition-all font-light"
-                  value={formData.password}
+                <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <input id="password" type="password" placeholder="At least 6 characters" value={formData.password} minLength={6}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                />
+                  className="w-full rounded-lg border-2 border-ink bg-white py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-cherry" required />
               </div>
             </div>
 
-            {isLogin && (
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-gray-600 font-light">Remember me</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => navigate('/forgot-password')}
-                  className="text-black hover:underline font-medium"
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
-
-            {/* Terms Acceptance (Signup only) */}
             {!isLogin && (
-              <div className="flex items-start gap-3 animate-fadeIn">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  checked={acceptsTerms}
-                  onChange={(e) => setAcceptsTerms(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
-                />
-                <label htmlFor="terms" className="text-sm text-gray-600 font-light">
-                  By clicking you accept our{' '}
-                  <button
-                    type="button"
-                    onClick={() => window.open('/terms', '_blank')}
-                    className="text-black hover:underline font-medium"
-                  >
-                    Terms of Service
-                  </button>
-                  {' '}and{' '}
-                  <button
-                    type="button"
-                    onClick={() => window.open('/privacy', '_blank')}
-                    className="text-black hover:underline font-medium"
-                  >
-                    Privacy Policy
-                  </button>
-                </label>
-              </div>
+              <label className="flex cursor-pointer items-start gap-3 text-sm">
+                <input type="checkbox" checked={acceptsTerms} onChange={(e) => setAcceptsTerms(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 rounded border-2 border-ink accent-cherry" />
+                <span>
+                  I agree to the{' '}
+                  <a href="/terms" target="_blank" rel="noreferrer" className="font-semibold text-cherry underline underline-offset-4">Terms</a> and{' '}
+                  <a href="/privacy" target="_blank" rel="noreferrer" className="font-semibold text-cherry underline underline-offset-4">Privacy Policy</a>.
+                </span>
+              </label>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 bg-black text-white font-medium rounded-full hover:bg-gray-800 transition-all flex items-center justify-center gap-2 text-base mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
-              {!loading && <ArrowRight className="w-5 h-5" />}
+            <button type="submit" disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-ink bg-cherry py-3.5 font-bold text-white shadow-hard transition-all hover:-translate-y-0.5 hover:shadow-hard-lg active:translate-y-0 active:shadow-none disabled:opacity-60">
+              {loading ? 'One moment...' : isLogin ? 'Sign in' : 'Create my account'}
+              {!loading && <ArrowRight className="h-5 w-5" />}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500 font-light">Or continue with</span>
-            </div>
+          <div className="my-6 flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-gray-600">
+            <span className="h-0.5 flex-1 bg-ink" /> or <span className="h-0.5 flex-1 bg-ink" />
           </div>
 
-          {/* Social Login */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Google Sign-In Button */}
-            <button
-              type="button"
-              onClick={handleGoogleButtonClick}
-              disabled={loading || (!isLogin && !acceptsTerms)}
-              className="py-3 border-2 border-gray-200 rounded-full hover:border-gray-400 transition-all flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Google
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button type="button" onClick={handleGoogleButtonClick} disabled={loading}
+              className="rounded-lg border-2 border-ink bg-white py-3 font-semibold shadow-hard-sm transition-all hover:-translate-y-0.5 hover:shadow-hard disabled:opacity-60">
+              Continue with Google
             </button>
-            <button
-              type="button"
-              onClick={handleAppleSignIn}
-              disabled={loading || (!isLogin && !acceptsTerms)}
-              className="py-3 border-2 border-gray-200 rounded-full hover:border-gray-400 transition-all flex items-center justify-center gap-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-              </svg>
-              Apple
+            <button type="button" onClick={handleAppleSignIn} disabled={loading}
+              className="rounded-lg border-2 border-ink bg-ink py-3 font-semibold text-white shadow-hard-sm transition-all hover:-translate-y-0.5 hover:shadow-hard disabled:opacity-60">
+              Continue with Apple
             </button>
           </div>
 
-          {/* Toggle Login/Register */}
-          <div className="mt-8 text-center text-sm">
-            <span className="text-gray-600 font-light">
-              {isLogin ? "Don't have an account?" : 'Already have an account?'}
-            </span>
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="ml-2 text-black hover:underline font-medium"
-            >
-              {isLogin ? 'Sign up' : 'Sign in'}
+          <p className="mt-8 text-center text-sm">
+            {isLogin ? 'New to Captain Title?' : 'Already have an account?'}{' '}
+            <button type="button" onClick={() => { setIsLogin(!isLogin); setError('') }} className="font-bold text-cherry underline underline-offset-4 hover:text-ink">
+              {isLogin ? 'Create an account' : 'Sign in'}
             </button>
-          </div>
+          </p>
         </div>
       </div>
 
-      {/* Right Side - Visual */}
-      <div className="hidden lg:flex flex-1 p-16 items-center justify-center relative overflow-hidden">
-        {/* GradientWave background replacing the old dark gradient */}
-        <GradientWave
-          colors={["#ffffff", "#fb7185", '#e879f9', "#a3e635", "#ffffff"]}
-          shadowPower={4}
-          darkenTop={false}
-          noiseFrequency={[0.0001, 0.0002]}
-          deform={{ incline: 0.2, noiseAmp: 100, noiseFlow: 2 }}
-        />
-
-        {/* Content */}
-        <div className="relative z-10 max-w-lg">
-          <div className="mb-12">
-            <div className="inline-flex items-center gap-2 bg-black/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-gray-800 text-sm font-light">500+ brands optimized</span>
-            </div>
-            <h2 className="text-5xl font-light text-gray-900 mb-6 leading-tight">
-              Dominate AI search
-              <br />
-              <span className="font-normal">Get recommended</span>
-            </h2>
-            <p className="text-gray-700 text-lg font-light leading-relaxed">
-              Join hundreds of brands getting recommended by ChatGPT, Perplexity, and other AI engines with our GEO platform.
-            </p>
-          </div>
-
-          {/* Features */}
-          <div className="space-y-6">
-            {[
-              { icon: <TrendingUp className="w-5 h-5" />, text: 'Track AI visibility in real-time' },
-              { icon: <Shield className="w-5 h-5" />, text: 'Private and secure data' },
-              { icon: <Zap className="w-5 h-5" />, text: 'Automated GEO optimization' },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 text-gray-800"
-                style={{
-                  animation: 'fadeInUp 0.6s ease-out',
-                  animationDelay: `${index * 0.1}s`,
-                  animationFillMode: 'both'
-                }}
-              >
-                <div className="w-10 h-10 bg-black/10 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  {feature.icon}
-                </div>
-                <span className="font-light">{feature.text}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-black/10">
-            {[
-              { value: '500+', label: 'Brands' },
-              { value: '4.9', label: 'Rating' },
-              { value: '92%', label: 'Visibility' },
-            ].map((stat, index) => (
-              <div key={index}>
-                <div className="text-3xl font-light text-gray-900 mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-600 font-light">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+      {/* Brand side: flat colour blocks, no gradients */}
+      <aside className="relative hidden overflow-hidden border-l-2 border-ink bg-sun p-12 lg:flex lg:flex-col lg:justify-between">
+        <p className="font-display text-sm font-extrabold uppercase tracking-[0.25em]">Words that hit on beat</p>
+        <div>
+          <h2 className="font-display text-6xl font-extrabold leading-[1.02] tracking-tight">
+            Har <span className="inline-block -rotate-2 rounded-lg border-2 border-ink bg-cherry px-3 text-white shadow-hard">WORD</span><br />
+            <span className="text-5xl">matters.</span>
+          </h2>
+          <p className="mt-6 max-w-md text-lg font-medium">
+            Upload a clip. Get word-perfect Hinglish captions, mixed fonts and bold colours, ready to post.
+          </p>
         </div>
-      </div>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
+        <ul className="grid gap-3 text-sm font-semibold">
+          {['Transcribes Hindi and Hinglish, word by word', 'Edit text, timing, fonts and colours live', 'Export a finished MP4 or an SRT file'].map((t, i) => (
+            <li key={t} className="flex items-center gap-3 rounded-lg border-2 border-ink bg-white px-4 py-3 shadow-hard-sm">
+              <span className={`grid h-7 w-7 place-items-center rounded-md border-2 border-ink font-display font-extrabold ${['bg-mint', 'bg-tangerine', 'bg-blush'][i]}`}>{i + 1}</span>
+              {t}
+            </li>
+          ))}
+        </ul>
+      </aside>
     </div>
   )
 }

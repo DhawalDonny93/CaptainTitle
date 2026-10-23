@@ -1,150 +1,72 @@
-import { useState, useRef, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Eye, ChevronDown, FileText, Shield } from 'lucide-react'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Menu, X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import { useWaitlist } from '../contexts/WaitlistContext'
 
-const FREE_TOOLS = [
-  { label: 'llms.txt Generator', path: '/tools/llms-txt-generator', icon: FileText, desc: 'Generate your llms.txt file' },
-  { label: 'AI Crawlability Checker', path: '/tools/ai-crawlability-checker', icon: Shield, desc: 'Check who can crawl your site' },
-]
+export function Logo({ onClick }: { onClick?: () => void }) {
+  return (
+    <button onClick={onClick} className="flex items-center gap-2.5" aria-label="Captain Title home">
+      <span className="grid h-9 w-9 place-items-center rounded-lg border-2 border-ink bg-cherry font-display text-base font-extrabold text-white shadow-hard-sm">C</span>
+      <span className="font-display text-xl font-extrabold tracking-tight text-ink">Captain Title</span>
+    </button>
+  )
+}
 
+/** Public site header (landing, pricing, legal pages). */
 export default function Header() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { isAuthenticated } = useAuth()
-  const { openWaitlist } = useWaitlist()
-  const [toolsOpen, setToolsOpen] = useState(false)
-  const toolsRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
-        setToolsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
-
-  const navLinks = [
-    { label: 'Home',     path: '/' },
-    { label: 'About',    path: '/about' },
-    { label: 'Features', path: '/features' },
+  const links = [
+    { to: '/#how-it-works', label: 'How it works' },
+    { to: '/#styles', label: 'Styles' },
+    { to: '/pricing', label: 'Pricing' },
   ]
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-6 pointer-events-none">
-      <nav
-        className="pointer-events-auto flex items-center justify-between w-full max-w-4xl rounded-full px-3 py-2"
-        style={{
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 4px 32px 0 rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.10)',
-        }}
-      >
-        {/* Logo */}
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 pl-1 flex-shrink-0"
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(0, 0, 0, 0.12)', border: '1px solid rgba(255,255,255,0.18)' }}
-          >
-            <Eye className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-black font-bold text-sm tracking-tight select-none">ProQuest AI</span>
-        </button>
+    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Logo onClick={() => navigate('/')} />
 
-        {/* Nav links */}
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map(link => {
-            const active = location.pathname === link.path
-            return (
-              <button
-                key={link.path}
-                onClick={() => navigate(link.path)}
-                className="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
-                style={{
-                  color: active ? '#ffffff' : 'rgba(1, 1, 1, 0.65)',
-                  background: active ? 'rgba(0, 0, 0, 0.12)' : 'transparent',
-                }}
-                onMouseEnter={e => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.color = '#717171'
-                }}
-                onMouseLeave={e => {
-                  if (!active) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(0, 0, 0, 0.65)'
-                }}
-              >
-                {link.label}
-              </button>
-            )
-          })}
+        <nav className="hidden items-center gap-8 md:flex">
+          {links.map((l) => (
+            <Link key={l.label} to={l.to} className="font-semibold text-ink hover:text-cherry">{l.label}</Link>
+          ))}
+        </nav>
 
-          {/* Free Tools dropdown */}
-          <div ref={toolsRef} className="relative">
-            <button
-              onClick={() => setToolsOpen(o => !o)}
-              className="flex items-center gap-1 px-4 py-1.5 rounded-full text-sm font-medium transition-all"
-              style={{
-                color: location.pathname.startsWith('/tools') ? '#ffffff' : 'rgba(1, 1, 1, 0.65)',
-                background: location.pathname.startsWith('/tools') ? 'rgba(0, 0, 0, 0.12)' : 'transparent',
-              }}
-            >
-              Free Tools
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
+        <div className="hidden items-center gap-3 md:flex">
+          {isAuthenticated ? (
+            <button onClick={() => navigate('/studio')} className="rounded-lg border-2 border-ink bg-cherry px-5 py-2 font-bold text-white shadow-hard-sm transition-all hover:-translate-y-0.5 hover:shadow-hard">
+              Open studio
             </button>
-
-            {toolsOpen && (
-              <div
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 rounded-2xl overflow-hidden"
-                style={{
-                  background: 'rgba(255,255,255,0.96)',
-                  backdropFilter: 'blur(20px)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
-                  border: '1px solid rgba(0,0,0,0.08)',
-                }}
-              >
-                {FREE_TOOLS.map(tool => (
-                  <button
-                    key={tool.path}
-                    onClick={() => { navigate(tool.path); setToolsOpen(false) }}
-                    className="w-full flex items-start gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <tool.icon className="w-3.5 h-3.5 text-gray-700" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{tool.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{tool.desc}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ) : (
+            <>
+              <button onClick={() => navigate('/login')} className="px-3 py-2 font-semibold hover:text-cherry">Sign in</button>
+              <button onClick={() => navigate('/login?mode=signup')} className="rounded-lg border-2 border-ink bg-cherry px-5 py-2 font-bold text-white shadow-hard-sm transition-all hover:-translate-y-0.5 hover:shadow-hard">
+                Start free
+              </button>
+            </>
+          )}
         </div>
 
-        {/* CTA */}
-        {isAuthenticated ? (
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-all"
-          >
-            Dashboard
-          </button>
-        ) : (
-          <button
-            onClick={openWaitlist}
-            className="flex-shrink-0 px-5 py-2 rounded-full text-sm font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-all"
-          >
-            Get Started
-          </button>
-        )}
-      </nav>
-    </div>
+        <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
+          {open ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+        </button>
+      </div>
+
+      {open && (
+        <div className="border-t-2 border-ink bg-paper px-4 py-4 md:hidden">
+          <div className="grid gap-3">
+            {links.map((l) => (
+              <Link key={l.label} to={l.to} onClick={() => setOpen(false)} className="font-semibold">{l.label}</Link>
+            ))}
+            <button onClick={() => navigate(isAuthenticated ? '/studio' : '/login')} className="rounded-lg border-2 border-ink bg-cherry py-2.5 font-bold text-white shadow-hard-sm">
+              {isAuthenticated ? 'Open studio' : 'Start free'}
+            </button>
+          </div>
+        </div>
+      )}
+    </header>
   )
 }

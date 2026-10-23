@@ -4,8 +4,9 @@
 export type Emphasis = 'support' | 'feature' | 'key'
 export type KineticStyle = 'pulse' | 'pop' | 'scale' | 'box' | 'wobble'
 export type CaptionPosition = 'top' | 'middle' | 'bottom'
+export type ScriptMode = 'roman' | 'native'
 export type RenderQuality = 'high' | 'draft'
-export type ProjectStatus = 'queued' | 'processing' | 'ready' | 'failed' | 'rendered'
+export type ProjectStatus = 'queued' | 'processing' | 'ready' | 'failed' | 'rendering' | 'rendered'
 
 export interface CaptionWord {
   index: number
@@ -23,6 +24,10 @@ export interface CaptionWord {
   new_line: boolean | null
   box_width: number | null
   box_height: number | null
+  /** Degrees (-45..45) the whole caption box is tilted around its centre; null = none. */
+  rotation: number | null
+  /** Tri-state caption boundary: true = new caption starts here (manual split), false = joins the previous one (manual merge), null = auto. */
+  new_caption: boolean | null
   kinetic: KineticStyle | null
   emphasize: boolean
 }
@@ -38,6 +43,8 @@ export interface CaptionElement {
   end: number
   pos_x: number
   pos_y: number
+  /** Draw order vs the caption text (plain z-staging, no subject matting). */
+  layer?: 'front' | 'behind'
 }
 
 export interface SfxMarker {
@@ -68,6 +75,26 @@ export interface CaptionProject {
   elements: CaptionElement[]
   sfx_markers: SfxMarker[]
   variant: string | null
+  script_mode: ScriptMode
+  outline_enabled: boolean
+  outline_width: number
+  outline_color: string
+  shadow_enabled: boolean
+  shadow_angle: number
+  shadow_distance: number
+  shadow_blur: number
+  shadow_opacity: number
+  shadow_color: string
+  glow_enabled: boolean
+  /** null = each word's own colour. */
+  glow_color: string | null
+  glow_blur: number
+  glow_opacity: number
+  background_enabled: boolean
+  background_color: string
+  background_opacity: number
+  bold: boolean
+  italic: boolean
   words: CaptionWord[]
   source_transcript: string
   speech_language: string
@@ -161,6 +188,32 @@ export interface CaptionUsage {
   plans: CaptionPlan[]
 }
 
+export interface RazorpayCheckoutInfo {
+  key_id: string
+  order_id?: string
+  subscription_id?: string
+  amount: number
+  currency: string
+  name: string
+  description: string
+  prefill_email?: string
+  prefill_name?: string
+}
+
+export interface CheckoutResponse {
+  provider: 'stripe' | 'razorpay'
+  checkout_url?: string
+  session_id: string
+  razorpay?: RazorpayCheckoutInfo
+}
+
+export interface PaymentProviders { stripe: boolean; razorpay: boolean; razorpay_key_id?: string }
+
+/** Project-wide typography controls (Outline / Shadow / Glow / Background box) - one object so the editor can spread it into the payload. */
+export type TextStyle = Pick<CaptionProject,
+  'outline_enabled' | 'outline_width' | 'outline_color' | 'shadow_enabled' | 'shadow_angle' | 'shadow_distance' | 'shadow_blur' | 'shadow_opacity' |
+  'shadow_color' | 'glow_enabled' | 'glow_color' | 'glow_blur' | 'glow_opacity' | 'background_enabled' | 'background_color' | 'background_opacity'>
+
 export type ProjectEditPayload = Pick<CaptionProject,
   'theme' | 'font_id' | 'words_per_caption' | 'caption_lines' | 'caption_position' | 'words' | 'audio_volume' | 'audio_muted' |
-  'brightness' | 'contrast' | 'saturation' | 'render_quality' | 'elements' | 'sfx_markers' | 'variant'>
+  'brightness' | 'contrast' | 'saturation' | 'render_quality' | 'elements' | 'sfx_markers' | 'script_mode' | 'bold' | 'italic'> & TextStyle

@@ -197,7 +197,7 @@ builder.Services.AddMemoryCache();
 
 // Configure Data Protection for encryption at rest
 builder.Services.AddDataProtection()
-    .SetApplicationName("BasicFrameworkBackend")
+    .SetApplicationName("CaptainTitle")
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "keys")));
 
 // Register repositories and services
@@ -280,31 +280,32 @@ else
 // Dependencies: Email service integration, notification queue setup, retry logic
 //builder.Services.AddHostedService<NotificationProcessorJob>();
 
-// Configure Hangfire with PostgreSQL storage (pool-limited to avoid Supabase connection exhaustion)
-var hangfireConnectionString = new Npgsql.NpgsqlConnectionStringBuilder(
-    builder.Configuration.GetConnectionString("DefaultConnection"))
-{
-    Pooling = true,
-    MinPoolSize = 1,
-    MaxPoolSize = 5, // Hangfire needs far fewer connections than EF Core
-    ConnectionIdleLifetime = 60,
-    ConnectionPruningInterval = 10,
-}.ConnectionString;
+// Hangfire is DISABLED for now (background jobs not required). Re-enable by uncommenting this block and the dashboard block below.
+//// Configure Hangfire with PostgreSQL storage (pool-limited to avoid Supabase connection exhaustion)
+//var hangfireConnectionString = new Npgsql.NpgsqlConnectionStringBuilder(
+//    builder.Configuration.GetConnectionString("DefaultConnection"))
+//{
+//    Pooling = true,
+//    MinPoolSize = 1,
+//    MaxPoolSize = 5, // Hangfire needs far fewer connections than EF Core
+//    ConnectionIdleLifetime = 60,
+//    ConnectionPruningInterval = 10,
+//}.ConnectionString;
 
-builder.Services.AddHangfire(configuration => configuration
-    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-    .UseSimpleAssemblyNameTypeSerializer()
-    .UseRecommendedSerializerSettings()
-    .UsePostgreSqlStorage(hangfireConnectionString));
+//builder.Services.AddHangfire(configuration => configuration
+//    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+//    .UseSimpleAssemblyNameTypeSerializer()
+//    .UseRecommendedSerializerSettings()
+//    .UsePostgreSqlStorage(hangfireConnectionString));
 
-// Enable Hangfire server for background job processing
-builder.Services.AddHangfireServer();
+//// Enable Hangfire server for background job processing
+//builder.Services.AddHangfireServer();
 
-// Register Hangfire job services
-builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
-builder.Services.AddScoped<EmailQueueJob>();
-builder.Services.AddScoped<CleanupJob>();
-builder.Services.AddScoped<JobScheduler>();
+//// Register Hangfire job services
+//builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+//builder.Services.AddScoped<EmailQueueJob>();
+//builder.Services.AddScoped<CleanupJob>();
+//builder.Services.AddScoped<JobScheduler>();
 
 // Register Captain Title (caption generator) services
 builder.Services.Configure<CaptionOptions>(builder.Configuration.GetSection(CaptionOptions.SectionName));
@@ -319,7 +320,8 @@ builder.Services.AddScoped<ICaptionTranscriptionService, CaptionTranscriptionSer
 builder.Services.AddScoped<IHinglishService, HinglishService>();
 builder.Services.AddScoped<ICaptionProjectService, CaptionProjectService>();
 builder.Services.AddScoped<ICaptionJobRunner, CaptionJobRunner>();
-builder.Services.AddScoped<ICaptionBillingService, CaptionBillingService>();
+builder.Services.AddScoped<ICaptionRenderService, CaptionRenderService>();
+builder.Services.AddHttpClient<ICaptionBillingService, CaptionBillingService>();
 builder.Services.AddSingleton<CaptionJobWorker>();
 builder.Services.AddSingleton<ICaptionJobQueue>(sp => sp.GetRequiredService<CaptionJobWorker>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<CaptionJobWorker>());
@@ -367,34 +369,32 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
+// CORS: explicit allow-list from configuration (Cors:AllowedOrigins). Local dev ports are always allowed in Development.
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+if (builder.Environment.IsDevelopment())
+{
+    corsOrigins = corsOrigins.Concat(new[] { "http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173" })
+        .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+}
 builder.Services.AddCors(options =>
 {
-    // Single policy covering all environments — avoids env-detection bugs on runasp.net
+    // Single policy covering all environments - avoids env-detection bugs on shared hosts
     options.AddPolicy("CorsPolicy", policy =>
     {
-
-        policy.WithOrigins(
-                  "https://auraaiseo.netlify.app",
-                  "https://basicframeworkwebui.netlify.app",
-                  "http://localhost:3000",
-                  "http://localhost:3001",
-                  "http://localhost:5049",
-                  "http://localhost:5173",
-                  "https://localhost:7167")
+        policy.WithOrigins(corsOrigins)
               .AllowCredentials()
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .WithExposedHeaders("X-Pagination", "X-Total-Count")
+              .WithExposedHeaders("X-Pagination", "X-Total-Count", "Content-Range", "Accept-Ranges", "Content-Disposition")
               .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
-
 });
 
 // Configure OpenAPI/Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "AppBackendBasic API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Captain Title API", Version = "v1" });
     
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -443,15 +443,15 @@ if (app.Environment.IsDevelopment())
     //app.UseSwagger();
     //app.UseSwaggerUI();
     
-    // Hangfire Dashboard (only in development for security)
-    // TODO: Ensure all recurring jobs are properly configured in the job initialization section below before enabling dashboard in production
-    // Dashboard provides visibility into job execution history, failures, and scheduling
-    // Hangfire Dashboard
-    app.UseHangfireDashboard("/hangfire", new DashboardOptions
-    {
-        Authorization = new[] { new HangfireAuthorizationFilter() },
-        IsReadOnlyFunc = (DashboardContext context) => !app.Environment.IsDevelopment()
-    });
+//    // Hangfire Dashboard (only in development for security)
+//    // TODO: Ensure all recurring jobs are properly configured in the job initialization section below before enabling dashboard in production
+//    // Dashboard provides visibility into job execution history, failures, and scheduling
+//    // Hangfire Dashboard
+//    app.UseHangfireDashboard("/hangfire", new DashboardOptions
+//    {
+//        Authorization = new[] { new HangfireAuthorizationFilter() },
+//        IsReadOnlyFunc = (DashboardContext context) => !app.Environment.IsDevelopment()
+//    });
 }
 
     app.UseSwagger();

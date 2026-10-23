@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { MagnifyingGlassMinus, MagnifyingGlassPlus, Pause, Play, X } from "@phosphor-icons/react";
+import { MagnifyingGlassMinus, MagnifyingGlassPlus, Pause, Play, Scissors, X } from "@phosphor-icons/react";
 import { playSfx } from "../lib/sfx";
 import { useCaptionCatalog } from "../catalogContext";
 import { SfxIcon } from "./sfxIcons";
-import type { CaptionWord, SfxMarker } from "../types";
+import type { CaptionWord, ScriptMode, SfxMarker } from "../types";
 
 export interface IndexedGroupWord { word: CaptionWord; index: number }
 
@@ -21,6 +21,11 @@ const TICK_INTERVALS = [1, 2, 5, 10, 15, 30, 60];
 // max zoom still draws a (slightly lower-resolution) waveform rather than
 // a blank lane.
 const MAX_CANVAS_WIDTH = 8000;
+// Captik-style filmstrip: a thumbnail grabbed every ~2.5s of the source
+// video, tiled across the timeline background right above the waveform.
+const FILMSTRIP_INTERVAL = 2.5;
+const FILMSTRIP_THUMB_W = 64;
+const FILMSTRIP_THUMB_H = 114;
 
 function formatTick(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -58,21 +63,27 @@ interface TimelineProps {
   onToggle: () => void
   onSeek: (time: number) => void
   selectedIndex: number
-  onSelect?: (index: number) => void
+  onSelect?: (index: number, anchorEl?: HTMLElement) => void
   onRetimeWord: (index: number, changes: Partial<CaptionWord>) => void
   mediaUrl: string | null
   sfxMarkers: SfxMarker[]
   onAddSfx: (type: string, time?: number, wordIndex?: number) => void
   onMoveSfx: (id: string, time: number) => void
   onDeleteSfx: (id: string) => void
+  scriptMode?: ScriptMode
+  onSplitAtPlayhead?: () => void
+  canSplitAtPlayhead?: boolean
 }
 
 export const Timeline = ({ words, groups, duration, currentTime, playing, onToggle, onSeek, selectedIndex, onSelect,
-                          onRetimeWord, mediaUrl, sfxMarkers, onAddSfx, onMoveSfx, onDeleteSfx }: TimelineProps) => {
+                          onRetimeWord, mediaUrl, sfxMarkers, onAddSfx, onMoveSfx, onDeleteSfx, scriptMode = "roman",
+                          onSplitAtPlayhead, canSplitAtPlayhead }: TimelineProps) => {
   const { catalog, sfxById } = useCaptionCatalog();
   const trackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const peaksRef = useRef<{ data: Float32Array; fallback: boolean } | null>(null);
+  const [filmstrip, setFilmstrip] = useState<{ time: number; url: string }[]>([]);
+  const wordLabel = (word: CaptionWord) => (scriptMode === "native" && word.original) ? word.original : word.text;
   // Lines by default - that's the view that actually shows how captions
   // are distributed across the video; Words is there for fine-grained
   // per-word timing work (and is the only mode where retime handles make
@@ -202,6 +213,55 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mediaUrl]);
 
+  // Filmstrip: grab a frame every FILMSTRIP_INTERVAL seconds from the project's own video. Fetching to a blob: URL first (rather than
+  // pointing <video> straight at the cross-origin API URL) keeps the canvas untainted so toDataURL() below doesn't throw a security error.
+  useEffect(() => {
+    setFilmstrip([]);
+    if (!mediaUrl || !duration) return undefined;
+    let cancelled = false;
+    let blobUrl: string | undefined;
+    (async () => {
+      try {
+        const response = await fetch(mediaUrl);
+        if (!response.ok) throw new Error(`media fetch failed: ${response.status}`);
+        const blob = await response.blob();
+        if (cancelled) return;
+        blobUrl = URL.createObjectURL(blob);
+        const video = document.createElement("video");
+        video.muted = true;
+        video.playsInline = true;
+        video.src = blobUrl;
+        await new Promise<void>((resolve, reject) => {
+          video.onloadedmetadata = () => resolve();
+          video.onerror = () => reject(new Error("filmstrip video load failed"));
+        });
+        if (cancelled) return;
+        const canvas = document.createElement("canvas");
+        canvas.width = FILMSTRIP_THUMB_W; canvas.height = FILMSTRIP_THUMB_H;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        const frames: { time: number; url: string }[] = [];
+        for (let t = 0; t < duration; t += FILMSTRIP_INTERVAL) {
+          if (cancelled) return;
+          await new Promise<void>((resolve) => {
+            const onSeeked = () => { video.removeEventListener("seeked", onSeeked); resolve(); };
+            video.addEventListener("seeked", onSeeked);
+            video.currentTime = Math.min(t, Math.max(0, duration - 0.05));
+          });
+          if (cancelled) return;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          frames.push({ time: t, url: canvas.toDataURL("image/jpeg", 0.55) });
+        }
+        if (!cancelled) setFilmstrip(frames);
+      } catch (error) {
+        console.warn("Timeline: filmstrip generation failed", error);
+      } finally {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
+      }
+    })();
+    return () => { cancelled = true; if (blobUrl) URL.revokeObjectURL(blobUrl); };
+  }, [mediaUrl, duration]);
+
   const drawWaveform = () => {
     const canvas = canvasRef.current;
     const entry = peaksRef.current;
@@ -212,7 +272,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     ctx.clearRect(0, 0, width, height);
     const peaks = entry?.data;
     if (!peaks || !peaks.length) return;
-    ctx.fillStyle = entry.fallback ? "rgba(34,211,238,.22)" : "rgba(34,211,238,.55)";
+    ctx.fillStyle = entry.fallback ? "rgba(255,214,10,.28)" : "rgba(255,214,10,.6)";
     const mid = height / 2;
     const pxPerPeak = width / peaks.length;
     for (let i = 0; i < peaks.length; i++) {
@@ -272,6 +332,10 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
           <button onClick={onToggle} title={playing ? "Pause (space)" : "Play (space)"} data-testid="timeline-play-toggle">{playing ? <Pause weight="fill" /> : <Play weight="fill" />}</button>
           <span data-testid="current-playback-time">{currentTime.toFixed(1)}s</span>
           <b data-testid="video-total-duration">/ {duration.toFixed(1)}s</b>
+          <button className="timeline-split-playhead" onClick={onSplitAtPlayhead} disabled={!canSplitAtPlayhead}
+            title="Split the caption currently on screen into two, right at the playhead" data-testid="split-at-playhead-button">
+            <Scissors size={14} weight="fill" /> Split at Playhead
+          </button>
         </div>
         <div className="timeline-mode-toggle" data-testid="timeline-mode-toggle">
           <button className={mode === "words" ? "active" : ""} onClick={() => setMode("words")} data-testid="timeline-mode-words-button">Words</button>
@@ -302,7 +366,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
                 style={{ left: `${word.start * pxPerSecond}px`, width: `${Math.max(MIN_BLOCK_WIDTH, (word.end - word.start) * pxPerSecond)}px` }}
                 data-testid={`word-block-${index}`}>
                 <i className="retime-handle left" onMouseDown={startRetime(index, "left")} data-testid={`word-retime-left-${index}`} />
-                <button onMouseDown={(e) => e.stopPropagation()} onClick={() => { onSeek(word.start); onSelect?.(index); }}>{word.text}</button>
+                <button onMouseDown={(e) => e.stopPropagation()} onClick={() => { onSeek(word.start); onSelect?.(index); }}>{wordLabel(word)}</button>
                 <i className="retime-handle right" onMouseDown={startRetime(index, "right")} data-testid={`word-retime-right-${index}`} />
               </div>;
             })}
@@ -314,9 +378,15 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
               return <button key={cueIndex} className={`line-block ${isActive ? "active" : ""} ${isSelected ? "selected" : ""}`}
                 style={{ left: `${start * pxPerSecond}px`, width: `${Math.max(MIN_BLOCK_WIDTH, (end - start) * pxPerSecond)}px` }}
                 onMouseDown={(e) => e.stopPropagation()} onClick={() => { onSeek(start); onSelect?.(group[0].index); }} data-testid={`line-block-${cueIndex}`}>
-                {group.map((item) => item.word.text).join(" ")}
+                {group.map((item) => wordLabel(item.word)).join(" ")}
               </button>;
             })}
+          </div>
+
+          <div className="timeline-lane timeline-lane-filmstrip" data-testid="timeline-lane-filmstrip">
+            {filmstrip.map((frame, i) => <img key={i} src={frame.url} alt=""
+              style={{ left: `${frame.time * pxPerSecond}px`, width: `${FILMSTRIP_INTERVAL * pxPerSecond}px` }}
+              data-testid={`filmstrip-thumb-${i}`} />)}
           </div>
 
           <div className="timeline-lane timeline-lane-waveform" data-testid="timeline-lane-waveform">

@@ -18,6 +18,7 @@ export default {
     },
     extend: {
       colors: {
+        paper: '#FFF8E7', ink: '#14110F', cherry: '#FF2D4D', sun: '#FFD60A', tangerine: '#FF8A00', mint: '#16C47F', butter: '#FFEFC9', blush: '#FFD6DE',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -52,6 +53,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      boxShadow: { hard: '4px 4px 0 0 #14110F', 'hard-sm': '2px 2px 0 0 #14110F', 'hard-lg': '6px 6px 0 0 #14110F' },
+      fontFamily: { display: ['Outfit', 'system-ui', 'sans-serif'], sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'] },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

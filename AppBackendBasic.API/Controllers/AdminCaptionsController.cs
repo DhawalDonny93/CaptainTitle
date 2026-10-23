@@ -35,6 +35,29 @@ public class AdminCaptionsController : ControllerBase
         _db = db; _catalog = catalog; _settings = settings; _queue = queue; _entitlement = entitlement; _logger = logger;
     }
 
+    // ---------- environment health ----------
+    /// <summary>Is this server able to run the caption pipeline? (ffmpeg with libx264 + libass, payment/provider keys present)</summary>
+    [HttpGet("health")]
+    public async Task<IActionResult> Health([FromServices] IFfmpegService ffmpeg, [FromServices] IConfiguration config,
+        [FromServices] Microsoft.Extensions.Options.IOptions<CaptionOptions> options)
+    {
+        static bool Real(string? v) => !string.IsNullOrWhiteSpace(v) && !v.StartsWith("YOUR_", StringComparison.OrdinalIgnoreCase);
+        var o = options.Value;
+        var fonts = o.ResolveFontsDir();
+        return Ok(new
+        {
+            ffmpeg = await ffmpeg.CheckAsync(),
+            fontsDirectory = new { path = fonts, exists = Directory.Exists(fonts), files = Directory.Exists(fonts) ? Directory.GetFiles(fonts, "*.ttf").Length : 0 },
+            storageRoot = Path.GetFullPath(o.StorageRoot),
+            maxConcurrentJobs = o.MaxConcurrentJobs,
+            ffmpegThreads = o.FfmpegThreads,
+            sarvamConfigured = Real(o.SarvamApiKey),
+            razorpayConfigured = Real(config["Razorpay:KeyId"]) && Real(config["Razorpay:KeySecret"]),
+            razorpayWebhookConfigured = Real(config["Razorpay:WebhookSecret"]),
+            stripeConfigured = Real(config["Stripe:SecretKey"]),
+        });
+    }
+
     // ---------- overview ----------
     [HttpGet("overview")]
     public async Task<IActionResult> Overview()
