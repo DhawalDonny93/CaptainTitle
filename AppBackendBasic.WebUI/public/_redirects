@@ -1,1 +1,4 @@
-/* /index.html 200
+# Proxy API calls to the backend (must come before the SPA fallback; _redirects rules win over netlify.toml)
+/api/*  https://captaintitle.runasp.net/api/:splat  200!
+
+/*  /index.html  200
