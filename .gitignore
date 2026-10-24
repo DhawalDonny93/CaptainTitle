@@ -31,19 +31,10 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-# CRITICAL: Secrets and sensitive configuration files
-appsettings.json
-appsettings.Development.json
-appsettings.Staging.json
-appsettings.Production.json
-!appsettings.example.json
+# Config files (appsettings*.json, .env*) are intentionally NOT ignored - they are committed on purpose.
+# NOTE: real keys in them end up in git history; move them to a secret store before the repo is shared.
 *.user
 *.secrets.json
-.env
-.env.local
-.env.development
-.env.production
-!.env.example
 secrets.json
 client_secret_*.json
 **/client_secret_*.json
