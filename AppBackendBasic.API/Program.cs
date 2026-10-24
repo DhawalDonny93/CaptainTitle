@@ -371,11 +371,15 @@ builder.Services.AddAntiforgery(options =>
 
 // CORS: explicit allow-list from configuration (Cors:AllowedOrigins). Local dev ports are always allowed in Development.
 var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
-if (builder.Environment.IsDevelopment())
-{
-    corsOrigins = corsOrigins.Concat(new[] { "http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173" })
-        .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-}
+// Always allowed (appsettings.json is not checked in, so these defaults must live in code): the production site and
+// the local dev servers, which are pointed at the production API for debugging.
+corsOrigins = corsOrigins.Concat(new[]
+    {
+        "https://captaintitle.netlify.app",
+        "http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://localhost:5174",
+        "http://127.0.0.1:3000", "http://127.0.0.1:5173"
+    })
+    .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 builder.Services.AddCors(options =>
 {
     // Single policy covering all environments - avoids env-detection bugs on shared hosts
