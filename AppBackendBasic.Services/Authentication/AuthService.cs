@@ -952,7 +952,7 @@ public async Task<AuthResponseDto> VerifySmsLoginOtpAsync(SmsLoginVerifyRequestD
             // Create a default team for the user
             var team = new Team
             {
-                Name = $"Personal Workspace",
+                Name = $"Personal Workspace {userId}",
                 IsActive = true
             };
 
@@ -976,6 +976,13 @@ public async Task<AuthResponseDto> VerifySmsLoginOtpAsync(SmsLoginVerifyRequestD
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error ensuring user {UserId} has a team", userId);
+            // Drop the failed entities so they are not re-saved (and fail again) by the caller's next SaveChanges
+            foreach (var entry in _context.ChangeTracker.Entries()
+                         .Where(e => e.Entity is Team or UserTeamMapping && e.State == Microsoft.EntityFrameworkCore.EntityState.Added)
+                         .ToList())
+            {
+                entry.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
             // Don't fail login if team creation fails - user can onboard later
         }
     }

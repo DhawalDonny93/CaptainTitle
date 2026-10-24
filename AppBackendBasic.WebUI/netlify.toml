@@ -3,7 +3,14 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://your-api-domain.example.com/api"
+  VITE_API_URL = "https://captaintitle.netlify.app/api"
+
+# Proxy API calls to the backend so https://captaintitle.netlify.app/api/* reaches it
+[[redirects]]
+  from = "/api/*"
+  to = "http://captaintitle.runasp.net/api/:splat"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
