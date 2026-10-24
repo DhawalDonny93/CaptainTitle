@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_API_URL = "https://your-api-domain.example.com/api"
+  VITE_API_URL = "https://captaintitle.netlify.app/api"
 
 [[redirects]]
   from = "/*"
