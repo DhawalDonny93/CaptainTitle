@@ -18,8 +18,9 @@ public class CaptionPaymentsController : CaptionsControllerBase
     [AllowAnonymous]
     public Task<IActionResult> Catalog() => RunAsync(async () =>
     {
-        var (items, available, providers) = await _billing.GetCatalogAsync(HttpContext.RequestAborted);
-        return Ok(new { items, available, providers });
+        var (items, available, providers, limits) = await _billing.GetCatalogAsync(HttpContext.RequestAborted);
+        var free = new { videos = limits.FreeVideos, max_seconds = limits.FreeMaxSeconds };
+        return Ok(new { items, available, providers, free, unlimited_testing = limits.UnlimitedTesting });
     });
 
     /// <summary>Starts a payment. Razorpay (INR/India): returns the order for Checkout.js. Stripe (other currencies): returns a hosted checkout URL.</summary>

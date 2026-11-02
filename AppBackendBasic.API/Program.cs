@@ -309,6 +309,8 @@ else
 
 // Register Captain Title (caption generator) services
 builder.Services.Configure<CaptionOptions>(builder.Configuration.GetSection(CaptionOptions.SectionName));
+// All plans are free (no paywall, no payment provider) in Development only; always overrides any configured value.
+builder.Services.PostConfigure<CaptionOptions>(o => o.DevFreeAccess = builder.Environment.IsDevelopment());
 builder.Services.AddSingleton<ICaptionStorage, LocalCaptionStorage>();
 builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
 builder.Services.AddSingleton<ICaptionMediaTokenService, CaptionMediaTokenService>();

@@ -13,16 +13,12 @@ import ResetPassword from './pages/ResetPassword'
 import LoginHistory from './pages/LoginHistory'
 import Settings from './pages/Settings'
 import NotificationsPage from './pages/NotificationsPage'
-import PaymentSuccess from './pages/PaymentSuccess'
-import PaymentCancelled from './pages/PaymentCancelled'
 import SessionManager from './components/SessionManager'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthRedirect from './components/AuthRedirect'
 import MainLayout from './components/layout/MainLayout'
 import { AuthProvider } from './contexts/AuthContext'
-import { SubscriptionProvider, useSubscription } from './contexts/SubscriptionContext'
 import { UserProfileProvider } from './contexts/UserProfileContext'
-import UpgradeModal from './components/UpgradeModal'
 import ErrorBoundary from './components/ErrorBoundary'
 
 // Captain Title caption studio - lazy so its (scoped) stylesheet only loads when the studio is opened
@@ -30,24 +26,12 @@ const StudioPage = lazy(() => import('./features/captions/pages/StudioPage'))
 const CaptionPaymentSuccess = lazy(() => import('./features/captions/pages/CaptionPaymentResultPage').then((m) => ({ default: m.CaptionPaymentSuccess })))
 const CaptionPaymentCancel = lazy(() => import('./features/captions/pages/CaptionPaymentResultPage').then((m) => ({ default: m.CaptionPaymentCancel })))
 
-function GlobalUpgradeModal() {
-  const { showUpgradeModal, upgradeReason, closeUpgradeModal } = useSubscription();
-  return (
-    <UpgradeModal
-      open={showUpgradeModal}
-      onClose={closeUpgradeModal}
-      reason={upgradeReason}
-    />
-  );
-}
-
 function App() {
   return (
     <ErrorBoundary>
       <Router>
         <AuthProvider>
           <UserProfileProvider>
-            <SubscriptionProvider>
               <AuthRedirect />
               <SessionManager idleTimeout={30}>
               <Routes>
@@ -60,8 +44,6 @@ function App() {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/payment-cancelled" element={<PaymentCancelled />} />
               <Route path="/auth/google/callback" element={<GoogleCallback />} />
               <Route path="/auth/apple/callback" element={<AppleCallback />} />
 
@@ -83,13 +65,14 @@ function App() {
               {/* Old SEO-era routes: send visitors somewhere useful instead of a blank page */}
               <Route path="/onboarding" element={<Navigate to="/studio" replace />} />
               <Route path="/onboarding/plans" element={<Navigate to="/pricing" replace />} />
+              {/* Old template payment pages: all plans now go through /pricing and the studio (one plan system) */}
+              <Route path="/payment-success" element={<Navigate to="/studio" replace />} />
+              <Route path="/payment-cancelled" element={<Navigate to="/pricing" replace />} />
               <Route path="/features" element={<Navigate to="/#how-it-works" replace />} />
               <Route path="/about" element={<Navigate to="/" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </SessionManager>
-            <GlobalUpgradeModal />
-            </SubscriptionProvider>
           </UserProfileProvider>
         </AuthProvider>
       </Router>

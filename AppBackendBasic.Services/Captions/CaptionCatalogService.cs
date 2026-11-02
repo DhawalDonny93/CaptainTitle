@@ -5,6 +5,7 @@ using AppBackendBasic.Infrastructure.Data;
 using AppBackendBasic.Services.Admin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace AppBackendBasic.Services.Captions;
 
@@ -30,10 +31,11 @@ public class CaptionCatalogService : ICaptionCatalogService
     private readonly ApplicationDbContext _db;
     private readonly SystemSettingsService _settings;
     private readonly IMemoryCache _cache;
+    private readonly CaptionOptions _options;
 
-    public CaptionCatalogService(ApplicationDbContext db, SystemSettingsService settings, IMemoryCache cache)
+    public CaptionCatalogService(ApplicationDbContext db, SystemSettingsService settings, IMemoryCache cache, IOptions<CaptionOptions> options)
     {
-        _db = db; _settings = settings; _cache = cache;
+        _db = db; _settings = settings; _cache = cache; _options = options.Value;
     }
 
     public void Invalidate() => _cache.Remove(CacheKey);
@@ -47,7 +49,8 @@ public class CaptionCatalogService : ICaptionCatalogService
             MaxUploadMb = await _settings.GetIntSettingAsync(CaptionSettingKeys.MaxUploadMb, 120),
             FreeVideos = await _settings.GetIntSettingAsync(CaptionSettingKeys.FreeVideos, 1),
             FreeMaxSeconds = await _settings.GetIntSettingAsync(CaptionSettingKeys.FreeMaxSeconds, 45),
-            UnlimitedTesting = await _settings.GetBoolSettingAsync(CaptionSettingKeys.UnlimitedTesting, false),
+            // Development forces unlimited testing on, so the studio never asks for a plan (CaptionOptions.DevFreeAccess).
+            UnlimitedTesting = _options.DevFreeAccess || await _settings.GetBoolSettingAsync(CaptionSettingKeys.UnlimitedTesting, false),
             AllowedExtensions = ext.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(e => e.StartsWith('.') ? e.ToLowerInvariant() : "." + e.ToLowerInvariant()).ToList(),
         };

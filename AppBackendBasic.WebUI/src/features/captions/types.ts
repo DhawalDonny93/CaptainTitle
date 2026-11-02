@@ -201,13 +201,23 @@ export interface RazorpayCheckoutInfo {
 }
 
 export interface CheckoutResponse {
-  provider: 'stripe' | 'razorpay'
+  /** 'dev' = the API runs in Development and granted the plan without payment. */
+  provider: 'stripe' | 'razorpay' | 'dev'
   checkout_url?: string
   session_id: string
   razorpay?: RazorpayCheckoutInfo
 }
 
 export interface PaymentProviders { stripe: boolean; razorpay: boolean; razorpay_key_id?: string }
+
+/** GET /captions/payments/catalog (public): the plans for sale plus the free tier. */
+export interface PlanCatalog {
+  items: CaptionPlan[]
+  available: boolean
+  providers: PaymentProviders
+  free: { videos: number; max_seconds: number }
+  unlimited_testing: boolean
+}
 
 /** Project-wide typography controls (Outline / Shadow / Glow / Background box) - one object so the editor can spread it into the payload. */
 export type TextStyle = Pick<CaptionProject,

@@ -65,6 +65,7 @@ export type CheckoutOutcome = 'paid' | 'cancelled' | 'redirected'
  */
 export async function startCheckout(planId: string): Promise<CheckoutOutcome> {
   const res = await captionsApi.checkout(planId)
+  if (res.provider === 'dev') return 'paid'
   if (res.provider === 'stripe' && res.checkout_url) {
     window.location.href = res.checkout_url
     return 'redirected'

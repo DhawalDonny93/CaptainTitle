@@ -14,14 +14,17 @@ namespace AppBackendBasic.Infrastructure.Services.LlmProviders
         private readonly HttpClient _httpClient;
         private readonly ILlmProviderConfigService _configService;
         private readonly ILogger<OpenAIProvider> _logger;
+        private readonly IConfiguration _configuration;
 
         public string ProviderName => "OpenAI";
 
         public OpenAIProvider(
             HttpClient httpClient, 
             ILlmProviderConfigService configService, 
-            ILogger<OpenAIProvider> logger)
+            ILogger<OpenAIProvider> logger,
+            IConfiguration configuration)
         {
+            _configuration = configuration;
             _httpClient = httpClient;
             _configService = configService;
             _logger = logger;
@@ -40,6 +43,12 @@ namespace AppBackendBasic.Infrastructure.Services.LlmProviders
             {
                 // Get configuration from database
                 var apiKey = await _configService.GetConfigValueAsync(ProviderName, "ApiKey");
+                // Fall back to appsettings when the key has not been entered in Admin > LLM Providers
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    apiKey = _configuration["Captions:OpenAiApiKey"] ?? _configuration["OpenAI:ApiKey"];
+                    if (apiKey != null && apiKey.StartsWith("YOUR_", StringComparison.Ordinal)) apiKey = null;
+                }
                 if (string.IsNullOrEmpty(apiKey))
                 {
                     throw new InvalidOperationException($"{ProviderName} API key not configured in database");

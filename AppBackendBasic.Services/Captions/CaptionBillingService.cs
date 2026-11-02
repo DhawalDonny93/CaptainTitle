@@ -18,7 +18,7 @@ public sealed record CaptionPaymentStatus(string SessionId, string Status, strin
 
 public interface ICaptionBillingService
 {
-    Task<(List<CaptionPlanSummaryDto> Items, bool Available, CaptionPaymentProvidersDto Providers)> GetCatalogAsync(CancellationToken ct = default);
+    Task<(List<CaptionPlanSummaryDto> Items, bool Available, CaptionPaymentProvidersDto Providers, CaptionLimitsDto Limits)> GetCatalogAsync(CancellationToken ct = default);
     Task<CaptionCheckoutResponse> CreateCheckoutAsync(int userId, CaptionCheckoutRequest request, CancellationToken ct = default);
     Task<CaptionPaymentStatus> VerifyRazorpayAsync(int userId, RazorpayVerifyRequest request, CancellationToken ct = default);
     Task<CaptionPaymentStatus> GetStatusAsync(int userId, string sessionId, CancellationToken ct = default);
@@ -60,11 +60,12 @@ public class CaptionBillingService : ICaptionBillingService
     private bool RazorpayOn => RzpKeyId != null && RzpSecret != null;
     private RequestOptions StripeOpts => new() { ApiKey = StripeKey };
 
-    public async Task<(List<CaptionPlanSummaryDto> Items, bool Available, CaptionPaymentProvidersDto Providers)> GetCatalogAsync(CancellationToken ct = default)
+    public async Task<(List<CaptionPlanSummaryDto> Items, bool Available, CaptionPaymentProvidersDto Providers, CaptionLimitsDto Limits)> GetCatalogAsync(CancellationToken ct = default)
     {
         var plans = await _catalog.GetActivePlansAsync(ct);
         var providers = new CaptionPaymentProvidersDto { Stripe = StripeKey != null, Razorpay = RazorpayOn, RazorpayKeyId = RazorpayOn ? RzpKeyId : null };
-        return (plans.Select(CaptionEntitlementService.ToSummary).ToList(), providers.Stripe || providers.Razorpay, providers);
+        return (plans.Select(CaptionEntitlementService.ToSummary).ToList(), _options.DevFreeAccess || providers.Stripe || providers.Razorpay, providers,
+            await _catalog.GetLimitsAsync(ct));
     }
 
     private bool IsAllowedOrigin(string origin)
@@ -92,8 +93,20 @@ public class CaptionBillingService : ICaptionBillingService
         if (await _entitlement.HasReachedPurchaseCapAsync(userId, plan, ct))
             throw new CaptionServiceException(409, $"Single-video passes can be purchased up to {plan.MaxPurchasesPerUser} times; then Basic is required.");
 
+        if (_options.DevFreeAccess) return await CreateFreeAsync(userId, plan, ct);
         var provider = ChooseProvider(plan, request.Provider, RazorpayOn, StripeKey != null);
         return provider == "razorpay" ? await CreateRazorpayAsync(userId, plan, ct) : await CreateStripeAsync(userId, plan, request, ct);
+    }
+
+    /// <summary>Development only (see CaptionOptions.DevFreeAccess): records a "dev" transaction and grants the plan at once.</summary>
+    private async Task<CaptionCheckoutResponse> CreateFreeAsync(int userId, CaptionPlan plan, CancellationToken ct)
+    {
+        var id = $"dev_{Guid.NewGuid():N}";
+        _db.CaptionPaymentTransactions.Add(new CaptionPaymentTransaction { UserId = userId, SessionId = id, PackageId = plan.Key, Provider = "dev" });
+        await _db.SaveChangesAsync(ct);
+        await GrantAsync(id, userId, plan.Key, null, ct);
+        _logger.LogWarning("Free dev checkout: granted {Plan} to user {User} without payment ({Session})", plan.Key, userId, id);
+        return new CaptionCheckoutResponse { Provider = "dev", SessionId = id };
     }
 
     private async Task<CaptionCheckoutResponse> CreateStripeAsync(int userId, CaptionPlan plan, CaptionCheckoutRequest request, CancellationToken ct)

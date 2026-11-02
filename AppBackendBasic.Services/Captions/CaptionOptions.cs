@@ -46,6 +46,13 @@ public class CaptionOptions
     /// <summary>Razorpay subscription length in billing cycles (monthly plan: 12 = one year, renewable).</summary>
     public int RazorpaySubscriptionCycles { get; set; } = 12;
 
+    /// <summary>
+    /// Development only: every plan is free. Uploads never hit the paywall (same as the captions.unlimited_testing setting) and
+    /// checkout grants a plan immediately without Stripe/Razorpay. Program.cs sets this from the hosting environment
+    /// (IsDevelopment) after configuration binding, so a config value can never switch it on in production.
+    /// </summary>
+    public bool DevFreeAccess { get; set; }
+
     /// <summary>Absolute fonts directory: as configured, else relative to the app base directory (published output).</summary>
     public string ResolveFontsDir()
     {

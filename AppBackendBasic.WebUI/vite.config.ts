@@ -9,7 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   // Local dev calls /api on the Vite server, which forwards to the real API (same-origin, so no CORS).
-  const apiTarget = env.VITE_DEV_PROXY_TARGET || 'https://captaintitle.runasp.net'
+  const apiTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:5000'
   return {
   plugins: [react()],
   base: "/",
