@@ -106,9 +106,54 @@ export interface CaptionProject {
   error_message: string | null
   created_at: string
   updated_at: string | null
+  last_edited_at: string
+  /** Version of the editable content; sent back as base_revision on save so another tab's newer edits are never overwritten. */
+  revision: number
+  /** Revision the stored export was rendered from; the export is current only when it equals revision. */
+  rendered_revision: number | null
+  /** Where the user left off; filled by GET projects/{id} and restore. */
+  editor_state: EditorState | null
   /** Client-side only: set after a successful render. */
   download_url?: string
 }
+
+export interface EditorState {
+  playhead: number
+  left_tab: string | null
+  theme_tab: string | null
+  selected_index: number
+  safe_zone: boolean
+}
+
+/** Project library card (no word documents). */
+export interface CaptionProjectSummary {
+  project_id: number
+  name: string
+  duration: number
+  width: number | null
+  height: number | null
+  size_bytes: number
+  theme: string
+  status: ProjectStatus
+  progress: number
+  processing_label: string
+  error_message: string | null
+  thumbnail_url: string | null
+  export_current: boolean
+  created_at: string
+  last_edited_at: string
+}
+
+export interface CaptionProjectList { items: CaptionProjectSummary[]; next_cursor: string | null }
+
+export interface CaptionProjectVersion {
+  version_id: number
+  reason: 'autosave' | 'before_relisten' | 'before_ai_emphasis' | 'before_restore' | string
+  project_revision: number
+  created_at: string
+}
+
+export interface SaveResult { status: string; revision: number; last_edited_at: string }
 
 export interface CaptionTier { font: string; css_font: string; color: string; size: number }
 

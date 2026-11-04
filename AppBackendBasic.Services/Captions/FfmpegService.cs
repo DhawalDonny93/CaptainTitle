@@ -25,6 +25,8 @@ public interface IFfmpegService
     Task ExtractAudioAsync(string source, string wavOut, CancellationToken ct = default);
     /// <summary>Creates a 720p H.264/AAC MP4 preview (only needed when the source is not browser-playable, e.g. iPhone HEVC).</summary>
     Task<bool> CreateBrowserPreviewAsync(string source, string output, CancellationToken ct = default);
+    /// <summary>Extracts one small JPEG frame for the project library.</summary>
+    Task<bool> CreateThumbnailAsync(string source, string output, double atSeconds, CancellationToken ct = default);
     /// <summary>Checks the ffmpeg binary can run and has the encoders/filters the pipeline needs. Used by the admin health view.</summary>
     Task<FfmpegCapability> CheckAsync(CancellationToken ct = default);
     Task<List<double>> SilenceMidpointsAsync(string audioPath, CancellationToken ct = default);
@@ -115,6 +117,16 @@ public class FfmpegService : IFfmpegService
             return false;
         }
         return true;
+    }
+
+    public async Task<bool> CreateThumbnailAsync(string source, string output, double atSeconds, CancellationToken ct = default)
+    {
+        // -ss before -i seeks by keyframe, so this stays fast however long the video is.
+        var at = Math.Max(0, atSeconds).ToString("0.###", CultureInfo.InvariantCulture);
+        var result = await RunAsync(new[] { "-y", "-ss", at, "-i", source, "-frames:v", "1", "-vf", "scale=360:-2", "-q:v", "5", output }, ct: ct);
+        if (result.ExitCode == 0 && File.Exists(output)) return true;
+        _logger.LogWarning("Thumbnail extraction failed: {Err}", Tail(result.StdErr, 600));
+        return false;
     }
 
     public async Task<FfmpegCapability> CheckAsync(CancellationToken ct = default)

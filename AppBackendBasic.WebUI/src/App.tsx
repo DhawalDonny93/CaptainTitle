@@ -48,7 +48,7 @@ function App() {
               <Route path="/auth/apple/callback" element={<AppleCallback />} />
 
               {/* Captain Title (caption generator) - full-screen, no sidebar */}
-              <Route path="/studio" element={<ProtectedRoute><Suspense fallback={null}><StudioPage /></Suspense></ProtectedRoute>} />
+              <Route path="/studio/:projectId?" element={<ProtectedRoute><Suspense fallback={null}><StudioPage /></Suspense></ProtectedRoute>} />
               <Route path="/payment/success" element={<ProtectedRoute><Suspense fallback={null}><CaptionPaymentSuccess /></Suspense></ProtectedRoute>} />
               <Route path="/payment/cancel" element={<ProtectedRoute><Suspense fallback={null}><CaptionPaymentCancel /></Suspense></ProtectedRoute>} />
 

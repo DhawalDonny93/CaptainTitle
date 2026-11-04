@@ -16,7 +16,7 @@ public abstract class CaptionsControllerBase : ControllerBase
         try { return await action(); }
         catch (CaptionServiceException ex)
         {
-            return StatusCode(ex.StatusCode, new { message = ex.Message, code = ex.StatusCode == 402 ? "PAYMENT_REQUIRED" : null });
+            return StatusCode(ex.StatusCode, new { message = ex.Message, code = ex.Code ?? (ex.StatusCode == 402 ? "PAYMENT_REQUIRED" : null) });
         }
     }
 }

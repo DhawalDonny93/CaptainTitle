@@ -22,6 +22,10 @@ public static class CaptionJson
 /// <summary>Maps an HTTP-meaningful failure out of the service layer (controllers translate it 1:1).</summary>
 public sealed class CaptionServiceException : Exception
 {
+    public const string RevisionConflict = "REVISION_CONFLICT";
+
     public int StatusCode { get; }
-    public CaptionServiceException(int statusCode, string message) : base(message) { StatusCode = statusCode; }
+    /// <summary>Optional machine-readable code the editor can branch on.</summary>
+    public string? Code { get; }
+    public CaptionServiceException(int statusCode, string message, string? code = null) : base(message) { StatusCode = statusCode; Code = code; }
 }

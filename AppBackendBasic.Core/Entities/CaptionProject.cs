@@ -112,6 +112,22 @@ public class CaptionProject
     [MaxLength(500)]
     public string? RenderPath { get; set; }
 
+    /// <summary>Small JPEG shown in the project library. Null for projects created before thumbnails existed.</summary>
+    [MaxLength(500)]
+    public string? ThumbnailPath { get; set; }
+
+    /// <summary>Optimistic-concurrency version of the editable content; bumped on every content change (see the EF concurrency token).</summary>
+    public int Revision { get; set; } = 1;
+
+    /// <summary>The <see cref="Revision"/> the file at <see cref="RenderPath"/> was rendered from. Differs from Revision once the export is out of date.</summary>
+    public int? RenderedRevision { get; set; }
+
+    /// <summary>Last user-visible content change (library sort key). UpdatedAt can't be used: background jobs heartbeat it.</summary>
+    public DateTime LastEditedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>When this project's credit was settled. Null = never charged, so a re-run after a failed first attempt still pays and a restart can't charge twice.</summary>
+    public DateTime? CreditConsumedAt { get; set; }
+
     /// <summary>queued | processing | ready | failed | rendering | rendered</summary>
     [Required, MaxLength(20)]
     public string Status { get; set; } = CaptionProjectStatus.Queued;

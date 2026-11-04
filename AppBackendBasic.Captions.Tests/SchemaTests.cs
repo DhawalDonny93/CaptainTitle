@@ -42,7 +42,7 @@ public class SchemaTests
         using var ctx = Ctx();
         var tables = ctx.Model.GetEntityTypes().Select(e => e.GetTableName()!).ToHashSet();
         foreach (var t in RemovedSeoTables) Assert.DoesNotContain(t, tables);
-        foreach (var t in new[] { "CaptionProjects", "CaptionUsages", "CaptionPaymentTransactions", "CaptionThemes", "CaptionFonts",
+        foreach (var t in new[] { "CaptionProjects", "CaptionProjectEditorStates", "CaptionProjectVersions", "CaptionUsages", "CaptionPaymentTransactions", "CaptionThemes", "CaptionFonts",
                                   "CaptionVariants", "CaptionSfxTypes", "CaptionStickers", "CaptionPlans", "CaptionFillerWords" })
             Assert.Contains(t, tables);
     }
@@ -58,15 +58,17 @@ public class SchemaTests
 
         var actual = SqlTables(File.ReadAllText(RepoFile("Database_Migrations/22_generic_template_schema.sql")));
         foreach (var kv in SqlTables(File.ReadAllText(RepoFile("Database_Migrations/21_captain_title_captions.sql")))) actual[kv.Key] = kv.Value;
+        foreach (var kv in SqlTables(File.ReadAllText(RepoFile("Database_Migrations/27_caption_project_persistence.sql")))) actual[kv.Key] = kv.Value;
         // columns added by later scripts (ALTER TABLE ... ADD COLUMN IF NOT EXISTS)
         foreach (var m in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/25_razorpay_payments_and_render_settings.sql")),
                      "ALTER TABLE \"(\\w+)\"\\s+ADD COLUMN IF NOT EXISTS \"(\\w+)\"").Cast<Match>())
             actual[m.Groups[1].Value].Add(m.Groups[2].Value);
-        // script 26 adds many columns in ONE multi-column ALTER TABLE
-        foreach (Match stmt in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/26_captions_templates_and_text_styling.sql")),
-                     "ALTER TABLE \"(\\w+)\"(.*?);", RegexOptions.Singleline))
-            foreach (Match col in Regex.Matches(stmt.Groups[2].Value, "ADD COLUMN IF NOT EXISTS \"(\\w+)\""))
-                actual[stmt.Groups[1].Value].Add(col.Groups[1].Value);
+        // scripts 26 and 27 add many columns in ONE multi-column ALTER TABLE
+        foreach (var script in new[] { "26_captions_templates_and_text_styling.sql", "27_caption_project_persistence.sql" })
+            foreach (Match stmt in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/" + script)),
+                         "ALTER TABLE \"(\\w+)\"(.*?);", RegexOptions.Singleline))
+                foreach (Match col in Regex.Matches(stmt.Groups[2].Value, "ADD COLUMN IF NOT EXISTS \"(\\w+)\""))
+                    actual[stmt.Groups[1].Value].Add(col.Groups[1].Value);
 
         Assert.Equal(expected.Keys.OrderBy(x => x), actual.Keys.OrderBy(x => x));
         foreach (var (table, cols) in expected)

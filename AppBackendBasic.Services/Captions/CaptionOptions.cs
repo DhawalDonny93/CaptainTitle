@@ -31,6 +31,12 @@ public class CaptionOptions
 
     public int MediaTokenMinutes { get; set; } = 120;
 
+    /// <summary>Autosave keeps at most one restore point per this many minutes (re-listen, AI emphasis and restore always keep one).</summary>
+    public int VersionIntervalMinutes { get; set; } = 5;
+
+    /// <summary>Restore points kept per project; older ones are deleted. A word list is roughly 100 KB of jsonb before compression.</summary>
+    public int MaxVersionsPerProject { get; set; } = 20;
+
     public string WhisperModel { get; set; } = "whisper-1";
     public string SarvamModel { get; set; } = "saaras:v4";
     public string SarvamBaseUrl { get; set; } = "https://api.sarvam.ai";

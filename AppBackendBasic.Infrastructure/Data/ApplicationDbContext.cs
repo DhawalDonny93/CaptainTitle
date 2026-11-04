@@ -79,6 +79,8 @@ public class ApplicationDbContext : DbContext
     
     // Captain Title (caption generator) entities
     public DbSet<CaptionProject> CaptionProjects { get; set; }
+    public DbSet<CaptionProjectEditorState> CaptionProjectEditorStates { get; set; }
+    public DbSet<CaptionProjectVersion> CaptionProjectVersions { get; set; }
     public DbSet<CaptionUsage> CaptionUsages { get; set; }
     public DbSet<CaptionPaymentTransaction> CaptionPaymentTransactions { get; set; }
     public DbSet<CaptionTheme> CaptionThemes { get; set; }
@@ -1006,7 +1008,21 @@ public class ApplicationDbContext : DbContext
             e.ToTable("CaptionProjects");
             e.HasOne(p => p.User).WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(p => new { p.UserId, p.CreatedAt });
+            e.HasIndex(p => new { p.UserId, p.LastEditedAt, p.Id }).IsDescending(false, true, true);
             e.HasIndex(p => p.Status);
+            e.Property(p => p.Revision).IsConcurrencyToken();
+        });
+        modelBuilder.Entity<CaptionProjectEditorState>(e =>
+        {
+            e.ToTable("CaptionProjectEditorStates");
+            e.HasKey(x => x.ProjectId);
+            e.HasOne<CaptionProject>().WithOne().HasForeignKey<CaptionProjectEditorState>(x => x.ProjectId).OnDelete(DeleteBehavior.Cascade);
+        });
+        modelBuilder.Entity<CaptionProjectVersion>(e =>
+        {
+            e.ToTable("CaptionProjectVersions");
+            e.HasOne<CaptionProject>().WithMany().HasForeignKey(x => x.ProjectId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => new { x.ProjectId, x.Id }).IsDescending(false, true);
         });
         modelBuilder.Entity<CaptionUsage>(e =>
         {

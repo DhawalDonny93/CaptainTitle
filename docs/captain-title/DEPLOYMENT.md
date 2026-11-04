@@ -16,3 +16,12 @@ Cost/scale: draft/high presets are admin settings (`captions.render_*`); default
 
 ## Database
 Manual SQL only, see `Database_Migrations/RUN_ORDER.md` (order 23 -> 25; fresh 22 -> 21 -> 25).
+
+## Stored videos (saved projects)
+
+Users come back to their projects, so the files under `Captions:StorageRoot` (default `App_Data/caption_storage`) are now long-lived user data, not a cache.
+
+- **Publishing must not delete them.** On MonsterASP/Web Deploy, keep "Remove additional files at destination" off, or set `Captions:StorageRoot` to a folder outside the site root. If the files disappear the editor still opens (edits are in the database) but shows "This video couldn't be loaded".
+- **Back them up with the database.** A database backup alone doesn't include the videos.
+- **Disk grows with every upload** until the user deletes the project: there is no automatic expiry. Watch the hosting quota. Each project keeps its source, an optional preview, one export (older exports are removed) and a thumbnail.
+- **One server only** with `LocalCaptionStorage`. Implement `ICaptionStorage` on S3/R2 before running more than one API instance.

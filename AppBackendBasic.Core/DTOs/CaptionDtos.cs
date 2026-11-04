@@ -62,6 +62,8 @@ public class CaptionSfxMarkerDto
 
 public class CaptionProjectEditDto
 {
+    /// <summary>The revision these edits were based on; a mismatch means another tab/device saved first (409). Null skips the check.</summary>
+    [JsonPropertyName("base_revision")] public int? BaseRevision { get; set; }
     [JsonPropertyName("theme"), Required] public string Theme { get; set; } = string.Empty;
     [JsonPropertyName("font_id")] public string FontId { get; set; } = "poppins";
     [JsonPropertyName("words_per_caption"), Range(1, 8)] public int? WordsPerCaption { get; set; }
@@ -160,6 +162,71 @@ public class CaptionProjectDto
     [JsonPropertyName("error_message")] public string? ErrorMessage { get; set; }
     [JsonPropertyName("created_at")] public DateTime CreatedAt { get; set; }
     [JsonPropertyName("updated_at")] public DateTime? UpdatedAt { get; set; }
+    [JsonPropertyName("last_edited_at")] public DateTime LastEditedAt { get; set; }
+    [JsonPropertyName("revision")] public int Revision { get; set; }
+    /// <summary>Revision the stored export was rendered from; the export is current only when this equals <see cref="Revision"/>.</summary>
+    [JsonPropertyName("rendered_revision")] public int? RenderedRevision { get; set; }
+    /// <summary>Where the user left off. Only filled by GET projects/{id} and restore.</summary>
+    [JsonPropertyName("editor_state")] public CaptionEditorStateDto? EditorState { get; set; }
+}
+
+/// <summary>Where the user left off in the studio. Saved separately from the content, so a moving playhead never bumps the revision.</summary>
+public class CaptionEditorStateDto
+{
+    [JsonPropertyName("playhead"), Range(0, 86400)] public double Playhead { get; set; }
+    [JsonPropertyName("left_tab"), StringLength(20)] public string? LeftTab { get; set; }
+    [JsonPropertyName("theme_tab"), StringLength(20)] public string? ThemeTab { get; set; }
+    [JsonPropertyName("selected_index"), Range(0, int.MaxValue)] public int SelectedIndex { get; set; }
+    [JsonPropertyName("safe_zone")] public bool SafeZone { get; set; }
+}
+
+/// <summary>Project library card: never carries the words/elements documents, so listing stays cheap.</summary>
+public class CaptionProjectSummaryDto
+{
+    [JsonPropertyName("project_id")] public int ProjectId { get; set; }
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("duration")] public double Duration { get; set; }
+    [JsonPropertyName("width")] public int? Width { get; set; }
+    [JsonPropertyName("height")] public int? Height { get; set; }
+    [JsonPropertyName("size_bytes")] public long SizeBytes { get; set; }
+    [JsonPropertyName("theme")] public string Theme { get; set; } = string.Empty;
+    [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
+    [JsonPropertyName("progress")] public int Progress { get; set; }
+    [JsonPropertyName("processing_label")] public string ProcessingLabel { get; set; } = string.Empty;
+    [JsonPropertyName("error_message")] public string? ErrorMessage { get; set; }
+    [JsonPropertyName("thumbnail_url")] public string? ThumbnailUrl { get; set; }
+    [JsonPropertyName("export_current")] public bool ExportCurrent { get; set; }
+    [JsonPropertyName("created_at")] public DateTime CreatedAt { get; set; }
+    [JsonPropertyName("last_edited_at")] public DateTime LastEditedAt { get; set; }
+}
+
+public class CaptionProjectListDto
+{
+    [JsonPropertyName("items")] public List<CaptionProjectSummaryDto> Items { get; set; } = new();
+    /// <summary>Pass back as ?cursor= for the next page; null on the last page.</summary>
+    [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }
+}
+
+public class CaptionSaveResultDto
+{
+    [JsonPropertyName("status")] public string Status { get; set; } = "saved";
+    [JsonPropertyName("revision")] public int Revision { get; set; }
+    [JsonPropertyName("last_edited_at")] public DateTime LastEditedAt { get; set; }
+}
+
+public class CaptionEmphasisResultDto
+{
+    [JsonPropertyName("words")] public List<CaptionWordDto> Words { get; set; } = new();
+    [JsonPropertyName("revision")] public int Revision { get; set; }
+}
+
+/// <summary>A restore point (metadata only; the document itself stays in the database until it is restored).</summary>
+public class CaptionProjectVersionDto
+{
+    [JsonPropertyName("version_id")] public int VersionId { get; set; }
+    [JsonPropertyName("reason")] public string Reason { get; set; } = string.Empty;
+    [JsonPropertyName("project_revision")] public int ProjectRevision { get; set; }
+    [JsonPropertyName("created_at")] public DateTime CreatedAt { get; set; }
 }
 
 public class CaptionUsageDto

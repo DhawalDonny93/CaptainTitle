@@ -87,6 +87,7 @@ public class RequestResponseLoggingMiddleware
     {
         var value = path.Value ?? string.Empty;
         return value.StartsWith("/api/captions/media/", StringComparison.OrdinalIgnoreCase)
+            || value.StartsWith("/api/captions/thumbnail/", StringComparison.OrdinalIgnoreCase)
             || (value.StartsWith("/api/captions/projects/", StringComparison.OrdinalIgnoreCase)
                 && (value.EndsWith("/download", StringComparison.OrdinalIgnoreCase) || value.EndsWith("/srt", StringComparison.OrdinalIgnoreCase)));
     }

@@ -38,3 +38,12 @@ Webhook endpoint: `POST {api}/api/captions/payments/stripe/webhook` (event `chec
 dotnet test AppBackendBasic.Captions.Tests     # golden parity (needs only the committed golden.json) + schema guard
 python3 -I scripts/old-sync/generate_golden.py <old>/backend AppBackendBasic.Captions.Tests/golden   # regenerate after old logic changes
 ```
+
+## Saved projects
+
+| Key | Default | Meaning |
+|---|---|---|
+| `Captions:VersionIntervalMinutes` | 5 | Autosave keeps at most one restore point per this many minutes |
+| `Captions:MaxVersionsPerProject` | 20 | Restore points kept per project; older ones are deleted |
+
+Integration tests: set `CAPTIONS_TEST_PG` to a throw-away database named `captain_test*` with scripts 22, 21, 25, 26, 27 applied (`Host=127.0.0.1;Port=...;Database=captain_test_x;Username=...`). Without it those tests are skipped. Never point it at a real database.

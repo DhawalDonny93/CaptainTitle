@@ -49,6 +49,12 @@ public class CaptionsController : CaptionsControllerBase
         return Ok(project);
     });
 
+    /// <summary>The signed-in user's projects, most recently edited first (cursor paged, no word documents).</summary>
+    [HttpGet("projects")]
+    [Authorize]
+    public Task<IActionResult> List([FromQuery] string? cursor, [FromQuery] int limit = 12) => RunAsync(async () =>
+        Ok(await _projects.ListAsync(CurrentUserId, cursor, limit, HttpContext.RequestAborted)));
+
     [HttpGet("projects/{id:int}")]
     [Authorize]
     public Task<IActionResult> Get(int id) => RunAsync(async () => Ok(await _projects.GetAsync(CurrentUserId, id, HttpContext.RequestAborted)));
@@ -56,10 +62,35 @@ public class CaptionsController : CaptionsControllerBase
     [HttpPut("projects/{id:int}")]
     [Authorize]
     public Task<IActionResult> Save(int id, [FromBody] CaptionProjectEditDto edit) => RunAsync(async () =>
+        Ok(await _projects.SaveAsync(CurrentUserId, id, edit, HttpContext.RequestAborted)));
+
+    /// <summary>Removes the project, its restore points and its stored files. Credits are not refunded.</summary>
+    [HttpDelete("projects/{id:int}")]
+    [Authorize]
+    public Task<IActionResult> Delete(int id) => RunAsync(async () =>
     {
-        await _projects.SaveAsync(CurrentUserId, id, edit, HttpContext.RequestAborted);
-        return Ok(new { status = "saved" });
+        await _projects.DeleteAsync(CurrentUserId, id, HttpContext.RequestAborted);
+        return NoContent();
     });
+
+    /// <summary>Saves where the user left off (playhead, open tabs). Never touches the project content or its revision.</summary>
+    [HttpPut("projects/{id:int}/editor-state")]
+    [Authorize]
+    public Task<IActionResult> SaveEditorState(int id, [FromBody] CaptionEditorStateDto state) => RunAsync(async () =>
+    {
+        await _projects.SaveEditorStateAsync(CurrentUserId, id, state, HttpContext.RequestAborted);
+        return NoContent();
+    });
+
+    [HttpGet("projects/{id:int}/versions")]
+    [Authorize]
+    public Task<IActionResult> Versions(int id) => RunAsync(async () =>
+        Ok(await _projects.ListVersionsAsync(CurrentUserId, id, HttpContext.RequestAborted)));
+
+    [HttpPost("projects/{id:int}/versions/{versionId:int}/restore")]
+    [Authorize]
+    public Task<IActionResult> RestoreVersion(int id, int versionId) => RunAsync(async () =>
+        Ok(await _projects.RestoreVersionAsync(CurrentUserId, id, versionId, HttpContext.RequestAborted)));
 
     [HttpGet("projects/{id:int}/srt")]
     [Authorize]
@@ -77,7 +108,7 @@ public class CaptionsController : CaptionsControllerBase
     [HttpPost("projects/{id:int}/ai/emphasis")]
     [Authorize]
     public Task<IActionResult> Emphasis(int id) => RunAsync(async () =>
-        Ok(new { words = await _projects.ReassignEmphasisAsync(CurrentUserId, id, HttpContext.RequestAborted) }));
+        Ok(await _projects.ReassignEmphasisAsync(CurrentUserId, id, HttpContext.RequestAborted)));
 
     [HttpPost("projects/{id:int}/render")]
     [Authorize]
@@ -102,7 +133,7 @@ public class CaptionsController : CaptionsControllerBase
     [Authorize]
     public Task<IActionResult> MediaUrl(int id) => RunAsync(async () =>
     {
-        await _projects.GetAsync(CurrentUserId, id, HttpContext.RequestAborted); // ownership check
+        await _projects.EnsureOwnedAsync(CurrentUserId, id, HttpContext.RequestAborted);
         var token = _mediaTokens.Create(id, CurrentUserId);
         return Ok(new { url = $"/api/captions/media/{id}?t={Uri.EscapeDataString(token)}" });
     });
@@ -117,5 +148,17 @@ public class CaptionsController : CaptionsControllerBase
         var (stream, contentType) = await _projects.OpenMediaAsync(claims.Value.UserId, id, HttpContext.RequestAborted);
         Response.Headers["Cache-Control"] = "private, max-age=3600";
         return File(stream, contentType, enableRangeProcessing: true);
+    });
+
+    /// <summary>Library thumbnail; signed like the media URL because an &lt;img&gt; cannot send a bearer header either.</summary>
+    [HttpGet("thumbnail/{id:int}")]
+    [AllowAnonymous]
+    public Task<IActionResult> Thumbnail(int id, [FromQuery(Name = "t")] string? token) => RunAsync(async () =>
+    {
+        var claims = string.IsNullOrEmpty(token) ? null : _mediaTokens.Validate(token);
+        if (claims == null || claims.Value.ProjectId != id) return Unauthorized(new { message = "Media link expired" });
+        var stream = await _projects.OpenThumbnailAsync(claims.Value.UserId, id, HttpContext.RequestAborted);
+        Response.Headers["Cache-Control"] = "private, max-age=3600";
+        return File(stream, "image/jpeg");
     });
 }

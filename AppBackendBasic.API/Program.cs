@@ -320,6 +320,7 @@ builder.Services.AddScoped<ICaptionCatalogService, CaptionCatalogService>();
 builder.Services.AddScoped<ICaptionEntitlementService, CaptionEntitlementService>();
 builder.Services.AddScoped<ICaptionTranscriptionService, CaptionTranscriptionService>();
 builder.Services.AddScoped<IHinglishService, HinglishService>();
+builder.Services.AddScoped<ICaptionProjectRepository, CaptionProjectRepository>();
 builder.Services.AddScoped<ICaptionProjectService, CaptionProjectService>();
 builder.Services.AddScoped<ICaptionJobRunner, CaptionJobRunner>();
 builder.Services.AddScoped<ICaptionRenderService, CaptionRenderService>();

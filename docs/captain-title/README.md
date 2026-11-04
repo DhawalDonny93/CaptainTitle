@@ -23,6 +23,7 @@ Code map (all new code is isolated so the template can still be synced):
 - API: `AppBackendBasic.API/Controllers/Caption*Controller.cs`, `AdminCaptionsController.cs`
 - DB: `Database_Migrations/21_captain_title_captions.sql` (+ `ApplicationDbContext.ConfigureCaptionEntities`)
 - Admin: `AppBackendBasic.AdminUI/Pages/Captions/*`
-- Frontend: `AppBackendBasic.WebUI/src/features/captions/*` (routes `/studio`, `/payment/success`, `/payment/cancel`)
+- Saved projects: `Core/Entities/CaptionProjectPersistence.cs`, `Core/Interfaces/ICaptionProjectRepository.cs`, `Infrastructure/Repositories/CaptionProjectRepository.cs`, `Database_Migrations/27_*`; frontend `hooks/useProjectAutosave.ts`, `hooks/useEditorStatePersistence.ts`, `components/ProjectLibrary.tsx`, `components/ProjectWorkspace.tsx` (see DECISIONS D-30..D-36)
+- Frontend: `AppBackendBasic.WebUI/src/features/captions/*` (routes `/studio`, `/studio/:projectId`, `/payment/success`, `/payment/cancel`)
 - Tests: `AppBackendBasic.Captions.Tests` (golden parity against the original Python + schema guard)
 - Tooling: `scripts/old-sync/*`

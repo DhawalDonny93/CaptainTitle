@@ -35,6 +35,23 @@ public class CaptionJobRunner : ICaptionJobRunner
         _db.CaptionProjects.Where(p => p.Id == id).ExecuteUpdateAsync(s => s
             .SetProperty(p => p.Progress, progress).SetProperty(p => p.ProcessingLabel, label).SetProperty(p => p.UpdatedAt, DateTime.UtcNow), ct);
 
+    /// <summary>Best effort: a missing thumbnail must never fail caption generation (the library shows a placeholder).</summary>
+    private async Task StoreThumbnailAsync(CaptionProject project, string source, string tempDir, double duration, CancellationToken ct)
+    {
+        try
+        {
+            var file = Path.Combine(tempDir, "thumbnail.jpg");
+            if (!await _ffmpeg.CreateThumbnailAsync(source, file, Math.Min(1, duration / 2), ct)) return;
+            var path = $"captain-title/thumbnails/{project.UserId}/{Guid.NewGuid():N}.jpg";
+            await _storage.PutFileAsync(path, file, "image/jpeg", ct);
+            await _db.CaptionProjects.Where(p => p.Id == project.Id).ExecuteUpdateAsync(s => s.SetProperty(p => p.ThumbnailPath, path), ct);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogWarning(ex, "Thumbnail could not be stored for project {ProjectId}", project.Id);
+        }
+    }
+
     public async Task RunAsync(int projectId, bool consumeCredit, CancellationToken ct = default)
     {
         string? tempDir = null;
@@ -64,6 +81,7 @@ public class CaptionJobRunner : ICaptionJobRunner
             await _ffmpeg.ExtractAudioAsync(source, audio, ct);
             // Only transcode a preview when the browser cannot play the upload (e.g. iPhone HEVC); H.264/AAC plays as-is = zero cost.
             var probe = await _ffmpeg.ProbeAsync(source, ct);
+            if (project.ThumbnailPath == null) await StoreThumbnailAsync(project, source, tempDir, probe.Duration, ct);
             var previewTask = probe.IsBrowserPlayable ? Task.FromResult(false) : _ffmpeg.CreateBrowserPreviewAsync(source, previewFile, ct);
             await SetProgressAsync(projectId, 28, "Listening word by word", ct);
 
@@ -106,10 +124,18 @@ public class CaptionJobRunner : ICaptionJobRunner
                 .SetProperty(p => p.ProcessingLabel, "Captions ready")
                 .SetProperty(p => p.PreviewPath, previewPath ?? project.PreviewPath)
                 .SetProperty(p => p.PreviewContentType, previewPath != null ? "video/mp4" : project.PreviewContentType)
+                .SetProperty(p => p.Revision, p => p.Revision + 1)
+                .SetProperty(p => p.LastEditedAt, DateTime.UtcNow)
                 .SetProperty(p => p.UpdatedAt, DateTime.UtcNow), ct);
 
-            if (consumeCredit && project.CreditType != null)
-                await _entitlement.ConsumeAsync(project.UserId, project.CreditType, ct);
+            // Settled at most once per project (compare-and-set), so a restart that re-queues a re-listen can't charge twice.
+            // consumeCredit = false (admin re-run) settles it without charging.
+            if (project.CreditType != null)
+            {
+                var settled = await _db.CaptionProjects.Where(p => p.Id == projectId && p.CreditConsumedAt == null)
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.CreditConsumedAt, DateTime.UtcNow), ct);
+                if (settled == 1 && consumeCredit) await _entitlement.ConsumeAsync(project.UserId, project.CreditType, ct);
+            }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {

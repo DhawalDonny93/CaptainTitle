@@ -121,9 +121,15 @@ public class CaptionRenderService : ICaptionRenderService
             var outputPath = $"captain-title/renders/{p.UserId}/{Guid.NewGuid():N}.mp4";
             await _storage.PutFileAsync(outputPath, output, "video/mp4", ct);
             await _db.CaptionProjects.Where(x => x.Id == projectId).ExecuteUpdateAsync(s => s
-                .SetProperty(x => x.RenderPath, outputPath).SetProperty(x => x.Status, CaptionProjectStatus.Rendered)
+                .SetProperty(x => x.RenderPath, outputPath).SetProperty(x => x.RenderedRevision, p.Revision)
+                .SetProperty(x => x.Status, CaptionProjectStatus.Rendered)
                 .SetProperty(x => x.Progress, 100).SetProperty(x => x.ProcessingLabel, "Export ready")
                 .SetProperty(x => x.ErrorMessage, (string?)null).SetProperty(x => x.UpdatedAt, DateTime.UtcNow), ct);
+
+            // Re-exports would otherwise leave every previous MP4 on disk forever.
+            if (!string.IsNullOrEmpty(p.RenderPath))
+                try { await _storage.DeleteAsync(p.RenderPath, CancellationToken.None); }
+                catch (Exception ex) { _logger.LogWarning(ex, "Could not delete the previous render of project {Id}", projectId); }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
         catch (Exception ex)

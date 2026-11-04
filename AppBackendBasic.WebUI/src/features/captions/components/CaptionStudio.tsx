@@ -1,10 +1,15 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookmarkSimple, ChatCircle, DotsThreeVertical, DownloadSimple, FileText, FloppyDisk, FrameCorners, Heart, Play, Share, SpinnerGap } from "@phosphor-icons/react";
 import { toast } from "@/utils/toast";
 import { absoluteApiUrl as absoluteUrl, captionsApi, errorMessage, saveBlob } from "../captionsApi";
 import { useCaptionCatalog } from "../catalogContext";
 import { bakeWordStyle, cssFamily, DEFAULT_WORD_SIZE, DOODLE_MARKER, STREET_GLOW } from "../lib/styles";
 import { playSfx } from "../lib/sfx";
+import { useEditorStatePersistence } from "../hooks/useEditorStatePersistence";
+import { useProjectAutosave } from "../hooks/useProjectAutosave";
+import { SaveIndicator } from "./SaveIndicator";
+import { VersionHistoryMenu } from "./VersionHistoryMenu";
+import { isLeftTab, isThemeTab } from "../lib/editorTabs";
 import { ThemePanel, type ThemeTab } from "./ThemePanel";
 import { TranscriptPanel } from "./TranscriptPanel";
 import { Timeline } from "./Timeline";
@@ -17,7 +22,7 @@ import { AdjustmentPanel } from "./AdjustmentPanel";
 import { AiToolsPanel } from "./AiToolsPanel";
 import { MomentPopover } from "./MomentPopover";
 import type {
-  CaptionElement, CaptionPosition, CaptionProject, CaptionTier, CaptionWord, KineticStyle, ProjectEditPayload, RenderQuality, ScriptMode, SfxMarker, TextStyle,
+  CaptionElement, CaptionPosition, CaptionProject, CaptionTier, CaptionWord, EditorState, KineticStyle, ProjectEditPayload, RenderQuality, ScriptMode, SfxMarker, TextStyle,
 } from "../types";
 
 type Tiers = Record<string, CaptionTier> | null;
@@ -179,9 +184,15 @@ function StreetGlowOverlay({ visibleWords, scriptMode, boxX, boxY, boxRotation, 
   );
 }
 
-interface CaptionStudioProps { initialProject: CaptionProject; onNew: () => void }
+interface CaptionStudioProps {
+  initialProject: CaptionProject
+  onNew: () => void
+  /** The server's copy replaced this editor's content (restore, or a failed re-listen): reload the editor from it. */
+  onReplaced: (project: CaptionProject) => void
+}
 
-export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => {
+export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStudioProps) => {
+  const savedState = initialProject.editor_state;
   const { themeById, fontById, sfxById } = useCaptionCatalog();
   const [project, setProject] = useState<CaptionProject>(initialProject);
   const [words, setWords] = useState(initialProject.words);
@@ -190,8 +201,8 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
   const [wordsPerCaption, setWordsPerCaption] = useState<number | null>(initialProject.words_per_caption ?? null);
   const [captionLines, setCaptionLines] = useState(initialProject.caption_lines || 1);
   const [captionPosition, setCaptionPosition] = useState<CaptionPosition>(initialProject.caption_position || "bottom");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [themeTab, setThemeTab] = useState<ThemeTab>("templates");
+  const [selectedIndex, setSelectedIndex] = useState(() => Math.min(savedState?.selected_index ?? 0, Math.max(0, initialProject.words.length - 1)));
+  const [themeTab, setThemeTab] = useState<ThemeTab>(isThemeTab(savedState?.theme_tab) ? savedState.theme_tab : "templates");
   // Selecting a word from the Captions list or the bottom timeline should
   // land you straight on its edit controls - requiring a separate click
   // over to the right panel's Text tab every time was exactly the kind of
@@ -217,17 +228,20 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
     setMomentPopover(index);
     setMomentAnchor(anchorEl ? anchorEl.getBoundingClientRect() : null);
   };
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(savedState?.playhead ?? 0);
   const [playing, setPlaying] = useState(false);
-  const [rendering, setRendering] = useState(false);
+  const [rendering, setRendering] = useState(initialProject.status === "rendering");
   const [relistening, setRelistening] = useState(false);
   // Short-lived signed media URL (the <video> element cannot send the bearer token); refreshed on error/expiry.
   const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const [mediaRetry, setMediaRetry] = useState(0);
+  const [mediaFailed, setMediaFailed] = useState(false);
+  // Where to seek once the video's metadata is known (the saved playhead on open, the current time after a media URL refresh).
+  const pendingSeekRef = useRef(savedState?.playhead ?? 0);
   // Shown right after a direct drag/resize on the canvas box releases - the move/resize has ALREADY been committed to this caption by then,
   // so this is purely an optional one-tap shortcut to also broadcast it to every caption, not a gate. Dismissing it just closes it.
   const [scopePrompt, setScopePrompt] = useState(false);
-  const [leftTab, setLeftTab] = useState<LeftTab>("captions");
+  const [leftTab, setLeftTab] = useState<LeftTab>(isLeftTab(savedState?.left_tab) ? savedState.left_tab : "captions");
   const [elements, setElements] = useState(initialProject.elements || []);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [audioVolume, setAudioVolume] = useState(initialProject.audio_volume ?? 100);
@@ -264,7 +278,8 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
   const [bold, setBold] = useState(initialProject.bold ?? true);
   const [italic, setItalic] = useState(initialProject.italic ?? false);
   const [reassigning, setReassigning] = useState(false);
-  const [safeZone, setSafeZone] = useState(false);
+  const [safeZone, setSafeZone] = useState(savedState?.safe_zone ?? false);
+  const [restoring, setRestoring] = useState(false);
   const [frameWidth, setFrameWidth] = useState(0);
   const [frameBox, setFrameBox] = useState({ w: 360, h: 640 });
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -278,7 +293,7 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
     let cancelled = false;
     captionsApi.mediaUrl(project.project_id)
       .then((relative) => { if (!cancelled) setMediaUrl(absoluteUrl(relative)); })
-      .catch(() => { if (!cancelled) setMediaUrl(null); });
+      .catch(() => { if (!cancelled) { setMediaUrl(null); setMediaFailed(true); } });
     return () => { cancelled = true; };
   }, [project.project_id, mediaRetry]);
 
@@ -478,12 +493,24 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
     setCaptionPosition(position);
     setWords((current) => current.map((word) => ({ ...word, pos_x: null, pos_y: null })));
   };
-  const payload = (): ProjectEditPayload => ({ theme, font_id: fontId, words_per_caption: wordsPerCaption,
+  const payload = useMemo((): ProjectEditPayload => ({ theme, font_id: fontId, words_per_caption: wordsPerCaption,
                            caption_lines: captionLines, caption_position: captionPosition, words,
                            audio_volume: audioVolume, audio_muted: audioMuted,
                            brightness, contrast, saturation, render_quality: renderQuality, elements,
                            sfx_markers: sfxMarkers, script_mode: scriptMode,
-                           ...textStyle, bold, italic });
+                           ...textStyle, bold, italic }),
+    [theme, fontId, wordsPerCaption, captionLines, captionPosition, words, audioVolume, audioMuted, brightness, contrast, saturation, renderQuality,
+      elements, sfxMarkers, scriptMode, textStyle, bold, italic]);
+  // Jobs that replace the words on the server (and the restore flow) own the document while they run; autosaving over them would only conflict.
+  const autosave = useProjectAutosave({ projectId: initialProject.project_id, initialRevision: initialProject.revision, payload,
+    paused: relistening || reassigning || restoring });
+  const { flush: flushEdits } = autosave;
+  const exportIsCurrent = project.rendered_revision != null && project.rendered_revision === autosave.revision && autosave.status === "saved";
+
+  // Reads the React state, not the <video>: until the saved position has been seeked to, the element itself still reports 0.
+  const getEditorState = useCallback((): EditorState => ({ playhead: Math.round(currentTime * 100) / 100, left_tab: leftTab, theme_tab: themeTab,
+    selected_index: selectedIndex, safe_zone: safeZone }), [currentTime, leftTab, themeTab, selectedIndex, safeZone]);
+  useEditorStatePersistence(initialProject.project_id, getEditorState);
 
   const addSfxMarker = (type: string, time?: number, wordIndex?: number) => {
     const id = `sfx_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -513,49 +540,80 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
   const reassignEmphasis = async () => {
     setReassigning(true);
     try {
+      await flushEdits();
       const data = await captionsApi.reassignEmphasis(project.project_id);
       setWords(data.words);
+      autosave.rebase(data.revision);
       toast.success("Emphasis re-tagged by AI");
     } catch (error) { toast.error(errorMessage(error)); }
     finally { setReassigning(false); }
   };
   const save = async () => {
     try {
-      await captionsApi.save(project.project_id, payload());
+      await flushEdits();
       toast.success("Caption edits saved");
     } catch (error) { toast.error(errorMessage(error)); }
   };
+  // The export runs as a background job on the server, so it may already be running when the project is opened: this also picks that back up.
+  const aliveRef = useRef(true);
+  useEffect(() => { aliveRef.current = true; return () => { aliveRef.current = false; }; }, []);
+  const followingRenderRef = useRef(false);
+  const followRender = useCallback(async (started: CaptionProject) => {
+    if (followingRenderRef.current) return;
+    followingRenderRef.current = true;
+    setRendering(true);
+    try {
+      let data = started;
+      while (data.status === "rendering" && aliveRef.current) {
+        await new Promise((resolve) => window.setTimeout(resolve, 2500));
+        data = await captionsApi.get(started.project_id);
+      }
+      if (!aliveRef.current) return;
+      if (data.status !== "rendered") throw new Error(data.error_message || "Video rendering failed. Please try again.");
+      setProject((current) => ({ ...current, status: "rendered", rendered_revision: data.rendered_revision }));
+      toast.success("Your captioned video is ready");
+    } catch (error) { toast.error(errorMessage(error)); }
+    finally { followingRenderRef.current = false; setRendering(false); }
+  }, []);
+  useEffect(() => {
+    if (initialProject.status === "rendering") void followRender(initialProject);
+    // Only for the state the project was opened in; exports started here call followRender themselves.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const render = async () => {
     setRendering(true);
     try {
-      await captionsApi.save(project.project_id, payload());
-      // The export runs as a background job on the server; poll until it finishes.
-      let data = await captionsApi.render(project.project_id);
-      while (data.status === "rendering") {
-        await new Promise((resolve) => window.setTimeout(resolve, 2500));
-        data = await captionsApi.get(project.project_id);
-      }
-      if (data.status !== "rendered") throw new Error(data.error_message || "Video rendering failed. Please try again.");
-      setProject((current) => ({ ...current, status: "rendered" }));
-      toast.success("Your captioned video is ready");
-    } catch (error) { toast.error(errorMessage(error)); }
-    finally { setRendering(false); }
+      await flushEdits();
+      await followRender(await captionsApi.render(project.project_id));
+    } catch (error) { toast.error(errorMessage(error)); setRendering(false); }
   };
   const relisten = async () => {
     setRelistening(true);
     try {
+      await flushEdits();
       let data = await captionsApi.retranscribe(project.project_id, "auto");
       while (["queued", "processing"].includes(data.status)) {
         await new Promise((resolve) => window.setTimeout(resolve, 2500));
         data = await captionsApi.get(project.project_id);
       }
-      if (data.status === "failed") throw new Error(data.error_message || "Re-listen failed");
+      // The server's words are gone at this point, so the editor can't stay open on them: the project page offers retry and restore.
+      if (data.status === "failed") { toast.error(data.error_message || "Re-listen failed"); onReplaced(data); return; }
       setWords(data.words);
       setProject((current) => ({ ...current, ...data }));
+      autosave.rebase(data.revision);
       setSelectedIndex(0);
       toast.success("A fresh trusted transcript is ready");
     } catch (error) { toast.error(errorMessage(error)); }
     finally { setRelistening(false); }
+  };
+  const restoreVersion = async (versionId: number) => {
+    setRestoring(true);
+    try {
+      await flushEdits(); // the unsaved edits become part of the restore point the server keeps
+      const restored = await captionsApi.restoreVersion(project.project_id, versionId);
+      toast.success("Version restored. Your previous edits were kept in History.");
+      onReplaced(restored);
+    } catch (error) { toast.error(errorMessage(error)); setRestoring(false); }
   };
   const download = async () => {
     try {
@@ -564,7 +622,7 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
   };
   const downloadSrt = async () => {
     try {
-      await captionsApi.save(project.project_id, payload());
+      await flushEdits();
       saveBlob(await captionsApi.srtBlob(project.project_id), "captain-title.srt");
     } catch (error) { toast.error(errorMessage(error)); }
   };
@@ -726,19 +784,24 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
   return (
     <main className="studio" data-testid="caption-editor-workspace">
       <div className="studio-topbar" data-testid="project-command-bar">
-        <div><button onClick={onNew} data-testid="new-project-button">← New session</button><h1 data-testid="current-project-name">{project.name}</h1></div>
+        <div><button onClick={onNew} data-testid="new-project-button">← All projects</button><h1 data-testid="current-project-name">{project.name}</h1><SaveIndicator status={autosave.status} error={autosave.error} /></div>
         <div className="project-actions">
           {project.width && project.height && <span className="resolution-badge" data-testid="resolution-badge">{project.width}×{project.height} · {aspectLabel(project.width, project.height)}</span>}
           <select className="quality-select" value={renderQuality} onChange={(e) => setRenderQuality(e.target.value as RenderQuality)} title="Export quality" data-testid="render-quality-select">
             <option value="high">High quality</option>
             <option value="draft">Draft (fast)</option>
           </select>
+          <VersionHistoryMenu projectId={project.project_id} busy={restoring} onRestore={restoreVersion} />
           <button className="utility-chip" onClick={save} data-testid="save-project-button"><FloppyDisk size={16} /> Save</button>
           <button className="utility-chip" onClick={downloadSrt} data-testid="download-srt-button"><FileText size={16} /> SRT</button>
-          {project.status === "rendered" ? <button className="export-button" onClick={download} data-testid="download-video-button"><DownloadSimple size={19} weight="bold" /> Download MP4</button> :
+          {exportIsCurrent && !rendering ? <button className="export-button" onClick={download} data-testid="download-video-button"><DownloadSimple size={19} weight="bold" /> Download MP4</button> :
             <button className="export-button" onClick={render} disabled={rendering} data-testid="render-video-button">{rendering ? <SpinnerGap className="spin" size={19} /> : <DownloadSimple size={19} weight="bold" />} {rendering ? "Exporting…" : "Export Video"}</button>}
         </div>
       </div>
+      {autosave.status === "conflict" && <div className="studio-conflict-banner" role="alert" data-testid="save-conflict-banner">
+        <span>{autosave.error}</span>
+        <button onClick={() => window.location.reload()} data-testid="save-conflict-reload-button">Reload</button>
+      </div>}
       <div className="studio-grid">
         <LeftRail active={leftTab} onSelect={setLeftTab} />
         {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} />}
@@ -751,7 +814,8 @@ export const CaptionStudio = ({ initialProject, onNew }: CaptionStudioProps) => 
         <section className="preview-panel" data-testid="video-preview-panel">
           <div className="video-stage" ref={stageRef}>
           <div className="video-frame" ref={videoFrameRef} style={{ width: `${frameBox.w}px`, height: `${frameBox.h}px` }}>
-            <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: `brightness(${100 + brightness}%) contrast(${contrast}%) saturate(${saturation}%)` }} onError={() => { if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
+            <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: `brightness(${100 + brightness}%) contrast(${contrast}%) saturate(${saturation}%)` }} onLoadedMetadata={(e) => { if (pendingSeekRef.current > 0) { e.currentTarget.currentTime = Math.min(pendingSeekRef.current, e.currentTarget.duration || pendingSeekRef.current); pendingSeekRef.current = 0; } setMediaFailed(false); }} onError={() => { pendingSeekRef.current = currentTime; if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); else setMediaFailed(true); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
+            {mediaFailed && <div className="preview-media-error" data-testid="video-unavailable-message">This video couldn't be loaded. Your caption edits are safe. Try reloading the page.</div>}
             <button className="preview-play" onClick={togglePlayback} data-testid="video-preview-play-button"><Play size={28} weight="fill" /></button>
             <button className={`preview-safe-zone-toggle ${safeZone ? "active" : ""}`} onClick={() => setSafeZone((current) => !current)} title="Toggle Reels/Shorts safe-zone guide" data-testid="safe-zone-toggle-button"><FrameCorners size={18} weight={safeZone ? "fill" : "regular"} /></button>
             {safeZone && <div className="safe-zone-overlay" data-testid="safe-zone-overlay">

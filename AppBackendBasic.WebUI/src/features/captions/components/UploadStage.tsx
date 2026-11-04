@@ -53,16 +53,8 @@ export const UploadStage = ({ onCreated, onPaywall }: Props) => {
     setProgress(2)
     setProcessingLabel('Uploading video')
     try {
-      let project = await captionsApi.process(file, catalog.default_theme, speechLanguage)
-      while (['queued', 'processing'].includes(project.status)) {
-        setProgress(project.progress || 5)
-        setProcessingLabel(project.processing_label || 'Generating captions')
-        await new Promise((resolve) => window.setTimeout(resolve, 2500))
-        project = await captionsApi.get(project.project_id)
-      }
-      if (project.status === 'failed') throw new Error(project.error_message || 'Caption processing failed')
-      onCreated(project)
-      toast.success('Hinglish captions are ready')
+      // From here the project lives on the server: its own page follows the job, and survives this tab closing.
+      onCreated(await captionsApi.process(file, catalog.default_theme, speechLanguage, setProgress))
     } catch (error) {
       if (httpStatus(error) === 402) onPaywall()
       else toast.error(errorMessage(error))
@@ -98,12 +90,12 @@ export const UploadStage = ({ onCreated, onPaywall }: Props) => {
           <p data-testid="selected-video-metadata">{duration ? `${duration.toFixed(1)} sec · ` : probing ? 'Checking duration · ' : 'Duration checked on upload · '}{file.size < 1048576 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / 1048576).toFixed(1)} MB`}</p>
           <div className="upload-buttons">
             <CtButton variant="outline" disabled={processing} onClick={() => input.current?.click()} data-testid="replace-video-button">Replace</CtButton>
-            <CtButton onClick={generate} disabled={processing || probing} data-testid="generate-captions-button">{processing ? 'Transcribing & styling…' : probing ? 'Checking video…' : 'Generate Hinglish captions'}</CtButton>
+            <CtButton onClick={generate} disabled={processing || probing} data-testid="generate-captions-button">{processing ? 'Uploading…' : probing ? 'Checking video…' : 'Generate Hinglish captions'}</CtButton>
           </div>
           {processing && <div className="processing-progress" data-testid="caption-processing-progress">
             <div><span data-testid="caption-processing-label">{processingLabel}</span><b data-testid="caption-processing-percent">{progress}%</b></div>
             <i><em style={{ width: `${progress}%` }} /></i>
-            <p data-testid="caption-processing-note">You can keep this tab open—long videos continue safely in the background.</p>
+            <p data-testid="caption-processing-note">Keep this tab open until the upload finishes. After that it is safe to leave: your video is saved to your projects.</p>
           </div>}
         </> : <>
           <h2 data-testid="upload-dropzone-heading">Drag your video here</h2>
