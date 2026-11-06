@@ -102,13 +102,13 @@ public class CaptionJobWorker : BackgroundService, ICaptionJobQueue
             if (job.Kind == CaptionJobKind.Render)
                 await db.CaptionProjects.Where(p => p.Id == job.ProjectId).ExecuteUpdateAsync(s => s
                     .SetProperty(p => p.Status, CaptionProjectStatus.Ready).SetProperty(p => p.ProcessingLabel, "Captions ready")
-                    .SetProperty(p => p.ErrorMessage, "Video rendering could not start. Please try again.")
+                    .SetProperty(p => p.ErrorMessage, CaptionErrors.ServerIssue)
                     .SetProperty(p => p.UpdatedAt, DateTime.UtcNow));
             else
                 await db.CaptionProjects.Where(p => p.Id == job.ProjectId).ExecuteUpdateAsync(s => s
                     .SetProperty(p => p.Status, CaptionProjectStatus.Failed).SetProperty(p => p.Progress, 100)
                     .SetProperty(p => p.ProcessingLabel, "Processing failed")
-                    .SetProperty(p => p.ErrorMessage, "Caption processing could not start. Please try Re-listen or contact support.")
+                    .SetProperty(p => p.ErrorMessage, CaptionErrors.ServerIssue)
                     .SetProperty(p => p.UpdatedAt, DateTime.UtcNow));
         }
         catch (Exception ex) { _logger.LogError(ex, "Could not mark project {Id} as failed", job.ProjectId); }

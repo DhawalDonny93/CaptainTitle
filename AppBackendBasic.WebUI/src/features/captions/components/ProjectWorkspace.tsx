@@ -109,7 +109,7 @@ export const ProjectWorkspace = ({ projectId, onExit, onUsageChanged, onPaywall 
       <main className="project-stage" data-testid="project-failed">
         <section>
           <h1>{project.name}</h1>
-          <p data-testid="project-failed-message">{project.error_message || 'Caption processing could not finish.'}</p>
+          <p data-testid="project-failed-message">{project.error_message || 'Caption processing could not finish. Please try again, and contact the admin if it keeps happening.'}</p>
           <div className="upload-buttons">
             <CtButton disabled={pending} onClick={retry} data-testid="project-retry-button">Try again</CtButton>
             {latestVersionId != null && <CtButton variant="outline" disabled={pending} onClick={restore} data-testid="project-restore-button">Restore my previous edits</CtButton>}

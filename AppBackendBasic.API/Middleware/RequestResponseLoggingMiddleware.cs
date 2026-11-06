@@ -109,10 +109,15 @@ public class RequestResponseLoggingMiddleware
 
         // Build response info
         var responseInfo = new StringBuilder();
-        responseInfo.AppendLine($"Started: {startTime:yyyy-MM-dd HH:mm:ss.fff} UTC | Path: {context.Request.Path}");
+        responseInfo.AppendLine($"Started: {startTime:yyyy-MM-dd HH:mm:ss.fff} UTC | Path: {context.Request.Path} | Status: {response.StatusCode}");
 
         // Log response body (for small responses and non-binary content)
-        if (response.Body.CanSeek && response.ContentType?.Contains("application/json") == true)
+        // Response compression runs inside this middleware, so the buffer can hold gzip/brotli bytes: logged as text they only garble the log.
+        if (response.Headers.ContainsKey("Content-Encoding"))
+        {
+            responseInfo.AppendLine($"Response Body: [compressed, {(response.Body.CanSeek ? response.Body.Length : 0)} bytes]");
+        }
+        else if (response.Body.CanSeek && response.ContentType?.Contains("application/json") == true)
         {
             response.Body.Seek(0, SeekOrigin.Begin);
             var bodyAsText = await new StreamReader(response.Body).ReadToEndAsync();

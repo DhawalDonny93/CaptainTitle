@@ -21,7 +21,7 @@ export function CaptionCatalogProvider({ children }: { children: ReactNode }) {
     sfxById: Object.fromEntries(catalog.sfx_types.map((s) => [s.id, s])),
   }), [catalog])
 
-  if (error) return <div className="auth-loading ct-scope" data-testid="catalog-error">Captain Title could not load its configuration. Please refresh.</div>
+  if (error) return <div className="auth-loading ct-scope" data-testid="catalog-error">Captain Title could not load its configuration. Please refresh, and contact the admin if it keeps happening.</div>
   if (!value) return <div className="auth-loading ct-scope" data-testid="auth-checking-status">Loading Captain Title…</div>
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>
 }

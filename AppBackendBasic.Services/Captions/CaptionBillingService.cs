@@ -149,7 +149,7 @@ public class CaptionBillingService : ICaptionBillingService
         if (!res.IsSuccessStatusCode)
         {
             _logger.LogError("Razorpay {Method} {Url} failed ({Status}): {Body}", req.Method, req.RequestUri, (int)res.StatusCode, text);
-            throw new CaptionServiceException(502, "The payment provider rejected the request. Please try again.");
+            throw new CaptionServiceException(502, "The payment provider rejected the request. Please try again, and contact the admin if it keeps happening.");
         }
         return JsonDocument.Parse(text).RootElement.Clone();
     }

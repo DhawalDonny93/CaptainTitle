@@ -29,3 +29,23 @@ public sealed class CaptionServiceException : Exception
     public string? Code { get; }
     public CaptionServiceException(int statusCode, string message, string? code = null) : base(message) { StatusCode = statusCode; Code = code; }
 }
+
+/// <summary>The video itself can't be captioned (not a server problem); its message is safe to show to the user.</summary>
+public sealed class CaptionVideoUnusableException : Exception
+{
+    public CaptionVideoUnusableException(string message) : base(message) { }
+}
+
+/// <summary>What users are told when something fails. The cause (bad API key, provider outage, ffmpeg...) goes to the log, never to the user.</summary>
+public static class CaptionErrors
+{
+    public const string ServerIssue = "Something went wrong on our server, so this could not be completed. Please try again later, and contact the admin if it keeps happening.";
+
+    /// <summary>Only failures known to come from the video blame the video; anything else is a server issue.</summary>
+    public static string JobFailureMessage(Exception ex) => ex switch
+    {
+        NoTrustworthyTranscriptException => "No trustworthy transcript was found. Try clearer speech or less background music.",
+        CaptionVideoUnusableException => ex.Message,
+        _ => ServerIssue,
+    };
+}

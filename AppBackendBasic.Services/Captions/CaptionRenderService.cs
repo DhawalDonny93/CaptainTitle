@@ -135,7 +135,7 @@ public class CaptionRenderService : ICaptionRenderService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Export failed for project {Id}", projectId);
-            var message = ex is CaptionRenderTimeoutException ? ex.Message : "Video rendering failed. Please try again.";
+            var message = ex is CaptionRenderTimeoutException ? ex.Message : CaptionErrors.ServerIssue;
             await _db.CaptionProjects.Where(x => x.Id == projectId && x.Status == CaptionProjectStatus.Rendering).ExecuteUpdateAsync(s => s
                 .SetProperty(x => x.Status, CaptionProjectStatus.Ready).SetProperty(x => x.ProcessingLabel, "Captions ready")
                 .SetProperty(x => x.ErrorMessage, message).SetProperty(x => x.UpdatedAt, DateTime.UtcNow), CancellationToken.None);

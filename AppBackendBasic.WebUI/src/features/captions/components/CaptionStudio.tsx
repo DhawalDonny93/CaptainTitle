@@ -569,7 +569,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         data = await captionsApi.get(started.project_id);
       }
       if (!aliveRef.current) return;
-      if (data.status !== "rendered") throw new Error(data.error_message || "Video rendering failed. Please try again.");
+      if (data.status !== "rendered") throw new Error(data.error_message || "Video rendering could not finish. Please try again, and contact the admin if it keeps happening.");
       setProject((current) => ({ ...current, status: "rendered", rendered_revision: data.rendered_revision }));
       toast.success("Your captioned video is ready");
     } catch (error) { toast.error(errorMessage(error)); }

@@ -78,10 +78,12 @@ public class CaptionJobRunner : ICaptionJobRunner
             await using (var dst = File.Create(source))
                 await src.CopyToAsync(dst, ct);
 
-            await _ffmpeg.ExtractAudioAsync(source, audio, ct);
-            // Only transcode a preview when the browser cannot play the upload (e.g. iPhone HEVC); H.264/AAC plays as-is = zero cost.
             var probe = await _ffmpeg.ProbeAsync(source, ct);
             if (project.ThumbnailPath == null) await StoreThumbnailAsync(project, source, tempDir, probe.Duration, ct);
+            // Checked up front: otherwise a video with no sound fails inside ffmpeg and can't be told apart from a server problem.
+            if (probe.AudioCodec == null) throw new CaptionVideoUnusableException("This video has no audio track, so there is nothing to caption.");
+            await _ffmpeg.ExtractAudioAsync(source, audio, ct);
+            // Only transcode a preview when the browser cannot play the upload (e.g. iPhone HEVC); H.264/AAC plays as-is = zero cost.
             var previewTask = probe.IsBrowserPlayable ? Task.FromResult(false) : _ffmpeg.CreateBrowserPreviewAsync(source, previewFile, ct);
             await SetProgressAsync(projectId, 28, "Listening word by word", ct);
 
@@ -116,7 +118,7 @@ public class CaptionJobRunner : ICaptionJobRunner
 
             var wordsJson = CaptionJson.Serialize(words);
             var qualityJson = CaptionJson.Serialize(new { mode = diagnostics.Mode, chunks_used = diagnostics.ChunksUsed,
-                unique_ratio = diagnostics.UniqueRatio, bigram_ratio = diagnostics.BigramRatio, ngram_repeat = diagnostics.NgramRepeat });
+                unique_ratio = diagnostics.UniqueRatio, bigram_ratio = diagnostics.BigramRatio, ngram_repeat = diagnostics.NgramRepeat, sarvam_failed_chunks = diagnostics.SarvamFailedChunks });
             await _db.CaptionProjects.Where(p => p.Id == projectId).ExecuteUpdateAsync(s => s
                 .SetProperty(p => p.WordsJson, wordsJson).SetProperty(p => p.SourceTranscript, sourceTranscript)
                 .SetProperty(p => p.TranscriptionMode, diagnostics.Mode).SetProperty(p => p.TranscriptionQualityJson, qualityJson)
@@ -144,9 +146,7 @@ public class CaptionJobRunner : ICaptionJobRunner
         catch (Exception ex)
         {
             _logger.LogError(ex, "Background caption job failed for {ProjectId}", projectId);
-            var message = ex is NoTrustworthyTranscriptException
-                ? "No trustworthy transcript was found. Try clearer speech or less background music."
-                : "Caption processing could not finish. Please try Re-listen.";
+            var message = CaptionErrors.JobFailureMessage(ex);
             await _db.CaptionProjects.Where(p => p.Id == projectId).ExecuteUpdateAsync(s => s
                 .SetProperty(p => p.Status, CaptionProjectStatus.Failed).SetProperty(p => p.Progress, 100)
                 .SetProperty(p => p.ProcessingLabel, "Processing failed").SetProperty(p => p.ErrorMessage, message)

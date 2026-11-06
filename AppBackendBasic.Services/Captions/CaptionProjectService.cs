@@ -181,8 +181,8 @@ public class CaptionProjectService : ICaptionProjectService
 
             VideoProbe probe;
             try { probe = await _ffmpeg.ProbeAsync(tempFile, ct); }
-            catch (InvalidOperationException) { throw; } // ffmpeg missing -> surfaces as 500 with a clear log
-            catch (Exception) { throw new CaptionServiceException(422, "This video could not be read"); }
+            // Only "ffmpeg found no duration" blames the file. Anything else (e.g. ffmpeg missing) is a server issue, reported by the controller.
+            catch (InvalidDataException) { throw new CaptionServiceException(422, "This video could not be read"); }
             if (probe.Duration > limits.AbsoluteMaxSeconds) throw new CaptionServiceException(422, $"Videos can be at most {limits.AbsoluteMaxSeconds} seconds");
 
             var credit = await _entitlement.DetermineCreditAsync(userId, probe.Duration, ct);
@@ -190,7 +190,11 @@ public class CaptionProjectService : ICaptionProjectService
 
             var storagePath = $"captain-title/uploads/{userId}/{Guid.NewGuid():N}{suffix}";
             try { await _storage.PutFileAsync(storagePath, tempFile, string.IsNullOrWhiteSpace(contentType) ? "video/mp4" : contentType, ct); }
-            catch (Exception) { throw new CaptionServiceException(503, "Video upload could not be stored. Please try again."); }
+            catch (Exception ex) when (!ct.IsCancellationRequested)
+            {
+                _logger.LogError(ex, "Upload could not be stored at {Path}", storagePath);
+                throw new CaptionServiceException(503, CaptionErrors.ServerIssue);
+            }
 
             var project = new CaptionProject
             {
@@ -369,7 +373,11 @@ public class CaptionProjectService : ICaptionProjectService
         var words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson);
         if (words.Count == 0) throw new CaptionServiceException(422, "No captions to re-tag yet");
         try { words = await _hinglish.ReassignEmphasisAsync(words, p.Name, ct); }
-        catch (Exception) { throw new CaptionServiceException(502, "AI emphasis re-assignment failed. Please try again."); }
+        catch (Exception ex) when (!ct.IsCancellationRequested)
+        {
+            _logger.LogError(ex, "AI emphasis re-assignment failed for project {Id}", projectId);
+            throw new CaptionServiceException(502, CaptionErrors.ServerIssue);
+        }
 
         // Re-bake colour/size from the (possibly different) tier, exactly like a template switch.
         var theme = (await _catalog.GetStyleSetAsync(ct)).Theme(p.Theme);

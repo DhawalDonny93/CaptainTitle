@@ -10,7 +10,7 @@ public sealed class NoTrustworthyTranscriptException : Exception
         : base("No trustworthy transcript was found. The audio may be unclear, music-heavy, or repetitive.") { }
 }
 
-public sealed record TranscriptionDiagnostics(string Mode, int ChunksUsed, double UniqueRatio, double BigramRatio, int NgramRepeat);
+public sealed record TranscriptionDiagnostics(string Mode, int ChunksUsed, double UniqueRatio, double BigramRatio, int NgramRepeat, int SarvamFailedChunks = 0);
 
 public interface ICaptionTranscriptionService
 {
@@ -82,6 +82,7 @@ public class CaptionTranscriptionService : ICaptionTranscriptionService
         // Carrying recent words forward (Whisper prompt + Sarvam keyterms) gives continuity across chunk boundaries.
         string runningPrompt = "";
         var runningKeyterms = new List<string>();
+        int sarvamPasses = 0, sarvamFailures = 0;
 
         var tempDir = Path.Combine(Path.GetTempPath(), "captain-chunks-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);
@@ -90,28 +91,22 @@ public class CaptionTranscriptionService : ICaptionTranscriptionService
             foreach (var chunk in await SplitWavAsync(audioPath, tempDir, ct))
             {
                 double skipBefore = chunk.ContentStart - chunk.Offset;
-                WhisperCandidate? candidate = null;
-                try
-                {
-                    var response = await _whisper.TranscribeAsync(chunk.Path, whisperLanguage, runningPrompt, ct);
-                    candidate = TranscriptionAlgorithms.BuildWhisperCandidate(response, skipBefore);
-                }
-                catch (OperationCanceledException) { throw; }
-                catch (Exception ex) { _logger.LogError(ex, "Whisper timing pass failed for chunk {Chunk}", chunk.Path); }
+                // A failed Whisper call (bad key, quota, outage, timeout) is deliberately NOT caught here: it says nothing about the audio, so it must not
+                // end up as "no trustworthy transcript" or as a silent hole in the captions. The job fails, uncharged, as a server issue.
+                var response = await _whisper.TranscribeAsync(chunk.Path, whisperLanguage, runningPrompt, ct);
+                var candidate = TranscriptionAlgorithms.BuildWhisperCandidate(response, skipBefore);
 
-                if (candidate == null || !candidate.Trustworthy || candidate.Words.Count == 0)
+                if (!candidate.Trustworthy || candidate.Words.Count == 0)
                 {
-                    if (candidate != null)
-                        _logger.LogWarning("Chunk {Chunk} has no usable timing skeleton: avg_logprob={Avg} words={Count}", chunk.Path, candidate.AverageLogprob, candidate.Words.Count);
-                    else
-                        _logger.LogWarning("Chunk {Chunk} produced no Whisper timing candidate (pass threw)", chunk.Path);
+                    _logger.LogWarning("Chunk {Chunk} has no usable timing skeleton: avg_logprob={Avg} words={Count}", chunk.Path, candidate.AverageLogprob, candidate.Words.Count);
                     continue;
                 }
 
                 string sarvamText = "";
+                sarvamPasses++;
                 try { sarvamText = (await _sarvam.TranscribeAsync(chunk.Path, sarvamLanguageCode, runningKeyterms, ct)).Trim(); }
-                catch (OperationCanceledException) { throw; }
-                catch (Exception ex) { _logger.LogError(ex, "Sarvam text pass failed for chunk {Chunk}", chunk.Path); }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+                catch (Exception ex) { sarvamFailures++; _logger.LogError(ex, "Sarvam text pass failed for chunk {Chunk}", chunk.Path); }
 
                 // If Sarvam fails for this chunk, fall back to Whisper's own words rather than losing the chunk.
                 var stitched = sarvamText.Length > 0 ? TranscriptionAlgorithms.StitchChunk(candidate.Words, sarvamText) : new List<CaptionWordDto>();
@@ -162,7 +157,10 @@ public class CaptionTranscriptionService : ICaptionTranscriptionService
         if (words.Count == 0 || (words.Count >= 12 && (overall.UniqueRatio < .24 || overall.BigramRatio > .30 || overall.NgramRepeat >= 3)))
             throw new NoTrustworthyTranscriptException();
 
-        return (words, new TranscriptionDiagnostics("whisper-timing+sarvam-text", selectedChunks.Count,
-            Math.Round(overall.UniqueRatio, 3), Math.Round(overall.BigramRatio, 3), overall.NgramRepeat));
+        // The stored mode has to say what really produced the text, or a dead Sarvam key looks like a normal run.
+        if (sarvamFailures > 0) _logger.LogError("Sarvam failed on {Failed}/{Passes} chunks; those captions use Whisper's text", sarvamFailures, sarvamPasses);
+        var mode = sarvamFailures == 0 ? "whisper-timing+sarvam-text" : sarvamFailures < sarvamPasses ? "whisper-timing+partial-sarvam-text" : "whisper-only";
+        return (words, new TranscriptionDiagnostics(mode, selectedChunks.Count,
+            Math.Round(overall.UniqueRatio, 3), Math.Round(overall.BigramRatio, 3), overall.NgramRepeat, sarvamFailures));
     }
 }

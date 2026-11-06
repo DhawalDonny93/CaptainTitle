@@ -70,10 +70,10 @@ public class ProjectPersistenceTests : IDisposable
             new StubHinglish(), new CaptionMediaTokenService(new EphemeralDataProtectionProvider(), _options), _options, NullLogger<CaptionProjectService>.Instance);
     }
 
-    private CaptionJobRunner Runner()
+    private CaptionJobRunner Runner(ICaptionTranscriptionService? transcription = null, IFfmpegService? ffmpeg = null)
     {
         var db = Db();
-        return new CaptionJobRunner(db, new LocalCaptionStorage(_options), new StubFfmpeg(), new StubTranscription(), new StubHinglish(), Catalog(db), Entitlement(db), NullLogger<CaptionJobRunner>.Instance);
+        return new CaptionJobRunner(db, new LocalCaptionStorage(_options), ffmpeg ?? new StubFfmpeg(), transcription ?? new StubTranscription(), new StubHinglish(), Catalog(db), Entitlement(db), NullLogger<CaptionJobRunner>.Instance);
     }
 
     private async Task<int> NewUserAsync(int free = 1)
@@ -404,6 +404,48 @@ public class ProjectPersistenceTests : IDisposable
         Assert.Equal(410, ex.StatusCode);
     }
 
+    [PgFact]
+    public async Task A_provider_failure_is_reported_as_a_server_issue_and_is_not_charged()
+    {
+        var user = await NewUserAsync();
+        var id = await NewProjectAsync(user, CaptionProjectStatus.Queued);
+        await Runner(new ThrowingTranscription(new HttpRequestException("Whisper request failed (401)"))).RunAsync(id, consumeCredit: true);
+        var p = await Db().CaptionProjects.AsNoTracking().FirstAsync(x => x.Id == id);
+        Assert.Equal(CaptionProjectStatus.Failed, p.Status);
+        Assert.Equal(CaptionErrors.ServerIssue, p.ErrorMessage);
+        Assert.Null(p.CreditConsumedAt);
+    }
+
+    [PgFact]
+    public async Task Unclear_audio_is_reported_as_a_problem_with_the_video()
+    {
+        var user = await NewUserAsync();
+        var id = await NewProjectAsync(user, CaptionProjectStatus.Queued);
+        await Runner(new ThrowingTranscription(new NoTrustworthyTranscriptException())).RunAsync(id, consumeCredit: true);
+        var p = await Db().CaptionProjects.AsNoTracking().FirstAsync(x => x.Id == id);
+        Assert.Equal(CaptionProjectStatus.Failed, p.Status);
+        Assert.Contains("No trustworthy transcript", p.ErrorMessage);
+    }
+
+    [PgFact]
+    public async Task A_video_without_audio_says_so()
+    {
+        var user = await NewUserAsync();
+        var id = await NewProjectAsync(user, CaptionProjectStatus.Queued);
+        await Runner(ffmpeg: new StubFfmpeg(new VideoProbe(10, 1080, 1920, "h264"))).RunAsync(id, consumeCredit: true);
+        var p = await Db().CaptionProjects.AsNoTracking().FirstAsync(x => x.Id == id);
+        Assert.Equal(CaptionProjectStatus.Failed, p.Status);
+        Assert.Contains("no audio track", p.ErrorMessage);
+    }
+
+    private sealed class ThrowingTranscription : ICaptionTranscriptionService
+    {
+        private readonly Exception _error;
+        public ThrowingTranscription(Exception error) { _error = error; }
+        public Task<(List<CaptionWordDto> Words, TranscriptionDiagnostics Diagnostics)> TranscribeWordsAsync(string audioPath, string speechLanguage, CancellationToken ct = default) =>
+            Task.FromException<(List<CaptionWordDto>, TranscriptionDiagnostics)>(_error);
+    }
+
     private sealed class RecordingQueue : ICaptionJobQueue
     {
         public bool Enqueue(int projectId, bool consumeCredit) => true;
@@ -424,8 +466,10 @@ public class ProjectPersistenceTests : IDisposable
 
     private sealed class StubFfmpeg : IFfmpegService
     {
+        private readonly VideoProbe _probe;
+        public StubFfmpeg(VideoProbe? probe = null) { _probe = probe ?? new VideoProbe(10, 1080, 1920, "h264", "aac"); }
         public Task<FfmpegResult> RunAsync(IEnumerable<string> args, string? workingDirectory = null, CancellationToken ct = default) => Task.FromResult(new FfmpegResult(0, ""));
-        public Task<VideoProbe> ProbeAsync(string path, CancellationToken ct = default) => Task.FromResult(new VideoProbe(10, 1080, 1920, "h264", "aac"));
+        public Task<VideoProbe> ProbeAsync(string path, CancellationToken ct = default) => Task.FromResult(_probe);
         public Task ExtractAudioAsync(string source, string wavOut, CancellationToken ct = default) => Task.CompletedTask;
         public Task<bool> CreateBrowserPreviewAsync(string source, string output, CancellationToken ct = default) => Task.FromResult(false);
         public async Task<bool> CreateThumbnailAsync(string source, string output, double atSeconds, CancellationToken ct = default)

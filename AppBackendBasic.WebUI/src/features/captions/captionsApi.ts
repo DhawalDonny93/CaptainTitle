@@ -5,12 +5,19 @@ import type {
 
 const base = '/captions'
 
+/** Same wording as CaptionErrors.ServerIssue on the backend. */
+const SERVER_ISSUE_MESSAGE = 'Something went wrong on our server, so this could not be completed. Please try again later, and contact the admin if it keeps happening.'
+
 /** Extracts a user-facing message from an axios error (backend returns { message }). */
 export function errorMessage(error: unknown): string {
-  const e = error as { response?: { data?: { message?: string; detail?: string; title?: string; errors?: unknown } }; message?: string }
+  const e = error as { response?: { status?: number; data?: { message?: string; detail?: string; title?: string; errors?: unknown } }; message?: string; code?: string }
   // ASP.NET model validation: its title ("One or more validation errors occurred") tells the user nothing.
   if (e?.response?.data?.errors) return 'Some captions have invalid content, for example an empty word'
-  return e?.response?.data?.message || e?.response?.data?.detail || e?.response?.data?.title || e?.message || 'Something went wrong'
+  if (e?.response?.data?.message) return e.response.data.message
+  // A 5xx with no message of ours (e.g. the hosting proxy): axios's "Request failed with status code 502" tells the user nothing either.
+  if ((e?.response?.status ?? 0) >= 500) return SERVER_ISSUE_MESSAGE
+  if (!e?.response && (e?.code === 'ERR_NETWORK' || e?.code === 'ECONNABORTED')) return 'We could not reach the server. Check your connection and try again, and contact the admin if it keeps happening.'
+  return e?.response?.data?.detail || e?.response?.data?.title || e?.message || 'Something went wrong'
 }
 
 export function httpStatus(error: unknown): number | undefined {

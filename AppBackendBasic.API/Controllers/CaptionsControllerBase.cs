@@ -18,5 +18,12 @@ public abstract class CaptionsControllerBase : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { message = ex.Message, code = ex.Code ?? (ex.StatusCode == 402 ? "PAYMENT_REQUIRED" : null) });
         }
+        // Without this an unexpected failure (database down, ffmpeg missing...) reaches the browser as an empty 500 with nothing useful to show.
+        catch (Exception ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            HttpContext.RequestServices.GetRequiredService<ILogger<CaptionsControllerBase>>()
+                .LogError(ex, "Unhandled caption API error on {Method} {Path}", Request.Method, Request.Path);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = CaptionErrors.ServerIssue });
+        }
     }
 }
