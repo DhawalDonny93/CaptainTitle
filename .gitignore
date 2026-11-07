@@ -301,6 +301,9 @@ pip-delete-this-directory.txt
 *.out
 *.app
 
+# Captain Title bundled ffmpeg binaries (large; added locally before publishing)
+AppBackendBasic.API/Tools/
+
 # Captain Title runtime media storage
 App_Data/
 

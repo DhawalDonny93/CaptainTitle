@@ -43,6 +43,8 @@
 
   <ItemGroup>
     <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Optional bundled ffmpeg (Tools/ffmpeg/<rid>/) for hosts where it cannot be installed. Publish only: local runs use the one on PATH. -->
+    <Content Include="Tools\**\*" CopyToOutputDirectory="Never" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -35,6 +35,28 @@ public class RenderSmokeTests
         catch { return false; }
     }
 
+    /// <summary>A fonts path with a colon: what the render sees on Windows when the temp folder and the site are on different drives.</summary>
+    [Fact]
+    public void Export_renders_when_fonts_path_contains_a_colon()
+    {
+        if (OperatingSystem.IsWindows() || !FfmpegReady()) return; // Windows cannot create this folder name
+        var work = Path.Combine(Path.GetTempPath(), "ct-render-colon-" + Guid.NewGuid().ToString("N"));
+        var fonts = Path.Combine(work, "D:", "fonts");
+        Directory.CreateDirectory(fonts);
+        try
+        {
+            var source = Path.Combine(work, "source.mp4");
+            Assert.Equal(0, Run(work, new[] { "-y", "-f", "lavfi", "-i", "testsrc=s=360x640:r=25:d=1", "-c:v", "libx264", "-pix_fmt", "yuv420p", source }).Code);
+            var ass = Path.Combine(work, "captions.ass");
+            File.WriteAllText(ass, "[Script Info]\nScriptType: v4.00+\n");
+            var args = FfmpegRenderArgs.Build(source, ass, Path.Combine(work, "out.mp4"), fonts, 100, false, 0, 100, 100, "draft",
+                Array.Empty<(string, double)>(), type => new SfxTone(type, 440, 440, 0.2), hasAudio: false);
+            var (code, err) = Run(work, args);
+            Assert.True(code == 0, err.Length > 1500 ? err[^1500..] : err);
+        }
+        finally { try { Directory.Delete(work, true); } catch { } }
+    }
+
     [Theory]
     [InlineData("street_glow")]
     [InlineData("doodle_marker")]

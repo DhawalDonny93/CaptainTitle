@@ -68,7 +68,7 @@ public class FfmpegService : IFfmpegService
         try { process.Start(); }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or FileNotFoundException)
         {
-            throw new InvalidOperationException($"ffmpeg could not be started ('{_options.FfmpegPath}'). Install ffmpeg, bundle it under Tools/ffmpeg/<rid>/ or set Captions:FfmpegPath.", ex);
+            throw new InvalidOperationException($"ffmpeg could not be started ('{psi.FileName}'): {ex.Message} Install ffmpeg, bundle it under Tools/ffmpeg/<rid>/ or set Captions:FfmpegPath.", ex);
         }
         process.BeginErrorReadLine();
         process.BeginOutputReadLine();

@@ -20,7 +20,15 @@ public static class FfmpegRenderArgs
     public static (string Preset, string Crf) QualityPreset(string quality) =>
         quality == "draft" ? ("veryfast", "26") : ("medium", "17");
 
-    public static string EscapeFilterPath(string path) => path.Replace('\\', '/').Replace(":", "\\:");
+    /// <summary>
+    /// A path as a filter option value. A colon needs escaping for the filter's option parser, and the quotes stop the filtergraph parser consuming that
+    /// escape first: unquoted, "D\:/fonts" reaches the filter as "D:/fonts" and fails with "No option name near '/fonts'".
+    /// </summary>
+    public static string EscapeFilterPath(string path)
+    {
+        var forward = path.Replace('\\', '/');
+        return forward.Contains(':') ? $"'{forward.Replace(":", "\\:")}'" : forward;
+    }
 
     private static string N(double v) => v.ToString("R", Inv);
 
@@ -109,7 +117,8 @@ public static class FfmpegRenderArgs
         int threads = 0, (string Preset, string Crf)? encode = null,
         BlurMaskFiles? masks = null, int? videoWidth = null, int? videoHeight = null, bool hasAudio = true)
     {
-        // ffmpeg runs from the .ass directory and references every path relatively so no drive-letter colon is needed.
+        // ffmpeg runs from the .ass directory and references paths relatively. The fonts path stays absolute, drive letter included, when the
+        // temp folder is on another Windows drive (GetRelativePath cannot bridge drives); EscapeFilterPath handles that colon.
         var workDir = Path.GetDirectoryName(assPath)!;
         var assName = Path.GetFileName(assPath);
         var fontsRel = Path.GetRelativePath(workDir, fontsDir);
