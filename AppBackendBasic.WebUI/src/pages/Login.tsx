@@ -25,13 +25,16 @@ export default function Login() {
     const params = new URLSearchParams(window.location.search);
     const reason = params.get('reason');
     if (params.get('mode') === 'signup') setIsLogin(false);
+    // Landing-page email capture (/home-v3) hands the address over so it does not have to be typed twice
+    const prefillEmail = params.get('email');
+    if (prefillEmail) setFormData((f) => ({ ...f, email: prefillEmail.slice(0, 254) }));
 
     if (reason === 'session_expired') {
       toast.error('Your session has expired. Please log in again.');
     }
 
     // Clear the query parameters but keep the page clean
-    if (reason || params.get('mode')) {
+    if (reason || params.get('mode') || prefillEmail) {
       window.history.replaceState({}, '', '/login');
     }
   }, [])

@@ -5,6 +5,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../lib/api'
+import { LANDING_FAQ } from './landingContent'
 
 interface Plan { id: string; name: string; price: number; currency: string; kind: string; videos: number; max_seconds: number; description: string | null }
 
@@ -29,13 +30,7 @@ const FEATURES = [
   { icon: Pencil, title: 'Edit like a video editor', body: 'Drag captions on the frame, retime words on the timeline, add stickers, text layers and sound effects.' },
 ]
 
-const FAQ = [
-  { q: 'Which languages work?', a: 'Hindi, English and Hinglish (a mix of both). Captions are written in the Roman alphabet, the way creators type Hinglish.' },
-  { q: 'How long can my video be?', a: 'Up to two minutes per upload. Your plan decides how long a video can be before it needs a pass or a subscription.' },
-  { q: 'Is the first video really free?', a: 'Yes. Your first captioned video is free, up to 45 seconds. No card is needed to try it.' },
-  { q: 'Can I edit the captions?', a: 'Everything is editable: text, timing, fonts, colours, position, stickers and sound effects. The preview is live.' },
-  { q: 'What do I get at the end?', a: 'A finished MP4 with captions burned in and an SRT subtitle file.' },
-]
+const FAQ = LANDING_FAQ
 
 function PricingTeaser() {
   const navigate = useNavigate()

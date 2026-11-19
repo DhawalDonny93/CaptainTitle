@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
+import LandingPageV2 from './pages/LandingPageV2'
+import LandingPageV3 from './pages/LandingPageV3'
 import Login from './pages/Login'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
@@ -37,6 +39,8 @@ function App() {
               <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
+              <Route path="/home-v2" element={<LandingPageV2 />} />
+              <Route path="/home-v3" element={<LandingPageV3 />} />
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
