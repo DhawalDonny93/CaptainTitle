@@ -156,7 +156,8 @@ public static class AssSubtitleWriter
 
             double rotation = CaptionLayout.GroupRotation(group);
             // Doodle Marker uses ONE font size for every tier, so words flow on one line instead of breaking at every tier change.
-            var breakTiers = themeKey == FixedTemplates.DoodleMarker ? null : tiers;
+            // A "flow" template (migration 28) does the same: emphasis changes colour/size, not the line.
+            var breakTiers = themeKey == FixedTemplates.DoodleMarker || theme.Flow ? null : tiers;
             var breaks = CaptionLayout.ResolveLineBreaks(group, breakTiers, captionLines);
             var rows = CaptionLayout.SplitRows(group, breaks);
 
@@ -179,13 +180,17 @@ public static class AssSubtitleWriter
                 int popInEnd = Math.Min(relOff, relOn + PopInMs);
                 int popOutStart = Math.Max(popInEnd, relOff - PopOutMs);
                 var popScaleOnly = $"\\t({relOn},{popInEnd},\\fscx{PopScale}\\fscy{PopScale})\\t({popOutStart},{relOff},\\fscx100\\fscy100)";
+                // Karaoke colour (migration 28 templates): the word switches to the template's active colour while it is spoken, then back.
+                // Only on the visible text layer - shadow/glow masks keep their own colours. The manual Emphasize accent wins over it.
+                var activeTags = theme.ActiveColor != null && !word.Emphasize
+                    ? $"\\t({relOn},{relOn + 1},\\c{AssColor(theme.ActiveColor)})\\t({relOff},{relOff + 1},\\c{AssColor(color)})" : "";
 
                 if (useBackground)
-                    return ($"{baseTags}\\c{AssColor(color)}{boldTag}" + popScaleOnly, null, null, null, null);
+                    return ($"{baseTags}\\c{AssColor(color)}{boldTag}" + popScaleOnly + activeTags, null, null, null, null);
 
                 // Outline stays crisp and unblurred; Shadow/Glow are built as separate blur-mask files, not ASS override tags.
                 var outlineTags = style.OutlineEnabled ? $"\\3c{AssColor(style.OutlineColor)}\\bord{N(style.OutlineWidth)}" : "\\bord0";
-                var primary = $"{baseTags}\\c{AssColor(color)}{boldTag}{outlineTags}\\shad0\\blur0" + popScaleOnly;
+                var primary = $"{baseTags}\\c{AssColor(color)}{boldTag}{outlineTags}\\shad0\\blur0" + popScaleOnly + activeTags;
                 var maskBase = $"{baseTags}{boldTag}\\bord0\\shad0\\blur0" + popScaleOnly;
 
                 string? shadowAlphaTags = null, shadowColorTags = null, glowAlphaTags = null, glowColorTags = null;
@@ -222,6 +227,8 @@ public static class AssSubtitleWriter
                 {
                     var word = row[index];
                     var displayText = scriptMode == "native" && !string.IsNullOrEmpty(word.Original) ? word.Original : word.Text;
+                    // Upper-case templates (migration 28): Roman letters only; Devanagari has no case, so ToUpperInvariant leaves it as is.
+                    if (theme.Uppercase) displayText = displayText.ToUpperInvariant();
                     var safe = displayText.Replace("{", "").Replace("}", "");
                     var (primaryTags, shadowAlphaTags, shadowColorTags, glowAlphaTags, glowColorTags) = WordTags(word, displayText);
                     if (firstWord)
@@ -280,7 +287,10 @@ public static class AssSubtitleWriter
             if (element.End > element.Start) lines.Append(ElementDialogue(element, styles));
 
         // Mask files are only produced when their layer actually has content, so the renderer builds only the blur stages it needs.
-        var maskHeader = "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n[V4+ Styles]\n" + StyleFormat
+        // Flow templates (migration 28) put a whole caption on one long line; without WrapStyle 2 libass would auto-wrap the MASK copy while the
+        // main layer stays on one line, so the shadow/glow would sit under the wrong words. Older templates keep their exact (golden-tested) header.
+        var maskWrap = theme.Flow ? "WrapStyle: 2\n" : "";
+        var maskHeader = "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n" + maskWrap + "[V4+ Styles]\n" + StyleFormat
             + $"Style: Default,{primaryFamily},52,&H00FFFFFF,&H00007AFF,&H00000000,&H00000000,0,{italicField},0,0,100,100,0,0,1,0,0,2,70,70,210,1\n"
             + EventsFormat;
         string? Mask(StringBuilder sb) => sb.Length > 0 ? maskHeader + sb : null;

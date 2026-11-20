@@ -13,10 +13,10 @@ export const CtButton = forwardRef<HTMLButtonElement, CtButtonProps>(({ classNam
   <button
     ref={ref}
     className={cn(
-      'inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff5470] disabled:pointer-events-none disabled:opacity-50',
-      variant === 'default' && 'bg-[#ff2d4d] text-white hover:bg-[#ff5470]',
-      variant === 'outline' && 'border border-zinc-700 bg-transparent text-white hover:bg-zinc-800',
-      variant === 'ghost' && 'bg-transparent text-white hover:bg-zinc-800',
+      'inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ct-accent)] disabled:pointer-events-none disabled:opacity-50',
+      variant === 'default' && 'bg-[var(--ct-accent)] text-[var(--ct-on-accent)] hover:brightness-110',
+      variant === 'outline' && 'border border-[var(--ct-border)] bg-transparent text-[var(--ct-text)] hover:bg-[var(--ct-hover)]',
+      variant === 'ghost' && 'bg-transparent text-[var(--ct-text)] hover:bg-[var(--ct-hover)]',
       size === 'default' ? 'h-10 px-4' : 'h-10 w-10',
       className,
     )}
@@ -28,7 +28,7 @@ CtButton.displayName = 'CtButton'
 export const CtInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(({ className, ...props }, ref) => (
   <input
     ref={ref}
-    className={cn('h-10 w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm text-white placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff5470]', className)}
+    className={cn('h-10 w-full rounded-md border border-[var(--ct-border)] bg-[var(--ct-field)] px-3 text-sm text-[var(--ct-text)] placeholder:text-[var(--ct-faint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ct-accent)]', className)}
     {...props}
   />
 ))
@@ -79,7 +79,7 @@ export function CtDialog({ open, onOpenChange, className, children, ...rest }: C
   if (!open) return null
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center bg-black/70 backdrop-blur-sm p-4" onMouseDown={() => onOpenChange(false)}>
-      <div role="dialog" aria-modal="true" className={cn('ct-scope max-h-[90vh] w-full max-w-3xl overflow-auto rounded-lg border border-zinc-800 bg-[#121212] p-6 text-white', className)}
+      <div role="dialog" aria-modal="true" className={cn('ct-scope max-h-[90vh] w-full max-w-3xl overflow-auto rounded-lg border border-[var(--ct-border)] bg-[var(--ct-panel)] p-6 text-[var(--ct-text)]', className)}
         onMouseDown={(e) => e.stopPropagation()} data-testid={rest['data-testid']}>
         {children}
       </div>

@@ -77,32 +77,32 @@ const WordPopover = ({ word, index, anchor, onClose, onText, onNewLine, onSplitW
   const top = Math.min(anchor.y, window.innerHeight - 220);
 
   return (
-    <div ref={popoverRef} className="fixed z-50 w-64 rounded-lg border border-zinc-700 bg-[#17171a] p-3 shadow-xl"
+    <div ref={popoverRef} className="fixed z-50 w-64 rounded-lg border border-[var(--ct-border)] bg-[var(--ct-panel)] p-3 shadow-xl"
       style={{ left, top }} data-testid={`script-word-popover-${index}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-semibold tracking-[.14em] text-zinc-500">EDIT WORD</span>
-        <button onClick={onClose} className="text-zinc-500 hover:text-white" data-testid="script-popover-close"><X size={13} weight="bold" /></button>
+        <span className="text-[10px] font-semibold tracking-[.14em] text-[var(--ct-muted)]">EDIT WORD</span>
+        <button onClick={onClose} className="text-[var(--ct-muted)] hover:text-[var(--ct-text)]" data-testid="script-popover-close"><X size={13} weight="bold" /></button>
       </div>
       <input ref={inputRef} value={draft} onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter") { commitText(); onClose(); } }}
         onBlur={commitText}
-        className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-white outline-none focus:border-[#ff2d4d]"
+        className="w-full rounded border border-[var(--ct-border)] bg-[var(--ct-field)] px-2 py-1.5 text-sm text-[var(--ct-text)] outline-none focus:border-[var(--ct-accent)]"
         data-testid={`script-popover-input-${index}`} />
       <div className="mt-2 grid grid-cols-2 gap-1.5">
-        <button onClick={splitHere} className="flex items-center justify-center gap-1 rounded bg-zinc-800 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 hover:bg-zinc-700"
+        <button onClick={splitHere} className="flex items-center justify-center gap-1 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]"
           title="Split this word into two, at the cursor" data-testid={`script-split-word-${index}`}>
           <Scissors size={12} /> Split word
         </button>
-        <button onClick={() => { onNewLine(index); onClose(); }} className="flex items-center justify-center gap-1 rounded bg-zinc-800 px-2 py-1.5 text-[11px] font-semibold text-zinc-200 hover:bg-zinc-700"
+        <button onClick={() => { onNewLine(index); onClose(); }} className="flex items-center justify-center gap-1 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]"
           title="Toggle a caption line break before this word" data-testid={`script-split-line-${index}`}>
           <TextAa size={12} /> Split line
         </button>
       </div>
       <div className="mt-2">
-        <span className="block mb-1 text-[10px] font-semibold tracking-[.1em] text-zinc-500">EMPHASIS</span>
+        <span className="block mb-1 text-[10px] font-semibold tracking-[.1em] text-[var(--ct-muted)]">EMPHASIS</span>
         <div className="grid grid-cols-3 gap-1.5">
           {EMPHASIS_TIERS.map((tier) => <button key={tier.id} onClick={() => { onEmphasis(index, tier.id); onClose(); }}
-            className={`rounded px-1.5 py-1 text-[11px] font-semibold ${word.emphasis === tier.id ? "bg-[#ff2d4d] text-white" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"}`}
+            className={`rounded px-1.5 py-1 text-[11px] font-semibold ${word.emphasis === tier.id ? "bg-[var(--ct-accent)] text-[var(--ct-on-accent)]" : "bg-[var(--ct-field)] text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]"}`}
             data-testid={`script-emphasis-${tier.id}-${index}`}>{tier.label}</button>)}
         </div>
       </div>
@@ -171,11 +171,11 @@ export const TranscriptPanel = ({ words, originalTranscript, transcriptionMode, 
           const start = sentence[0].word.start, end = sentence[sentence.length - 1].word.end;
           const isActive = sentenceIndex === activeSentenceIndex;
           return <div key={sentence[0].index} ref={(el) => { cardRefs.current[sentenceIndex] = el; }}
-            className={`rounded-md border p-2.5 transition-colors ${isActive ? "border-[#ff2d4d]/60 bg-[#2a0f14]" : "border-zinc-800 bg-[#151113]"}`}
+            className={`rounded-md border p-2.5 transition-colors ${isActive ? "border-[var(--ct-accent-line)] bg-[var(--ct-accent-soft)]" : "border-[var(--ct-border)] bg-[var(--ct-field)]"}`}
             data-testid={`script-sentence-${sentenceIndex}`}>
             <div className="mb-1.5 flex items-center justify-between">
-              <span className="grid h-[18px] w-[18px] place-items-center rounded-full bg-zinc-800 text-[10px] font-semibold text-zinc-400" data-testid={`script-sentence-number-${sentenceIndex}`}>{sentenceIndex + 1}</span>
-              <span className="font-mono text-[9px] text-zinc-500" data-testid={`script-sentence-time-${sentenceIndex}`}>{start.toFixed(1)}s → {end.toFixed(1)}s</span>
+              <span className="grid h-[18px] w-[18px] place-items-center rounded-full bg-[var(--ct-field)] text-[10px] font-semibold text-[var(--ct-muted)]" data-testid={`script-sentence-number-${sentenceIndex}`}>{sentenceIndex + 1}</span>
+              <span className="font-mono text-[9px] text-[var(--ct-muted)]" data-testid={`script-sentence-time-${sentenceIndex}`}>{start.toFixed(1)}s → {end.toFixed(1)}s</span>
             </div>
             <div className="flex flex-wrap items-baseline gap-y-1">
               {sentence.map(({ word, index }) => <button key={index} type="button"
@@ -183,9 +183,9 @@ export const TranscriptPanel = ({ words, originalTranscript, transcriptionMode, 
                 onDoubleClick={(e) => { e.preventDefault(); openPopover(index, e.currentTarget); }}
                 onContextMenu={(e) => { e.preventDefault(); openPopover(index, e.currentTarget); }}
                 className={`mr-1 flex flex-col items-start rounded px-2 py-1 leading-none transition-colors ${
-                  activeIndex === index ? "bg-[#ff2d4d] text-white"
-                    : selectedIndex === index ? "bg-zinc-700 text-white ring-1 ring-[#ff2d4d]"
-                    : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                  activeIndex === index ? "bg-[var(--ct-accent)] text-[var(--ct-on-accent)]"
+                    : selectedIndex === index ? "bg-[var(--ct-accent-soft)] text-[var(--ct-text)] ring-1 ring-[var(--ct-accent)]"
+                    : "bg-[var(--ct-field)] text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)] hover:text-[var(--ct-text)]"
                 } ${word.important || word.emphasis === "key" ? "font-bold" : ""}`}
                 title={word.uncertain ? "Uncertain transcription - double-click to fix the spelling" : "Click to seek · double-click or right-click to edit"}
                 data-testid={`script-word-${index}`} data-uncertain={word.uncertain ? "true" : undefined}>

@@ -1,0 +1,81 @@
+/* Caption studio colour themes.
+   Every chrome colour in studio.css reads one of these --ct-* tokens. The video frame and the caption previews (template cards,
+   caption overlay, safe-zone) keep their own fixed colours on purpose: captions are white-on-video and must look like the export.
+   The active theme is the data-ct-theme attribute on <html> (set by useStudioTheme). No attribute = "vscode-light". */
+
+/* ---- VS Code "Light Modern" (default) ---- */
+:root {
+  --ct-bg:#f8f8f8; --ct-surface:#ffffff; --ct-panel:#ffffff; --ct-sunken:#f3f3f3; --ct-field:#f8f8f8; --ct-hover:#f0f0f0;
+  --ct-header-bg:rgba(248,248,248,.92); --ct-overlay:rgba(255,255,255,.55);
+  --ct-border:#e5e5e5; --ct-border-soft:#ececec; --ct-border-strong:#c8c8c8; --ct-line:#e5e5e5;
+  --ct-text:#1f1f1f; --ct-text-2:#3b3b3b; --ct-muted:#616161; --ct-faint:#8b8b8b;
+  --ct-accent:#005fb8; --ct-accent-text:#005fb8; --ct-accent-soft:#e6f0fa; --ct-accent-line:#9cc4ea; --ct-accent-glow:rgba(0,95,184,.22);
+  --ct-on-accent:#ffffff; --ct-roma:#c42b1c; --ct-viral:#e51400;
+  --ct-track:#e0e0e0; --ct-knob:#9e9e9e; --ct-retime:rgba(0,0,0,.06); --ct-retime-hover:rgba(0,0,0,.18);
+  --ct-select:#bf8803; --ct-shadow:rgba(0,0,0,.12);
+  --ct-info-bg:#eef6fd; --ct-info-line:#c5ddf3; --ct-info-text:#0b5cad;
+  --ct-ok-bg:#edf7f0; --ct-ok-line:#bfe0c9; --ct-ok-text:#2a7a3e; --ct-warn-text:#9a6700;
+  --ct-amber:#bf8803; --ct-amber-bg:#fff8e1; --ct-amber-line:#ecd28b; --ct-amber-text:#6b5200; --ct-amber-active-bg:#ffe7a3; --ct-amber-glow:rgba(191,136,3,.3);
+  --ct-block-active-bg:#005fb8; --ct-block-active-text:#ffffff; --ct-wave:rgba(0,95,184,.45);
+  /* legacy aliases still referenced by studio.css */
+  --ct-cherry:var(--ct-accent); --ct-brand-grad:var(--ct-accent); --ct-blue:var(--ct-accent);
+  color-scheme:light;
+}
+
+/* ---- Visual Studio 2022 Light: cool grey shell, purple brand, blue selection ---- */
+:root[data-ct-theme="vs-light"] {
+  --ct-bg:#eeeef2; --ct-surface:#f5f5f5; --ct-panel:#ffffff; --ct-sunken:#e7e8ec; --ct-field:#ffffff; --ct-hover:#e0e3e8;
+  --ct-header-bg:rgba(238,238,242,.94);
+  --ct-border:#cccedb; --ct-border-soft:#dcdde4; --ct-border-strong:#a0a3b5; --ct-line:#cccedb;
+  --ct-text:#1e1e1e; --ct-text-2:#333337; --ct-muted:#6d6d6d; --ct-faint:#8e8e94;
+  --ct-accent:#68217a; --ct-accent-text:#68217a; --ct-accent-soft:#f1e8f4; --ct-accent-line:#c9a7d3; --ct-accent-glow:rgba(104,33,122,.22);
+  --ct-select:#007acc; --ct-block-active-bg:#68217a; --ct-wave:rgba(0,122,204,.45);
+}
+
+/* ---- Snow: pure white, crisp grey borders, blue accent ---- */
+:root[data-ct-theme="snow"] {
+  --ct-bg:#ffffff; --ct-surface:#ffffff; --ct-panel:#ffffff; --ct-sunken:#f6f8fa; --ct-field:#f6f8fa; --ct-hover:#eef1f4;
+  --ct-header-bg:rgba(255,255,255,.92);
+  --ct-border:#d0d7de; --ct-border-soft:#e6eaef; --ct-border-strong:#afb8c1; --ct-line:#d8dee4;
+  --ct-text:#1f2328; --ct-text-2:#3d444d; --ct-muted:#59636e; --ct-faint:#818b98;
+  --ct-accent:#0969da; --ct-accent-text:#0969da; --ct-accent-soft:#ddf4ff; --ct-accent-line:#80ccff; --ct-accent-glow:rgba(9,105,218,.22);
+  --ct-select:#bf8700; --ct-block-active-bg:#0969da; --ct-wave:rgba(9,105,218,.4); --ct-shadow:rgba(31,35,40,.12);
+}
+
+/* ---- Paper: warm off-white, keeps the Captain Title cherry brand ---- */
+:root[data-ct-theme="paper"] {
+  --ct-bg:#faf7f2; --ct-surface:#ffffff; --ct-panel:#ffffff; --ct-sunken:#f3efe8; --ct-field:#fbf9f6; --ct-hover:#f4eee6;
+  --ct-header-bg:rgba(250,247,242,.92);
+  --ct-border:#e8e1d7; --ct-border-soft:#efe9e0; --ct-border-strong:#d4c8b8; --ct-line:#e8e1d7;
+  --ct-text:#1c1917; --ct-text-2:#44403c; --ct-muted:#78716c; --ct-faint:#a8a29e;
+  --ct-accent:#e11d48; --ct-accent-text:#be123c; --ct-accent-soft:#ffe4e9; --ct-accent-line:#fbb1c0; --ct-accent-glow:rgba(225,29,72,.25);
+  --ct-roma:#be123c; --ct-select:#d97706; --ct-block-active-bg:#e11d48; --ct-wave:rgba(225,29,72,.38);
+}
+
+/* ---- Solarized Light ---- */
+:root[data-ct-theme="solarized"] {
+  --ct-bg:#fdf6e3; --ct-surface:#fffbef; --ct-panel:#fffbef; --ct-sunken:#eee8d5; --ct-field:#fdf6e3; --ct-hover:#f3ecd6;
+  --ct-header-bg:rgba(253,246,227,.94);
+  --ct-border:#e3dcc6; --ct-border-soft:#ece5cf; --ct-border-strong:#c9c0a4; --ct-line:#e3dcc6;
+  --ct-text:#073642; --ct-text-2:#3d5560; --ct-muted:#657b83; --ct-faint:#93a1a1;
+  --ct-accent:#268bd2; --ct-accent-text:#1e6fa8; --ct-accent-soft:#e2eef2; --ct-accent-line:#a9cbe3; --ct-accent-glow:rgba(38,139,210,.25);
+  --ct-roma:#dc322f; --ct-select:#b58900; --ct-block-active-bg:#268bd2; --ct-wave:rgba(38,139,210,.4);
+  --ct-ok-text:#5f7000; --ct-warn-text:#8a6900; --ct-amber:#b58900;
+}
+
+/* ---- Studio Dark: the original look ---- */
+:root[data-ct-theme="dark"] {
+  --ct-bg:#0a0a0a; --ct-surface:#121212; --ct-panel:#18181b; --ct-sunken:#0d0d0e; --ct-field:#17171a; --ct-hover:#201a1c;
+  --ct-header-bg:rgba(10,10,10,.88); --ct-overlay:rgba(10,10,10,.6);
+  --ct-border:#2d2d31; --ct-border-soft:rgba(255,255,255,.07); --ct-border-strong:#4a3338; --ct-line:#2a1e21;
+  --ct-text:#ffffff; --ct-text-2:#b4b4bb; --ct-muted:#9a9196; --ct-faint:#68686f;
+  --ct-accent:#ff2d4d; --ct-accent-text:#ff8fa3; --ct-accent-soft:#241016; --ct-accent-line:#7a2230; --ct-accent-glow:rgba(255,45,77,.4);
+  --ct-on-accent:#ffffff; --ct-roma:#8c0f28; --ct-viral:#ff3b30;
+  --ct-track:#28282d; --ct-knob:#888888; --ct-retime:rgba(255,255,255,.08); --ct-retime-hover:rgba(255,255,255,.25);
+  --ct-select:#f5a623; --ct-shadow:rgba(0,0,0,.5);
+  --ct-info-bg:#10161d; --ct-info-line:#203244; --ct-info-text:#70b5ff;
+  --ct-ok-bg:#102019; --ct-ok-line:#244d36; --ct-ok-text:#8fd8ae; --ct-warn-text:#f5c76a;
+  --ct-amber:#d99a2b; --ct-amber-bg:#241e14; --ct-amber-line:#4a3a1f; --ct-amber-text:#d9c89a; --ct-amber-active-bg:#5a3a12; --ct-amber-glow:rgba(217,154,43,.4);
+  --ct-block-active-bg:#8c0f28; --ct-block-active-text:#ffffff; --ct-wave:rgba(255,214,10,.6);
+  color-scheme:dark;
+}

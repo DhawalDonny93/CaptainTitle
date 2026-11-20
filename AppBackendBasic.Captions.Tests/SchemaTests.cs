@@ -96,10 +96,11 @@ public class SchemaTests
 /// <summary>The seed rows in 21_captain_title_captions.sql must equal CaptionSeedData (which the parity tests tie to the old Python tables).</summary>
 public class CaptionSeedSqlTests
 {
-    // seed rows live in 21 (catalog), 25 (render settings) and 26 (new templates/fonts)
+    // seed rows live in 21 (catalog), 25 (render settings), 26 (new templates/fonts) and 28 (templates converted from tscaps)
     private static readonly string Sql = File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/21_captain_title_captions.sql"))
         + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/25_razorpay_payments_and_render_settings.sql"))
-        + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/26_captions_templates_and_text_styling.sql"));
+        + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/26_captions_templates_and_text_styling.sql"))
+        + "\n" + File.ReadAllText(SchemaTests.RepoFile("Database_Migrations/28_tscaps_templates.sql"));
 
     private static string Block(string table)
     {

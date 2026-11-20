@@ -2,9 +2,14 @@ namespace AppBackendBasic.Services.Captions;
 
 public sealed record TierStyle(string Font, string CssFont, string Color, int Size);
 
-/// <summary>Resolved render style for a template (from the admin-managed CaptionTheme table).</summary>
+/// <summary>
+/// Resolved render style for a template (from the admin-managed CaptionTheme table). The last three flags come from optional CardJson fields
+/// (used by the templates converted from tscaps, migration 28) and are off for every older template:
+/// <paramref name="Uppercase"/> draws Roman text in capitals, <paramref name="Flow"/> keeps words of different emphasis tiers on one line
+/// (no automatic break at a tier change), <paramref name="ActiveColor"/> recolours the word while it is being spoken (karaoke).
+/// </summary>
 public sealed record ThemeStyle(string Key, string? BaseColor, string AccentColor, string? AccentFont,
-    IReadOnlyDictionary<string, TierStyle>? Tiers)
+    IReadOnlyDictionary<string, TierStyle>? Tiers, bool Uppercase = false, bool Flow = false, string? ActiveColor = null)
 {
     /// <summary>
     /// Colour/size baked into a word when it is first generated or when the theme is switched (old _apply_theme_defaults).

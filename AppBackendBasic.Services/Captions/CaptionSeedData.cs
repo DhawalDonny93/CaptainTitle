@@ -17,7 +17,10 @@ public static class CaptionSeedData
     private static string Card(string? stroke, string? shadow, string? glow, bool highlight) =>
         JsonSerializer.Serialize(new { stroke, shadow, glow, highlight });
 
-    public static List<CaptionTheme> Themes() => new()
+    /// <summary>Factory templates: the core catalog below plus the templates converted from tscaps (migration 28).</summary>
+    public static List<CaptionTheme> Themes() => CoreThemes().Concat(TscapsTemplates.Themes()).ToList();
+
+    private static List<CaptionTheme> CoreThemes() => new()
     {
         // The two fixed templates of the current old app (migration 26). Their look and motion live in FixedTemplates / AssSubtitleWriter; these rows
         // only make them selectable (name, order, active flag, card preview). The nine templates below are the pre-sync catalog: migration 26 turns them

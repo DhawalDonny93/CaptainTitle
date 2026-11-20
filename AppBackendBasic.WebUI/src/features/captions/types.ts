@@ -164,7 +164,24 @@ export interface CaptionTheme {
   color: string
   accent_font: string | null
   tiers: Record<string, CaptionTier> | null
-  card: { stroke: string | null; shadow: string | null; glow: string | null; highlight: boolean }
+  card: CaptionThemeCard
+}
+
+/** Template picker card + optional render flags. The flags are only set by the templates converted from tscaps (migration 28). */
+export interface CaptionThemeCard {
+  stroke: string | null
+  shadow: string | null
+  glow: string | null
+  highlight: boolean
+  /** Roman text drawn in capitals (preview CSS + export). */
+  uppercase?: boolean
+  /** Emphasis tiers change colour/size only - no automatic line break at a tier change. */
+  flow?: boolean
+  /** Karaoke colour while a word is being spoken. */
+  active_color?: string | null
+  /** Outline/shadow/glow/background/bold/italic preset applied when the template is picked. */
+  text_style?: Partial<TextStyle> & { bold?: boolean; italic?: boolean } | null
+  source?: string | null
 }
 
 export interface CaptionFont { id: string; name: string; family: string }

@@ -343,6 +343,13 @@ public class CaptionCardDto
     [JsonPropertyName("shadow")] public string? Shadow { get; set; }
     [JsonPropertyName("glow")] public string? Glow { get; set; }
     [JsonPropertyName("highlight")] public bool Highlight { get; set; }
+    // Optional (templates converted from tscaps, migration 28). Absent = off; older templates never set them.
+    [JsonPropertyName("uppercase")] public bool Uppercase { get; set; }
+    [JsonPropertyName("flow")] public bool Flow { get; set; }
+    [JsonPropertyName("active_color")] public string? ActiveColor { get; set; }
+    /// <summary>Text-style preset the studio applies when the template is picked (outline/shadow/glow/background/bold/italic fields).</summary>
+    [JsonPropertyName("text_style")] public System.Text.Json.JsonElement? TextStyle { get; set; }
+    [JsonPropertyName("source")] public string? Source { get; set; }
 }
 
 public class CaptionFontDto

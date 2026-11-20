@@ -391,6 +391,11 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   }, [wordGroups, currentTime]);
   const anchorWord = visibleWords[0];
   const tiers: Tiers = themeById[theme]?.tiers ?? null;
+  // Optional render flags (templates converted from tscaps); all off for the older templates.
+  const themeCard = themeById[theme]?.card;
+  const flowLines = !!themeCard?.flow;
+  const upperCase = !!themeCard?.uppercase;
+  const activeColor = themeCard?.active_color ?? null;
   // A real browser already blurs text-shadow independently of the glyph fill (unlike libass's single \blur), so the preview needs no two-layer
   // trick: one WebkitTextStroke (crisp) + one text-shadow (independently blurred) gives the same crisp-text-plus-soft-shadow look the export builds
   // from separate blur-mask layers.
@@ -485,6 +490,15 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     const nextTheme = themeById[next];
     // Street Glow (no tiers) ignores word.color/font_size in preview and export - its two lines are a fixed design - so only a tiered template re-bakes.
     if (nextTheme?.tiers) setWords((current) => current.map((word) => ({ ...word, ...bakeWordStyle(nextTheme, word.emphasis) })));
+    // Templates that carry their own text-style preset (the ones converted from tscaps) set outline/shadow/glow/background/bold/italic to
+    // their design defaults; the user can still change every control afterwards. Older templates have no preset and leave these alone.
+    const preset = nextTheme?.card?.text_style;
+    if (preset) {
+      const { bold: presetBold, italic: presetItalic, ...style } = preset;
+      updateTextStyle(style);
+      if (typeof presetBold === "boolean") setBold(presetBold);
+      if (typeof presetItalic === "boolean") setItalic(presetItalic);
+    }
   };
   // What a word's canvas/Timeline label shows: falls back to the Roman text when native mode is on but the word has no native transcription.
   const scriptText = (word: CaptionWord) => (scriptMode === "native" && word.original) ? word.original : word.text;
@@ -835,7 +849,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
             {visibleWords.length > 0 && theme !== STREET_GLOW && <div className={`caption-overlay theme-${theme} ${(captionLines === 2 || tiers) ? "lines-2" : ""}`}
               style={{ left: `${boxX}%`, top: `${boxY}%`,
                       transform: `translate(-50%,-50%) rotate(${boxRotation}deg)`, lineHeight: NATIVE_LINE_HEIGHT,
-                      fontStyle: italic ? "italic" : "normal",
+                      fontStyle: italic ? "italic" : "normal", textTransform: upperCase ? "uppercase" : undefined,
                       // WebkitTextStroke / textShadow are always set explicitly (never left to the stylesheet's default rule) so every Outline/
                       // Shadow combination - including both off - renders exactly what the controls say, matching the export 1:1.
                       WebkitTextStroke: outlineStroke, textShadow: dropShadow }}
@@ -844,7 +858,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
                   stacked lines with each line's own natural metrics, exactly the way libass stacks \N-separated lines in the export. Doodle
                   Marker uses ONE size for every tier, so words flow on one line (null tiers = only an explicit two-line midpoint or a word's own
                   new_line breaks), mirroring the server's break_tiers override. */}
-              {splitIntoRows(visibleWords, theme === DOODLE_MARKER ? null : tiers, captionLines).map((row, rowIndex) => <Fragment key={rowIndex}>
+              {splitIntoRows(visibleWords, theme === DOODLE_MARKER || flowLines ? null : tiers, captionLines).map((row, rowIndex) => <Fragment key={rowIndex}>
                 {rowIndex > 0 && <br />}
                 {/* BorderStyle=3's opaque box in libass draws around each \N-separated VISUAL LINE on its own, so the background lives on a per-row wrapper. */}
                 <span style={textStyle.background_enabled
@@ -859,7 +873,8 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
                   const isActiveWord = activeIndex === word.index;
                   // Glow can differ per word, so it is combined into an explicit per-word textShadow together with the Shadow entry.
                   const glowEntry = glowShadowFor(word, isActiveWord);
-                  const style: React.CSSProperties = { color: word.color, fontSize: `${Math.max(20, word.font_size * previewScale)}px`, fontFamily,
+                  // Karaoke colour (export: an ASS colour switch for the word's spoken time); the manual Emphasize accent still wins.
+                  const style: React.CSSProperties = { color: isActiveWord && activeColor && !word.emphasize ? activeColor : word.color, fontSize: `${Math.max(20, word.font_size * previewScale)}px`, fontFamily,
                     fontWeight: bold && isBoldCapableFont(fontFamily) ? 800 : 400,
                     ...((isActiveWord || glowEntry) ? { textShadow: [isActiveWord ? dropShadowActive : dropShadow, glowEntry].filter((v) => v && v !== "none").join(", ") || "none" } : {}) };
                   const className = [

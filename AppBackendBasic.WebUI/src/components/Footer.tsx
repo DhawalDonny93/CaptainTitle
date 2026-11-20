@@ -20,6 +20,7 @@ export default function Footer() {
             <p className="font-display font-bold uppercase tracking-widest text-sun">Legal</p>
             <Link to="/terms" className="hover:text-sun">Terms</Link>
             <Link to="/privacy" className="hover:text-sun">Privacy</Link>
+            <Link to="/credits" className="hover:text-sun">Credits &amp; licences</Link>
           </div>
         </div>
       </div>

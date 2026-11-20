@@ -272,7 +272,9 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     ctx.clearRect(0, 0, width, height);
     const peaks = entry?.data;
     if (!peaks || !peaks.length) return;
-    ctx.fillStyle = entry.fallback ? "rgba(255,214,10,.28)" : "rgba(255,214,10,.6)";
+    // Colour follows the studio theme (--ct-wave in studio-themes.css); the estimated fallback waveform is drawn fainter.
+    ctx.fillStyle = getComputedStyle(canvas).getPropertyValue("--ct-wave").trim() || "rgba(255,214,10,.6)";
+    ctx.globalAlpha = entry.fallback ? 0.5 : 1;
     const mid = height / 2;
     const pxPerPeak = width / peaks.length;
     for (let i = 0; i < peaks.length; i++) {
@@ -294,6 +296,14 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     drawWaveform();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trackWidth]);
+
+  // Repaint the waveform when the studio colour theme changes (canvas pixels don't follow CSS variables).
+  useEffect(() => {
+    const repaint = () => drawWaveform();
+    window.addEventListener("ct-theme-change", repaint);
+    return () => window.removeEventListener("ct-theme-change", repaint);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Keep the playhead in view as the video plays instead of letting it run
   // off the edge of a scrolled timeline. Only while actually playing, so it

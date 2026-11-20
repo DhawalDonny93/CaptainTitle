@@ -6,6 +6,7 @@ import LandingPageV3 from './pages/LandingPageV3'
 import Login from './pages/Login'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
+import Credits from './pages/Credits'
 import Pricing from './pages/Pricing'
 import GoogleCallback from './pages/GoogleCallback'
 import AppleCallback from './pages/AppleCallback'
@@ -47,6 +48,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/credits" element={<Credits />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/auth/google/callback" element={<GoogleCallback />} />
               <Route path="/auth/apple/callback" element={<AppleCallback />} />

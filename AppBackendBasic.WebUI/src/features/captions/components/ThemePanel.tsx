@@ -54,6 +54,7 @@ const TemplateCard = ({ item }: { item: CaptionTheme }) => {
     return <span key={index} className="template-card-word"
       style={{
         fontFamily: word.font, color: word.color, fontSize: `${word.size}px`, fontWeight: word.weight,
+        textTransform: item.card.uppercase ? 'uppercase' : undefined,
         WebkitTextStroke: item.card.stroke || undefined,
         textShadow: [item.card.shadow, item.card.glow].filter(Boolean).join(', ') || undefined,
         background: highlighted ? 'rgba(255,255,255,.12)' : undefined,

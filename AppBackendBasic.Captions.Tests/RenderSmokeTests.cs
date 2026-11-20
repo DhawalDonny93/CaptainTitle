@@ -60,6 +60,9 @@ public class RenderSmokeTests
     [Theory]
     [InlineData("street_glow")]
     [InlineData("doodle_marker")]
+    [InlineData("naya")]  // converted tscaps templates: upper case + karaoke colour, background box, shadow + glow
+    [InlineData("theo")]
+    [InlineData("zara")]
     public void Export_renders_with_real_ffmpeg(string theme)
     {
         if (!FfmpegReady())

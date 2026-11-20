@@ -22,8 +22,29 @@ public static class CaptionStyleFactory
         return raw.ToDictionary(k => k.Key, k => new TierStyle(k.Value.font, k.Value.css_font, k.Value.color, k.Value.size));
     }
 
-    public static ThemeStyle ToStyle(CaptionTheme t) =>
-        new(t.Key, t.BaseColor, t.AccentColor, t.AccentFont, ParseTiers(t.TiersJson));
+    public static ThemeStyle ToStyle(CaptionTheme t)
+    {
+        var (upper, flow, active) = ParseCardFlags(t.CardJson);
+        return new(t.Key, t.BaseColor, t.AccentColor, t.AccentFont, ParseTiers(t.TiersJson), upper, flow, active);
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex HexColor = new("^#[0-9A-Fa-f]{6}$");
+
+    /// <summary>Optional render flags in CardJson (uppercase, flow, active_color). Anything missing or malformed means "off", never an error.</summary>
+    public static (bool Uppercase, bool Flow, string? ActiveColor) ParseCardFlags(string? cardJson)
+    {
+        if (string.IsNullOrWhiteSpace(cardJson)) return (false, false, null);
+        try
+        {
+            using var doc = JsonDocument.Parse(cardJson);
+            var root = doc.RootElement;
+            if (root.ValueKind != JsonValueKind.Object) return (false, false, null);
+            bool Flag(string name) => root.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.True;
+            string? active = root.TryGetProperty("active_color", out var a) && a.ValueKind == JsonValueKind.String && HexColor.IsMatch(a.GetString()!) ? a.GetString() : null;
+            return (Flag("uppercase"), Flag("flow"), active);
+        }
+        catch (JsonException) { return (false, false, null); }
+    }
 
     public static CaptionStyleSet Build(IEnumerable<CaptionTheme> themes, IEnumerable<CaptionFont> fonts,
         IEnumerable<CaptionVariant> variants, string defaultThemeKey)
