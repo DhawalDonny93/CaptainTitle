@@ -25,6 +25,9 @@ public interface ICaptionProjectRepository
     /// <summary>Deletes unless a job is running on the project. Returns false when it was not deleted. Children cascade in the database.</summary>
     Task<bool> DeleteIfIdleAsync(int userId, int projectId, CancellationToken ct = default);
 
+    /// <summary>Single-statement rename that also proves ownership; leaves the revision alone. Returns false when not owned.</summary>
+    Task<bool> RenameAsync(int userId, int projectId, string name, CancellationToken ct = default);
+
     Task<string?> GetEditorStateJsonAsync(int projectId, CancellationToken ct = default);
     /// <summary>Single-statement upsert that also proves ownership. Returns false when the user does not own the project.</summary>
     Task<bool> UpsertEditorStateAsync(int userId, int projectId, string stateJson, CancellationToken ct = default);

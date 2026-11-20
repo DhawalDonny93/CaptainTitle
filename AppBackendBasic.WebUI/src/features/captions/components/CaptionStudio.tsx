@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BookmarkSimple, ChatCircle, DotsThreeVertical, DownloadSimple, FileText, FloppyDisk, FrameCorners, Heart, Play, Share, SpinnerGap } from "@phosphor-icons/react";
+import { ArrowLeft, BookmarkSimple, ChatCircle, DotsThreeVertical, Export, FrameCorners, Heart, Play, Share, SpinnerGap } from "@phosphor-icons/react";
 import { toast } from "@/utils/toast";
 import { absoluteApiUrl as absoluteUrl, captionsApi, errorMessage, saveBlob } from "../captionsApi";
 import { useCaptionCatalog } from "../catalogContext";
@@ -8,7 +8,9 @@ import { playSfx } from "../lib/sfx";
 import { useEditorStatePersistence } from "../hooks/useEditorStatePersistence";
 import { useProjectAutosave } from "../hooks/useProjectAutosave";
 import { SaveIndicator } from "./SaveIndicator";
-import { VersionHistoryMenu } from "./VersionHistoryMenu";
+import { HeaderLeft, HeaderRight } from "./HeaderSlots";
+import { ProjectNameEditor } from "./ProjectNameEditor";
+import { ExportDialog } from "./ExportDialog";
 import { isLeftTab, isThemeTab } from "../lib/editorTabs";
 import { ThemePanel, type ThemeTab } from "./ThemePanel";
 import { TranscriptPanel } from "./TranscriptPanel";
@@ -279,7 +281,8 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const [italic, setItalic] = useState(initialProject.italic ?? false);
   const [reassigning, setReassigning] = useState(false);
   const [safeZone, setSafeZone] = useState(savedState?.safe_zone ?? false);
-  const [restoring, setRestoring] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [renderProgress, setRenderProgress] = useState(initialProject.status === "rendering" ? initialProject.progress ?? 0 : 0);
   const [frameWidth, setFrameWidth] = useState(0);
   const [frameBox, setFrameBox] = useState({ w: 360, h: 640 });
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -517,7 +520,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
       elements, sfxMarkers, scriptMode, textStyle, bold, italic]);
   // Jobs that replace the words on the server (and the restore flow) own the document while they run; autosaving over them would only conflict.
   const autosave = useProjectAutosave({ projectId: initialProject.project_id, initialRevision: initialProject.revision, payload,
-    paused: relistening || reassigning || restoring });
+    paused: relistening || reassigning });
   const { flush: flushEdits } = autosave;
   const exportIsCurrent = project.rendered_revision != null && project.rendered_revision === autosave.revision && autosave.status === "saved";
 
@@ -562,12 +565,6 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     } catch (error) { toast.error(errorMessage(error)); }
     finally { setReassigning(false); }
   };
-  const save = async () => {
-    try {
-      await flushEdits();
-      toast.success("Caption edits saved");
-    } catch (error) { toast.error(errorMessage(error)); }
-  };
   // The export runs as a background job on the server, so it may already be running when the project is opened: this also picks that back up.
   const aliveRef = useRef(true);
   useEffect(() => { aliveRef.current = true; return () => { aliveRef.current = false; }; }, []);
@@ -578,9 +575,11 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     setRendering(true);
     try {
       let data = started;
+      setRenderProgress(data.progress ?? 0);
       while (data.status === "rendering" && aliveRef.current) {
         await new Promise((resolve) => window.setTimeout(resolve, 2500));
         data = await captionsApi.get(started.project_id);
+        setRenderProgress(data.progress ?? 0);
       }
       if (!aliveRef.current) return;
       if (data.status !== "rendered") throw new Error(data.error_message || "Video rendering could not finish. Please try again, and contact the admin if it keeps happening.");
@@ -596,6 +595,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   }, []);
   const render = async () => {
     setRendering(true);
+    setRenderProgress(0);
     try {
       await flushEdits();
       await followRender(await captionsApi.render(project.project_id));
@@ -619,15 +619,6 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
       toast.success("A fresh trusted transcript is ready");
     } catch (error) { toast.error(errorMessage(error)); }
     finally { setRelistening(false); }
-  };
-  const restoreVersion = async (versionId: number) => {
-    setRestoring(true);
-    try {
-      await flushEdits(); // the unsaved edits become part of the restore point the server keeps
-      const restored = await captionsApi.restoreVersion(project.project_id, versionId);
-      toast.success("Version restored. Your previous edits were kept in History.");
-      onReplaced(restored);
-    } catch (error) { toast.error(errorMessage(error)); setRestoring(false); }
   };
   const download = async () => {
     try {
@@ -797,21 +788,22 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
 
   return (
     <main className="studio" data-testid="caption-editor-workspace">
-      <div className="studio-topbar" data-testid="project-command-bar">
-        <div><button onClick={onNew} data-testid="new-project-button">← All projects</button><h1 data-testid="current-project-name">{project.name}</h1><SaveIndicator status={autosave.status} error={autosave.error} /></div>
-        <div className="project-actions">
-          {project.width && project.height && <span className="resolution-badge" data-testid="resolution-badge">{project.width}×{project.height} · {aspectLabel(project.width, project.height)}</span>}
-          <select className="quality-select" value={renderQuality} onChange={(e) => setRenderQuality(e.target.value as RenderQuality)} title="Export quality" data-testid="render-quality-select">
-            <option value="high">High quality</option>
-            <option value="draft">Draft (fast)</option>
-          </select>
-          <VersionHistoryMenu projectId={project.project_id} busy={restoring} onRestore={restoreVersion} />
-          <button className="utility-chip" onClick={save} data-testid="save-project-button"><FloppyDisk size={16} /> Save</button>
-          <button className="utility-chip" onClick={downloadSrt} data-testid="download-srt-button"><FileText size={16} /> SRT</button>
-          {exportIsCurrent && !rendering ? <button className="export-button" onClick={download} data-testid="download-video-button"><DownloadSimple size={19} weight="bold" /> Download MP4</button> :
-            <button className="export-button" onClick={render} disabled={rendering} data-testid="render-video-button">{rendering ? <SpinnerGap className="spin" size={19} /> : <DownloadSimple size={19} weight="bold" />} {rendering ? "Exporting…" : "Export Video"}</button>}
-        </div>
-      </div>
+      <HeaderLeft>
+        <button className="header-back" onClick={onNew} data-testid="new-project-button"><ArrowLeft size={15} weight="bold" /> All projects</button>
+        <span className="header-divider" aria-hidden="true" />
+        <ProjectNameEditor projectId={project.project_id} name={project.name} onRenamed={(name) => setProject((current) => ({ ...current, name }))}>
+          <SaveIndicator status={autosave.status} error={autosave.error} />
+        </ProjectNameEditor>
+      </HeaderLeft>
+      <HeaderRight>
+        <button className="export-button" onClick={() => setExportOpen(true)} data-testid="open-export-dialog-button">
+          {rendering ? <SpinnerGap className="spin" size={18} /> : <Export size={18} weight="bold" />} {rendering ? `Exporting ${Math.round(renderProgress)}%` : "Export"}
+        </button>
+      </HeaderRight>
+      <ExportDialog open={exportOpen} onOpenChange={setExportOpen}
+        resolution={project.width && project.height ? `${project.width}×${project.height} · ${aspectLabel(project.width, project.height)}` : null}
+        duration={project.duration} quality={renderQuality} onQuality={setRenderQuality} rendering={rendering} renderProgress={renderProgress}
+        exportIsCurrent={exportIsCurrent} hasExport={project.rendered_revision != null} onExport={render} onDownload={download} onDownloadSrt={downloadSrt} />
       {autosave.status === "conflict" && <div className="studio-conflict-banner" role="alert" data-testid="save-conflict-banner">
         <span>{autosave.error}</span>
         <button onClick={() => window.location.reload()} data-testid="save-conflict-reload-button">Reload</button>

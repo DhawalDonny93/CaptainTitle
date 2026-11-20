@@ -151,6 +151,7 @@ public class ProjectPersistenceTests : IDisposable
             () => Service().EnsureOwnedAsync(stranger, id),
             () => Service().SaveAsync(stranger, id, Edit("x", null)),
             () => Service().SaveEditorStateAsync(stranger, id, new CaptionEditorStateDto()),
+            () => Service().RenameAsync(stranger, id, "stolen"),
             () => Service().DeleteAsync(stranger, id),
             () => Service().ListVersionsAsync(stranger, id),
             () => Service().OpenRenderAsync(stranger, id),
@@ -367,6 +368,19 @@ public class ProjectPersistenceTests : IDisposable
         Assert.Equal("ai", project.EditorState.LeftTab);
         Assert.Equal(9, project.EditorState.SelectedIndex);
         Assert.Equal(1, project.Revision);
+    }
+
+    [PgFact]
+    public async Task Rename_trims_the_name_rejects_blank_and_never_touches_the_revision()
+    {
+        var user = await NewUserAsync();
+        var id = await NewProjectAsync(user);
+        Assert.Equal("My reel", await Service().RenameAsync(user, id, "  My reel  "));
+        var project = await Service().GetAsync(user, id);
+        Assert.Equal("My reel", project.Name);
+        Assert.Equal(1, project.Revision);
+        var blank = await Assert.ThrowsAsync<CaptionServiceException>(() => Service().RenameAsync(user, id, "   "));
+        Assert.Equal(400, blank.StatusCode);
     }
 
     [PgFact]

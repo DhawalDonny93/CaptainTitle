@@ -49,6 +49,7 @@ export const captionsApi = {
   get: (id: number) => api.get<CaptionProject>(`${base}/projects/${id}`).then((r) => r.data),
   save: (id: number, payload: ProjectEditPayload, baseRevision: number) =>
     api.put<SaveResult>(`${base}/projects/${id}`, { ...payload, base_revision: baseRevision }).then((r) => r.data),
+  rename: (id: number, name: string) => api.put<{ name: string }>(`${base}/projects/${id}/name`, { name }).then((r) => r.data.name),
   remove: (id: number) => api.delete(`${base}/projects/${id}`).then(() => undefined),
   saveEditorState: (id: number, state: EditorState) => api.put(`${base}/projects/${id}/editor-state`, state).then(() => undefined),
   /** For a page that is going away: keepalive lets the request outlive the tab, which axios can't do. Best effort by nature. */

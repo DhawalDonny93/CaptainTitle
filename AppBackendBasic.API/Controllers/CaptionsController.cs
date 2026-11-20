@@ -64,6 +64,12 @@ public class CaptionsController : CaptionsControllerBase
     public Task<IActionResult> Save(int id, [FromBody] CaptionProjectEditDto edit) => RunAsync(async () =>
         Ok(await _projects.SaveAsync(CurrentUserId, id, edit, HttpContext.RequestAborted)));
 
+    /// <summary>Renames the project. A label only: the content and its revision are untouched.</summary>
+    [HttpPut("projects/{id:int}/name")]
+    [Authorize]
+    public Task<IActionResult> Rename(int id, [FromBody] CaptionRenameDto body) => RunAsync(async () =>
+        Ok(new { name = await _projects.RenameAsync(CurrentUserId, id, body.Name, HttpContext.RequestAborted) }));
+
     /// <summary>Removes the project, its restore points and its stored files. Credits are not refunded.</summary>
     [HttpDelete("projects/{id:int}")]
     [Authorize]

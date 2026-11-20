@@ -170,6 +170,12 @@ public class CaptionProjectDto
     [JsonPropertyName("editor_state")] public CaptionEditorStateDto? EditorState { get; set; }
 }
 
+/// <summary>Renames a project. The name is a label only: it never touches the content or its revision.</summary>
+public class CaptionRenameDto
+{
+    [JsonPropertyName("name"), Required, StringLength(120, MinimumLength = 1)] public string Name { get; set; } = string.Empty;
+}
+
 /// <summary>Where the user left off in the studio. Saved separately from the content, so a moving playhead never bumps the revision.</summary>
 public class CaptionEditorStateDto
 {

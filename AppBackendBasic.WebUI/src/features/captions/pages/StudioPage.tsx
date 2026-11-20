@@ -8,6 +8,7 @@ import { UploadStage } from '../components/UploadStage'
 import { ProjectLibrary } from '../components/ProjectLibrary'
 import { ProjectWorkspace } from '../components/ProjectWorkspace'
 import { PaywallDialog } from '../components/PaywallDialog'
+import { HeaderSlotsProvider } from '../components/HeaderSlots'
 import type { CaptionProject, CaptionUsage } from '../types'
 import '../studio.css'
 
@@ -18,6 +19,8 @@ function StudioShell() {
   const { projectId } = useParams()
   const openProjectId = projectId && /^\d+$/.test(projectId) ? Number(projectId) : null
   const [pricing, setPricing] = useState(false)
+  const [headerLeft, setHeaderLeft] = useState<HTMLDivElement | null>(null)
+  const [headerRight, setHeaderRight] = useState<HTMLDivElement | null>(null)
 
   const loadUsage = useCallback(() => { captionsApi.usage().then(setUsage).catch(() => setUsage(null)) }, [])
   useEffect(() => { loadUsage() }, [loadUsage])
@@ -29,8 +32,10 @@ function StudioShell() {
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || 'Creator'
 
   return (
+    <HeaderSlotsProvider value={{ left: headerLeft, right: headerRight }}>
     <div className="editor-app ct-scope" data-testid="captain-title-editor-app">
-      <EditorHeader userName={displayName} userPicture={user?.profilePhotoUrl} usage={usage} onPricing={() => setPricing(true)} onLogout={signOut} />
+      <EditorHeader userName={displayName} userEmail={user?.email} userPicture={user?.profilePhotoUrl} usage={usage} home={openProjectId == null}
+        onHome={showHome} onPricing={() => setPricing(true)} onLogout={signOut} leftSlotRef={setHeaderLeft} rightSlotRef={setHeaderRight} />
       {openProjectId != null
         ? <ProjectWorkspace key={openProjectId} projectId={openProjectId} onExit={showHome} onUsageChanged={loadUsage} onPaywall={() => setPricing(true)} />
         : <div className="studio-home" data-testid="studio-home">
@@ -39,6 +44,7 @@ function StudioShell() {
           </div>}
       <PaywallDialog open={pricing} onOpenChange={setPricing} usage={usage} onPaid={loadUsage} />
     </div>
+    </HeaderSlotsProvider>
   )
 }
 

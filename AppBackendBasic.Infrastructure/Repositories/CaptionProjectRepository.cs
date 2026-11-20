@@ -54,6 +54,10 @@ public class CaptionProjectRepository : ICaptionProjectRepository
         return deleted > 0;
     }
 
+    public async Task<bool> RenameAsync(int userId, int projectId, string name, CancellationToken ct = default) =>
+        await _context.CaptionProjects.Where(p => p.Id == projectId && p.UserId == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Name, name), ct) > 0;
+
     public Task<string?> GetEditorStateJsonAsync(int projectId, CancellationToken ct = default) =>
         _context.CaptionProjectEditorStates.AsNoTracking().Where(s => s.ProjectId == projectId).Select(s => s.StateJson).FirstOrDefaultAsync(ct);
 

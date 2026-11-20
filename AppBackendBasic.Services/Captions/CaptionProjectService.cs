@@ -19,6 +19,8 @@ public interface ICaptionProjectService
     /// <summary>Saves the editable document; 409 with code REVISION_CONFLICT when edit.BaseRevision is out of date.</summary>
     Task<CaptionSaveResultDto> SaveAsync(int userId, int projectId, CaptionProjectEditDto edit, CancellationToken ct = default);
     Task SaveEditorStateAsync(int userId, int projectId, CaptionEditorStateDto state, CancellationToken ct = default);
+    /// <summary>Renames the project (trimmed); 400 when blank. Never bumps the revision, so it can't conflict with autosave.</summary>
+    Task<string> RenameAsync(int userId, int projectId, string name, CancellationToken ct = default);
     /// <summary>Deletes the project and its stored files; 409 while a job is running on it.</summary>
     Task DeleteAsync(int userId, int projectId, CancellationToken ct = default);
     Task<List<CaptionProjectVersionDto>> ListVersionsAsync(int userId, int projectId, CancellationToken ct = default);
@@ -289,6 +291,15 @@ public class CaptionProjectService : ICaptionProjectService
     {
         if (!await _projects.UpsertEditorStateAsync(userId, projectId, CaptionJson.Serialize(state), ct))
             throw new CaptionServiceException(404, "Project not found");
+    }
+
+    public async Task<string> RenameAsync(int userId, int projectId, string name, CancellationToken ct = default)
+    {
+        var clean = (name ?? string.Empty).Trim();
+        if (clean.Length == 0) throw new CaptionServiceException(400, "Project name can't be empty.");
+        if (clean.Length > 120) clean = clean[..120];
+        if (!await _projects.RenameAsync(userId, projectId, clean, ct)) throw new CaptionServiceException(404, "Project not found");
+        return clean;
     }
 
     public async Task DeleteAsync(int userId, int projectId, CancellationToken ct = default)

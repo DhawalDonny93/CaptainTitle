@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from '@/utils/toast'
 import { CtButton } from './ui'
+import { ArrowLeft } from '@phosphor-icons/react'
 import { CaptionStudio } from './CaptionStudio'
+import { HeaderLeft } from './HeaderSlots'
 import { captionsApi, errorMessage, httpStatus } from '../captionsApi'
 import type { CaptionProject } from '../types'
 
@@ -86,11 +88,17 @@ export const ProjectWorkspace = ({ projectId, onExit, onUsageChanged, onPaywall 
   })
   const remove = () => run(async () => { await captionsApi.remove(projectId); toast.success('Project deleted'); onExit() })
 
-  if (!project) return <main className="project-stage" data-testid="project-loading"><p>Opening your project…</p></main>
+  const headerBack = (name?: string) => <HeaderLeft>
+    <button className="header-back" onClick={onExit} data-testid="header-back-button"><ArrowLeft size={15} weight="bold" /> All projects</button>
+    {name && <><span className="header-divider" aria-hidden="true" /><span className="header-project-name">{name}</span></>}
+  </HeaderLeft>
+
+  if (!project) return <main className="project-stage" data-testid="project-loading">{headerBack()}<p>Opening your project…</p></main>
 
   if (generating) {
     return (
       <main className="project-stage" data-testid="project-processing">
+        {headerBack(project.name)}
         <section>
           <h1 data-testid="project-processing-name">{project.name}</h1>
           <div className="processing-progress" data-testid="caption-processing-progress">
@@ -107,6 +115,7 @@ export const ProjectWorkspace = ({ projectId, onExit, onUsageChanged, onPaywall 
   if (failed) {
     return (
       <main className="project-stage" data-testid="project-failed">
+        {headerBack(project.name)}
         <section>
           <h1>{project.name}</h1>
           <p data-testid="project-failed-message">{project.error_message || 'Caption processing could not finish. Please try again, and contact the admin if it keeps happening.'}</p>

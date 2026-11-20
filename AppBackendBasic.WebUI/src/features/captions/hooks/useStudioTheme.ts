@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 
-/** Studio colour themes - the ids match the [data-ct-theme] blocks in studio-themes.css. */
+/** Studio colour themes - the ids match the [data-ct-theme] blocks in studio-themes.css. swatch = [background, accent] for the picker. */
 export const STUDIO_THEMES = [
-  { id: 'vscode-light', label: 'Studio Light 1' },
-  { id: 'vs-light', label: 'Studio Light 2' },
-  { id: 'snow', label: 'Snow' },
-  { id: 'paper', label: 'Paper' },
-  { id: 'solarized', label: 'Solarized Light' },
-  { id: 'dark', label: 'Studio Dark' },
+  { id: 'vscode-light', label: 'Studio Light 1', swatch: ['#f8f8f8', '#005fb8'] },
+  { id: 'vs-light', label: 'Studio Light 2', swatch: ['#eeeef2', '#68217a'] },
+  { id: 'snow', label: 'Snow', swatch: ['#ffffff', '#0969da'] },
+  { id: 'paper', label: 'Paper', swatch: ['#faf7f2', '#e11d48'] },
+  { id: 'solarized', label: 'Solarized Light', swatch: ['#fdf6e3', '#268bd2'] },
+  { id: 'dark', label: 'Studio Dark', swatch: ['#0a0a0a', '#ff2d4d'] },
 ] as const
 
 export type StudioThemeId = (typeof STUDIO_THEMES)[number]['id']
