@@ -404,7 +404,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
           </div>
 
           <div className="timeline-lane timeline-lane-waveform" data-testid="timeline-lane-waveform">
-            <canvas ref={canvasRef} className="timeline-waveform" height={44} data-testid="timeline-waveform" />
+            <canvas ref={canvasRef} className="timeline-waveform" height={32} data-testid="timeline-waveform" />
           </div>
 
           <div className="timeline-lane timeline-lane-sfx" data-testid="timeline-lane-sfx">

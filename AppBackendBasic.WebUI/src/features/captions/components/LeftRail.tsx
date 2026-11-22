@@ -1,28 +1,45 @@
-import { ClosedCaptioning, FilmSlate, FrameCorners, MusicNotes, Palette, Shapes, Sparkle, TextT, type Icon } from '@phosphor-icons/react'
+import { ArrowsOutCardinal, ClosedCaptioning, FilmSlate, FrameCorners, MusicNotes, Palette, Rows, Shapes, Sparkle, SquaresFour, TextAa, TextT, type Icon } from '@phosphor-icons/react'
 
 // 'adjustment' is the Color panel: the id is kept so editor states saved before the rename still open it.
-export type LeftTab = 'media' | 'audio' | 'text' | 'elements' | 'captions' | 'ratio' | 'adjustment' | 'ai'
+// 'templates' | 'customize' | 'word' | 'transform' are the caption style tools that used to be the right-hand panel's tabs;
+// 'word' is that panel's old "Text" tab (the picked word's size/colour/breaks) - renamed so it isn't confused with the Text overlay tool.
+export type CaptionStyleTab = 'templates' | 'customize' | 'word' | 'transform'
+export type LeftTab = 'media' | 'audio' | 'text' | 'elements' | 'captions' | 'ratio' | 'adjustment' | 'ai' | CaptionStyleTab
 
-const sections: { id: LeftTab; label: string; icon: Icon }[] = [
-  { id: 'media', label: 'Media', icon: FilmSlate },
-  { id: 'audio', label: 'Audio', icon: MusicNotes },
-  { id: 'text', label: 'Text', icon: TextT },
-  { id: 'elements', label: 'Elements', icon: Shapes },
-  { id: 'captions', label: 'Captions', icon: ClosedCaptioning },
-  { id: 'ratio', label: 'Ratio', icon: FrameCorners },
-  { id: 'adjustment', label: 'Color', icon: Palette },
-  { id: 'ai', label: 'AI tools', icon: Sparkle },
+interface Section { id: LeftTab; label: string; icon: Icon }
+
+// Two groups, split by a divider: the caption tools (transcript + its styling), then everything else on the video.
+const groups: Section[][] = [
+  [
+    { id: 'captions', label: 'Captions', icon: ClosedCaptioning },
+    { id: 'templates', label: 'Templates', icon: SquaresFour },
+    { id: 'customize', label: 'Customize', icon: Rows },
+    { id: 'word', label: 'Word', icon: TextAa },
+    { id: 'transform', label: 'Transform', icon: ArrowsOutCardinal },
+  ],
+  [
+    { id: 'media', label: 'Media', icon: FilmSlate },
+    { id: 'audio', label: 'Audio', icon: MusicNotes },
+    { id: 'text', label: 'Text', icon: TextT },
+    { id: 'elements', label: 'Elements', icon: Shapes },
+    { id: 'ratio', label: 'Ratio', icon: FrameCorners },
+    { id: 'adjustment', label: 'Color', icon: Palette },
+    { id: 'ai', label: 'AI tools', icon: Sparkle },
+  ],
 ]
 
 interface Props { active: LeftTab; onSelect: (tab: LeftTab) => void }
 
 export const LeftRail = ({ active, onSelect }: Props) => (
   <nav className="left-rail" data-testid="left-rail">
-    {sections.map(({ id, label, icon: Icon }) => (
-      <button key={id} className={active === id ? 'active' : ''} onClick={() => onSelect(id)} title={label} data-testid={`left-rail-${id}-button`}>
-        <Icon size={21} weight={active === id ? 'fill' : 'regular'} />
-        <span>{label}</span>
-      </button>
-    ))}
+    {groups.map((sections, groupIndex) => [
+      groupIndex > 0 && <i key={`divider-${groupIndex}`} className="left-rail-divider" aria-hidden="true" />,
+      ...sections.map(({ id, label, icon: Icon }) => (
+        <button key={id} className={active === id ? 'active' : ''} onClick={() => onSelect(id)} title={label} data-testid={`left-rail-${id}-button`}>
+          <Icon size={20} weight={active === id ? 'fill' : 'regular'} />
+          <span>{label}</span>
+        </button>
+      )),
+    ])}
   </nav>
 )

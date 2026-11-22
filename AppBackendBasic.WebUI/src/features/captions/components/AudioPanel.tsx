@@ -1,5 +1,5 @@
 import { SpeakerHigh, SpeakerSlash, Waveform } from '@phosphor-icons/react'
-import { CtSlider } from './ui'
+import { CtSlider, CtSwitchRow } from './ui'
 
 export interface AudioSettings {
   volume: number
@@ -35,9 +35,8 @@ export const AudioPanel = ({ value, duration, onChange }: Props) => {
             data-testid={`audio-volume-preset-${preset}`}>{preset}%</button>
         ))}
       </div>
-      <button className={`emphasis-toggle ${muted ? 'active' : ''}`} onClick={() => onChange({ muted: !muted })} data-testid="audio-mute-toggle">
-        <span>{muted ? <SpeakerSlash size={16} /> : <SpeakerHigh size={16} />} Mute original audio</span><i />
-      </button>
+      <CtSwitchRow icon={muted ? <SpeakerSlash size={16} /> : <SpeakerHigh size={16} />} label="Mute original audio"
+        checked={muted} onCheckedChange={(on) => onChange({ muted: on })} data-testid="audio-mute-toggle" />
 
       <div className="tool-divider" />
       <div className="panel-heading compact"><Waveform size={18} /><div><span>SHAPE</span><h2>Fades</h2></div></div>
@@ -46,9 +45,8 @@ export const AudioPanel = ({ value, duration, onChange }: Props) => {
       <label className="control-label" data-testid="audio-fade-out-label">Fade out <b data-testid="audio-fade-out-value">{seconds(fadeOut)}</b></label>
       <CtSlider min={0} max={maxFade} step={0.25} value={[Math.min(fadeOut, maxFade)]} disabled={muted} onValueChange={([v]) => onChange({ fadeOut: v })} data-testid="audio-fade-out-slider" />
 
-      <button className={`emphasis-toggle ${normalize ? 'active' : ''}`} disabled={muted} onClick={() => onChange({ normalize: !normalize })} data-testid="audio-normalize-toggle">
-        <span><Waveform size={16} /> Normalize loudness</span><i />
-      </button>
+      <CtSwitchRow icon={<Waveform size={16} />} label="Normalize loudness" disabled={muted}
+        checked={normalize} onCheckedChange={(on) => onChange({ normalize: on })} data-testid="audio-normalize-toggle" />
       <p className="panel-note">Normalize evens out quiet and loud speech to the level social apps expect (-14 LUFS). It is applied to the exported MP4 only; the preview plays the original level. Volume above 100% is also export-only.</p>
 
       <button className="panel-action-button outline" disabled={isDefault}

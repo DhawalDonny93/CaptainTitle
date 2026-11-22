@@ -8,7 +8,7 @@
 export type ShortcutGroup = 'General' | 'Playback' | 'Captions' | 'Timeline' | 'Assistant'
 
 export type ShortcutId =
-  | 'shortcuts.show' | 'undo' | 'redo' | 'element.remove'
+  | 'shortcuts.show' | 'save' | 'undo' | 'redo' | 'element.remove'
   | 'play.toggle' | 'play' | 'pause' | 'frame.prev' | 'frame.next' | 'word.prev' | 'word.next' | 'caption.prev' | 'caption.next'
   | 'volume.up' | 'volume.down' | 'speed.down' | 'speed.up'
   | 'caption.search' | 'caption.reveal' | 'caption.editPrev' | 'caption.editNext' | 'caption.playFromStart' | 'caption.split'
@@ -32,6 +32,7 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = ['General', 'Playback', 'Caption
 
 export const SHORTCUT_ACTIONS: ShortcutAction[] = [
   { id: 'shortcuts.show', group: 'General', label: 'Show keyboard shortcuts', defaults: ['Shift+Slash', 'Mod+Slash'], inInput: true },
+  { id: 'save', group: 'General', label: 'Save now', hint: 'Edits also save on their own a moment after you stop.', defaults: ['Mod+S'], inInput: true },
   { id: 'undo', group: 'General', label: 'Undo', defaults: ['Mod+Z'] },
   { id: 'redo', group: 'General', label: 'Redo', defaults: ['Mod+Shift+Z', 'Mod+Y'] },
   { id: 'element.remove', group: 'General', label: 'Remove the picked sticker or text',

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Switch } from '@/components/ui/Switch';
 import {
   User,
   Mail,
@@ -320,23 +321,11 @@ export default function Settings() {
                 <p className="font-medium text-gray-900">{item.label}</p>
                 <p className="text-sm text-gray-600 font-light">{item.description}</p>
               </div>
-              <button
-                onClick={() =>
-                  setNotifications({
-                    ...notifications,
-                    [item.key]: !notifications[item.key as keyof NotificationSettings],
-                  })
-                }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  notifications[item.key as keyof NotificationSettings] ? 'bg-gray-900' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    notifications[item.key as keyof NotificationSettings] ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <Switch
+                checked={notifications[item.key as keyof NotificationSettings]}
+                onCheckedChange={(on) => setNotifications({ ...notifications, [item.key]: on })}
+                aria-label={item.label}
+              />
             </div>
           ))}
 

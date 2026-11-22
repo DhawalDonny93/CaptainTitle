@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowCounterClockwise, ArrowClockwise, ArrowLeft, BookmarkSimple, ChatCircle, DotsThreeVertical, Export, FrameCorners, Heart, Keyboard, Play, Share, SpinnerGap } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowClockwise, ArrowLeft, BookmarkSimple, ChatCircle, CheckCircle, DotsThreeVertical, Export, FloppyDisk, FrameCorners, Heart, Keyboard, Play, Share, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { toast } from "@/utils/toast";
 import { absoluteApiUrl as absoluteUrl, captionsApi, errorMessage, saveBlob } from "../captionsApi";
 import { useCaptionCatalog } from "../catalogContext";
@@ -12,14 +12,16 @@ import { useStudioShortcuts, type ShortcutHandlers } from "../hooks/useShortcuts
 import { comboText, SHORTCUT_BINDINGS, type ShortcutId } from "../lib/shortcuts";
 import { ShortcutsDialog } from "./ShortcutsDialog";
 import { VersionHistoryMenu } from "./VersionHistoryMenu";
-import { SaveIndicator } from "./SaveIndicator";
 import { HeaderLeft, HeaderRight } from "./HeaderSlots";
 import { ProjectNameEditor } from "./ProjectNameEditor";
 import { ExportDialog, type CaptionFileFormat } from "./ExportDialog";
-import { isLeftTab, isThemeTab } from "../lib/editorTabs";
+import { isCaptionStyleTab, isLeftTab, isThemeTab, themeTabOf } from "../lib/editorTabs";
 import { ThemePanel, type ThemeTab } from "./ThemePanel";
 import { TranscriptPanel } from "./TranscriptPanel";
 import { Timeline, type TimelineMode } from "./Timeline";
+import { Switch } from "@/components/ui/Switch";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useMediaQuery } from "../lib/useMediaQuery";
 import { LeftRail, type LeftTab } from "./LeftRail";
 import { MediaPanel } from "./MediaPanel";
 import { AudioPanel } from "./AudioPanel";
@@ -209,18 +211,20 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const [captionLines, setCaptionLines] = useState(initialProject.caption_lines || 1);
   const [captionPosition, setCaptionPosition] = useState<CaptionPosition>(initialProject.caption_position || "bottom");
   const [selectedIndex, setSelectedIndex] = useState(() => Math.min(savedState?.selected_index ?? 0, Math.max(0, initialProject.words.length - 1)));
-  const [themeTab, setThemeTab] = useState<ThemeTab>(isThemeTab(savedState?.theme_tab) ? savedState.theme_tab : "templates");
+  // The caption style tool last opened when this project was saved; kept in the saved editor state while another left tab is open.
+  const [savedThemeTab] = useState<ThemeTab>(isThemeTab(savedState?.theme_tab) ? savedState.theme_tab : "templates");
   // Selecting a word from the Captions list or the bottom timeline should
-  // land you straight on its edit controls - requiring a separate click
-  // over to the right panel's Text tab every time was exactly the kind of
-  // hidden-UI friction that made editing feel clunky. It should also seek
+  // land you straight on its edit controls: while a caption style tool
+  // (Templates / Customize / Transform) is open in the left column, it
+  // switches to the Word tool. The Captions list itself stays open, so
+  // clicking through the transcript keeps working. It should also seek
   // the video there, matching how a real script/transcript editor works -
   // clicking a line is how you navigate the footage, not just an editing
   // affordance.
   const selectWord = (index: number) => {
     setSelectedIndex(index);
     setWordPicked(true);
-    setThemeTab("text");
+    setLeftTab((tab) => (isCaptionStyleTab(tab) ? "word" : tab));
     const word = words[index];
     if (word && videoRef.current) {
       videoRef.current.currentTime = word.start;
@@ -250,6 +254,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   // so this is purely an optional one-tap shortcut to also broadcast it to every caption, not a gate. Dismissing it just closes it.
   const [scopePrompt, setScopePrompt] = useState(false);
   const [leftTab, setLeftTab] = useState<LeftTab>(isLeftTab(savedState?.left_tab) ? savedState.left_tab : "captions");
+  const themeTab: ThemeTab = isCaptionStyleTab(leftTab) ? themeTabOf(leftTab) : savedThemeTab;
   const [elements, setElements] = useState(initialProject.elements || []);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [audioVolume, setAudioVolume] = useState(initialProject.audio_volume ?? 100);
@@ -320,6 +325,9 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoFrameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  // Phones get the stacked layout (see studio.css @media 760px); the resizable panels are desktop/tablet only.
+  // Switching between the two remounts the preview, so the ResizeObservers below re-attach on it.
+  const narrowLayout = useMediaQuery("(max-width: 760px)");
   // Set true mid-drag once the cursor has actually moved - read (and reset) by a word span's onClick to swallow the spurious click a
   // drag-release fires on whatever word is still under the cursor (the caption box follows the mouse).
   const dragMovedRef = useRef(false);
@@ -343,7 +351,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     });
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [narrowLayout]);
   const [outputWidth, outputHeight] = outputSize(aspectRatio, project.width, project.height);
   const frameAspect = outputWidth / outputHeight;
   const frameBox = useMemo(() => {
@@ -361,7 +369,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     videoRef.current.volume = Math.min(1, Math.max(0, audioVolume / 100)) * gain * previewVolume;
     videoRef.current.muted = audioMuted;
   }, [audioVolume, audioMuted, currentTime, project.duration, audioFadeIn, audioFadeOut, previewVolume]);
-  useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = playbackRate; }, [playbackRate, mediaUrl]);
+  useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = playbackRate; }, [playbackRate, mediaUrl, narrowLayout]);
   useEffect(() => () => window.clearTimeout(hudTimerRef.current), []);
 
   // Caption/element font sizes are defined against the 1080x1920 canvas the
@@ -377,7 +385,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     const observer = new ResizeObserver((entries) => setFrameWidth(entries[0].contentRect.width));
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [narrowLayout]);
   const previewScale = frameWidth ? frameWidth / 1080 : 0.62;
   // Same order as the export: eq (brightness, contrast, saturation) then the white-balance channel mixer.
   const videoFilter = `brightness(${100 + brightness}%) contrast(${contrast}%) saturate(${saturation}%)${warmth || tint ? ` url(#${WHITE_BALANCE_FILTER_ID})` : ""}`;
@@ -565,6 +573,11 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const autosave = useProjectAutosave({ projectId: initialProject.project_id, initialRevision: initialProject.revision, payload,
     paused: relistening || reassigning || restoring });
   const { flush: flushEdits } = autosave;
+  // Edits autosave on their own; the header Save button (and Mod+S) just writes them now instead of after the debounce.
+  const saveNow = useCallback(async () => {
+    try { await flushEdits(); }
+    catch (error) { toast.error(errorMessage(error)); }
+  }, [flushEdits]);
   // Undo / redo over the whole editable document (the autosave payload): putting a snapshot back just sets every piece of editor state from it.
   const applyDocument = useCallback((doc: ProjectEditPayload) => {
     setTheme(doc.theme); setFontId(doc.font_id); setWordsPerCaption(doc.words_per_caption); setCaptionLines(doc.caption_lines);
@@ -899,6 +912,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   };
   const shortcutHandlers: ShortcutHandlers = {
     "shortcuts.show": () => setShortcutsOpen(true),
+    save: () => { void saveNow(); },
     undo: () => { if (!history.canUndo) return false; history.undo(); },
     redo: () => { if (!history.canRedo) return false; history.redo(); },
     "element.remove": () => {
@@ -945,7 +959,6 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
       setLeftTab("captions");
       setSelectedIndex(indexedWordGroups[group][0].index);
       setWordPicked(true);
-      setThemeTab("text");
       setRevealToken((n) => n + 1);
     },
     "caption.editPrev": () => editGroup(-1),
@@ -995,14 +1008,167 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     return combo ? comboText(combo) : undefined;
   };
 
+  // The studio's three resizable regions, built once and placed by the layout below (resizable panels on desktop, stacked on phones).
+  const toolPanelNode = (<>
+    {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} searchQuery={searchQuery} onSearchQuery={setSearchQuery} searchHits={searchHits} onJumpTo={selectWord} searchFocusToken={searchFocusToken} onSearchFocused={() => setSearchFocusToken(0)} revealToken={revealToken} />}
+    {leftTab === "media" && <MediaPanel project={project} />}
+    {leftTab === "audio" && <AudioPanel duration={project.duration}
+      value={{ volume: audioVolume, muted: audioMuted, fadeIn: audioFadeIn, fadeOut: audioFadeOut, normalize: audioNormalize }}
+      onChange={(c) => {
+        if (c.volume !== undefined) setAudioVolume(c.volume);
+        if (c.muted !== undefined) setAudioMuted(c.muted);
+        if (c.fadeIn !== undefined) setAudioFadeIn(c.fadeIn);
+        if (c.fadeOut !== undefined) setAudioFadeOut(c.fadeOut);
+        if (c.normalize !== undefined) setAudioNormalize(c.normalize);
+      }} />}
+    {leftTab === "ratio" && <RatioPanel sourceWidth={project.width} sourceHeight={project.height}
+      value={{ ratio: aspectRatio, fit: frameFit, color: frameColor }}
+      onChange={(c) => {
+        if (c.ratio !== undefined) setAspectRatio(c.ratio);
+        if (c.fit !== undefined) setFrameFit(c.fit);
+        if (c.color !== undefined) setFrameColor(c.color);
+      }} />}
+    {leftTab === "elements" && <ElementsPanel elements={elements.filter((item) => item.kind !== "text")} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(char) => addElement(char, "sticker")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
+    {leftTab === "text" && <TextPanel elements={elements} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(text) => addElement(text, "text")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
+    {leftTab === "adjustment" && <ColorPanel value={{ brightness, contrast, saturation, warmth, tint }}
+      onChange={(c: Partial<ColorValues>) => {
+        if (c.brightness !== undefined) setBrightness(c.brightness);
+        if (c.contrast !== undefined) setContrast(c.contrast);
+        if (c.saturation !== undefined) setSaturation(c.saturation);
+        if (c.warmth !== undefined) setWarmth(c.warmth);
+        if (c.tint !== undefined) setTint(c.tint);
+      }} />}
+    {leftTab === "ai" && <AiToolsPanel words={words} onDeleteWords={deleteWords} onReassignEmphasis={reassignEmphasis} reassigning={reassigning} />}
+    {isCaptionStyleTab(leftTab) && <ThemePanel theme={theme} onTheme={chooseTheme} fontId={fontId} onFont={setFontId}
+      wordsPerCaption={wordsPerCaption} onWordsPerCaption={setWordsPerCaption}
+      captionLines={captionLines} onCaptionLines={setCaptionLines}
+      captionPosition={captionPosition} onCaptionPosition={choosePosition}
+      selectedWord={words[selectedIndex]} onWordStyle={(change) => updateWord(selectedIndex, change)}
+      tab={themeTab}
+      textStyle={textStyle} onTextStyle={updateTextStyle} bold={bold} onBold={setBold} italic={italic} onItalic={setItalic}
+      hasActiveCaption={visibleWords.length > 0} boxX={boxX} boxY={boxY} boxFontSize={boxFontSize} boxRotation={boxRotation}
+      onCaptionPos={setCaptionPos} onCaptionScale={setCaptionScale} onCaptionRotation={setCaptionRotation}
+      onApplyTransformToAll={applyTransformToAll} onResetTransform={resetTransform} />}
+  </>);
+  const previewNode = (
+    <section className="preview-panel" data-testid="video-preview-panel">
+      <div className="video-stage" ref={stageRef}>
+      <div className="video-frame" ref={videoFrameRef} data-ratio={aspectRatio}
+        style={{ width: `${frameBox.w}px`, height: `${frameBox.h}px`, background: reframed && frameFit === "color" ? frameColor : undefined }}>
+        <WhiteBalanceFilter warmth={warmth} tint={tint} />
+        {reframed && frameFit === "blur" && <BlurFill videoRef={videoRef} aspect={frameAspect}
+          filter={`${videoFilter} blur(${Math.max(4, Math.round(48 * previewScale / 1.1))}px)`} />}
+        <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: videoFilter, objectFit: reframed && frameFit === "crop" ? "cover" : "contain" }} onLoadedMetadata={(e) => { if (pendingSeekRef.current > 0) { e.currentTarget.currentTime = Math.min(pendingSeekRef.current, e.currentTarget.duration || pendingSeekRef.current); pendingSeekRef.current = 0; } setMediaFailed(false); }} onError={() => { pendingSeekRef.current = currentTime; if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); else setMediaFailed(true); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
+        {hud && <div key={hud.key} className="preview-hud" role="status" data-testid="preview-shortcut-hud">{hud.text}</div>}
+        {mediaFailed && <div className="preview-media-error" data-testid="video-unavailable-message">This video couldn't be loaded. Your caption edits are safe. Try reloading the page.</div>}
+        <button className="preview-play" onClick={togglePlayback} data-testid="video-preview-play-button"><Play size={28} weight="fill" /></button>
+        {safeZone && <div className="safe-zone-overlay" data-testid="safe-zone-overlay">
+          <div className="safe-zone-icons">
+            <i><Heart size={20} weight="fill" /></i>
+            <i><ChatCircle size={20} weight="fill" /></i>
+            <i><BookmarkSimple size={20} weight="fill" /></i>
+            <i><Share size={20} weight="fill" /></i>
+            <i><DotsThreeVertical size={20} weight="fill" /></i>
+          </div>
+          <div className="safe-zone-meta" />
+        </div>}
+        {visibleWords.length > 0 && theme === STREET_GLOW && <StreetGlowOverlay
+          visibleWords={visibleWords} scriptMode={scriptMode}
+          boxX={boxX} boxY={boxY} boxRotation={boxRotation} previewScale={previewScale}
+          onMouseDown={startCaptionDrag} onResize={startResize} />}
+        {visibleWords.length > 0 && theme !== STREET_GLOW && <div className={`caption-overlay theme-${theme} ${(captionLines === 2 || tiers) ? "lines-2" : ""}`}
+          style={{ left: `${boxX}%`, top: `${boxY}%`,
+                  transform: `translate(-50%,-50%) rotate(${boxRotation}deg)`, lineHeight: NATIVE_LINE_HEIGHT,
+                  fontStyle: italic ? "italic" : "normal", textTransform: upperCase ? "uppercase" : undefined,
+                  // WebkitTextStroke / textShadow are always set explicitly (never left to the stylesheet's default rule) so every Outline/
+                  // Shadow combination - including both off - renders exactly what the controls say, matching the export 1:1.
+                  WebkitTextStroke: outlineStroke, textShadow: dropShadow }}
+          onMouseDown={startCaptionDrag} data-testid="live-caption-preview">
+          {/* Plain text flow with a literal line break between rows - no per-row wrapper with hand-computed margins. The browser lays out
+              stacked lines with each line's own natural metrics, exactly the way libass stacks \N-separated lines in the export. Doodle
+              Marker uses ONE size for every tier, so words flow on one line (null tiers = only an explicit two-line midpoint or a word's own
+              new_line breaks), mirroring the server's break_tiers override. */}
+          {splitIntoRows(visibleWords, theme === DOODLE_MARKER || flowLines ? null : tiers, captionLines).map((row, rowIndex) => <Fragment key={rowIndex}>
+            {rowIndex > 0 && <br />}
+            {/* BorderStyle=3's opaque box in libass draws around each \N-separated VISUAL LINE on its own, so the background lives on a per-row wrapper. */}
+            <span style={textStyle.background_enabled
+              ? { backgroundColor: hexToRgba(textStyle.background_color, textStyle.background_opacity),
+                  padding: "2px 10px", borderRadius: "3px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" } as React.CSSProperties
+              : undefined}>
+            {row.map((word, wordIndex) => {
+              // Colour/size always come from the word itself; a tiered theme only decides the font.
+              const fontFamily = tiers
+                ? tiers[tiers[word.emphasis] ? word.emphasis : "support"].css_font
+                : cssFamily(fontById[fontId]?.family ?? "Poppins");
+              const isActiveWord = activeIndex === word.index;
+              // Glow can differ per word, so it is combined into an explicit per-word textShadow together with the Shadow entry.
+              const glowEntry = glowShadowFor(word, isActiveWord);
+              // Karaoke colour (export: an ASS colour switch for the word's spoken time); the manual Emphasize accent still wins.
+              const style: React.CSSProperties = { color: isActiveWord && activeColor && !word.emphasize ? activeColor : word.color, fontSize: `${Math.max(20, word.font_size * previewScale)}px`, fontFamily,
+                fontWeight: bold && isBoldCapableFont(fontFamily) ? 800 : 400,
+                ...((isActiveWord || glowEntry) ? { textShadow: [isActiveWord ? dropShadowActive : dropShadow, glowEntry].filter((v) => v && v !== "none").join(", ") || "none" } : {}) };
+              const className = [
+                isActiveWord ? "active" : "",
+                isActiveWord && word.kinetic ? `kinetic-${word.kinetic}` : "",
+                isActiveWord && word.emphasize ? "emphasize-accent" : "",
+              ].filter(Boolean).join(" ");
+              const doodleTier = theme === DOODLE_MARKER && (word.emphasis === "key" || word.emphasis === "feature") ? word.emphasis : null;
+              const relOnMs = Math.max(0, Math.round((word.start - visibleWords[0].start) * 1000));
+              return <span key={word.index} className={doodleTier ? `doodle-decorated doodle-${doodleTier}` : undefined}>
+                {wordIndex > 0 && " "}
+                {doodleTier === "feature" && <svg className="doodle-loop" viewBox="0 0 100 40" style={{ animationDelay: `${relOnMs}ms` }}>
+                  <path d="M 10 20 C 10 8, 90 6, 92 20 C 94 34, 8 36, 14 18" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" pathLength="1" style={{ animationDelay: `${relOnMs}ms` }} />
+                </svg>}
+                <span className={[className, doodleTier === "key" ? "doodle-pill" : ""].filter(Boolean).join(" ")}
+                  style={{ ...style, ...(doodleTier === "key" ? { animationDelay: `${relOnMs}ms` } : {}) }}
+                  onClick={(e) => { e.stopPropagation(); if (dragMovedRef.current) { dragMovedRef.current = false; return; } openMoment(word.index); }}
+                  data-testid={`preview-caption-word-${word.index}`}>{scriptText(word)}</span>
+              </span>;
+            })}
+            </span>
+          </Fragment>)}
+          <div className="selection-box">
+            {(["tl", "tc", "tr", "ml", "mr", "bl", "bc", "br"] as Handle[]).map((pos) => <i key={pos} className={`resize-handle handle-${pos}`} onMouseDown={startResize(pos)} data-testid={`caption-resize-handle-${pos}`} />)}
+          </div>
+        </div>}
+        {scopePrompt && <div className="position-scope-prompt" style={{ left: `${boxX}%`, top: `${Math.min(92, boxY + 8)}%` }} data-testid="position-scope-prompt">
+          <button onClick={() => setScopePrompt(false)} data-testid="apply-this-caption-button">This caption</button>
+          <button onClick={() => { applyTransformToAll(); setScopePrompt(false); }} data-testid="apply-all-captions-button">All captions</button>
+        </div>}
+        {elements.filter((item) => currentTime >= item.start && currentTime <= item.end).map((item) => {
+          const interactive = leftTab === "elements" || leftTab === "text";
+          return <div key={item.id} className={`element-overlay ${interactive && selectedElementId === item.id ? "selected" : ""}`}
+            style={{ left: `${item.pos_x}%`, top: `${item.pos_y}%`, fontSize: `${item.font_size * previewScale}px`, color: item.color,
+                    fontFamily: item.kind === "text" ? cssFamily(fontById[item.font_id]?.family ?? "Poppins") : undefined,
+                    fontWeight: item.kind === "text" ? 700 : undefined,
+                    // plain z-staging vs the caption overlay (z-index 3); mirrors the export's ASS Layer (no subject matting)
+                    zIndex: item.layer === "behind" ? 1 : 4,
+                    cursor: interactive ? "grab" : "default", pointerEvents: interactive ? "auto" : "none" }}
+            onMouseDown={interactive ? (e) => { setSelectedElementId(item.id); startMoveElement(item.id)(e); } : undefined}
+            data-testid={`element-overlay-${item.id}`}>
+            {item.char}
+            {interactive && selectedElementId === item.id && <div className="selection-box">
+              {(["tl", "tc", "tr", "ml", "mr", "bl", "bc", "br"] as Handle[]).map((pos) => <i key={pos} className={`resize-handle handle-${pos}`} onMouseDown={startResizeElement(item.id, pos)} data-testid={`element-resize-handle-${pos}`} />)}
+            </div>}
+          </div>;
+        })}
+      </div>
+      </div>
+      <div className="preview-meta"><span data-testid="preview-format-label">9:16 PREVIEW</span>
+        <label className="preview-safe-zone-switch" title="Show the Reels/Shorts safe-zone guide"><FrameCorners size={13} weight={safeZone ? "fill" : "regular"} /> SAFE ZONE
+          <Switch size="sm" checked={safeZone} onCheckedChange={setSafeZone} data-testid="safe-zone-toggle-button" /></label><span data-testid="caption-engine-label">WORD SYNC · {theme.toUpperCase()}</span></div>
+    </section>
+  );
+  const timelineNode = (
+    <Timeline words={words} groups={indexedWordGroups} duration={project.duration} currentTime={currentTime} playing={playing} onToggle={togglePlayback} onSeek={seek} selectedIndex={selectedIndex} onSelect={openMoment} onRetimeWord={updateWord} mediaUrl={mediaUrl} sfxMarkers={sfxMarkers} onAddSfx={addSfxMarker} onMoveSfx={moveSfxMarker} onDeleteSfx={deleteSfxMarker} scriptMode={scriptMode} onSplitAtPlayhead={splitAtPlayhead} canSplitAtPlayhead={canSplitAtPlayhead} mode={timelineMode} onModeChange={setTimelineMode} revealToken={revealToken} searchHits={searchHitSet} playShortcut={shortcutHint("play.toggle")} />
+  );
+
   return (
     <main className="studio" data-testid="caption-editor-workspace">
       <HeaderLeft>
         <button className="header-back" onClick={onNew} data-testid="new-project-button"><ArrowLeft size={15} weight="bold" /> All projects</button>
         <span className="header-divider" aria-hidden="true" />
-        <ProjectNameEditor projectId={project.project_id} name={project.name} onRenamed={(name) => setProject((current) => ({ ...current, name }))}>
-          <SaveIndicator status={autosave.status} error={autosave.error} />
-        </ProjectNameEditor>
+        <ProjectNameEditor projectId={project.project_id} name={project.name} onRenamed={(name) => setProject((current) => ({ ...current, name }))} />
       </HeaderLeft>
       <HeaderRight>
         <div className="header-tools" data-testid="editor-history-tools">
@@ -1021,6 +1187,16 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
             <Keyboard size={18} />
           </button>
         </div>
+        <button className={`export-button save-button is-${autosave.status}`} onClick={() => void saveNow()}
+          disabled={autosave.status === "saving" || autosave.status === "conflict"}
+          title={`${autosave.status === "error" ? `Not saved: ${autosave.error ?? "try again"}` : "Save now"}${shortcutHint("save") ? ` (${shortcutHint("save")})` : ""}`}
+          data-testid="save-project-button">
+          {autosave.status === "saving" ? <SpinnerGap className="spin" size={18} />
+            : autosave.status === "saved" ? <CheckCircle size={18} weight="bold" />
+            : autosave.status === "error" ? <WarningCircle size={18} weight="bold" />
+            : <FloppyDisk size={18} weight="bold" />}
+          {autosave.status === "saving" ? "Saving…" : autosave.status === "saved" ? "Saved" : autosave.status === "error" ? "Retry" : "Save"}
+        </button>
         <button className="export-button" onClick={() => setExportOpen(true)} data-testid="open-export-dialog-button">
           {rendering ? <SpinnerGap className="spin" size={18} /> : <Export size={18} weight="bold" />} {rendering ? `Exporting ${Math.round(renderProgress)}%` : "Export"}
         </button>
@@ -1035,154 +1211,24 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         <span>{autosave.error}</span>
         <button onClick={() => window.location.reload()} data-testid="save-conflict-reload-button">Reload</button>
       </div>}
-      <div className="studio-grid">
+      {/* Rail runs the full height on the left; the tool panel + preview sit above the timeline, which starts just right of the rail. */}
+      <div className="studio-body">
         <LeftRail active={leftTab} onSelect={setLeftTab} />
-        {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} searchQuery={searchQuery} onSearchQuery={setSearchQuery} searchHits={searchHits} onJumpTo={selectWord} searchFocusToken={searchFocusToken} onSearchFocused={() => setSearchFocusToken(0)} revealToken={revealToken} />}
-        {leftTab === "media" && <MediaPanel project={project} />}
-        {leftTab === "audio" && <AudioPanel duration={project.duration}
-          value={{ volume: audioVolume, muted: audioMuted, fadeIn: audioFadeIn, fadeOut: audioFadeOut, normalize: audioNormalize }}
-          onChange={(c) => {
-            if (c.volume !== undefined) setAudioVolume(c.volume);
-            if (c.muted !== undefined) setAudioMuted(c.muted);
-            if (c.fadeIn !== undefined) setAudioFadeIn(c.fadeIn);
-            if (c.fadeOut !== undefined) setAudioFadeOut(c.fadeOut);
-            if (c.normalize !== undefined) setAudioNormalize(c.normalize);
-          }} />}
-        {leftTab === "ratio" && <RatioPanel sourceWidth={project.width} sourceHeight={project.height}
-          value={{ ratio: aspectRatio, fit: frameFit, color: frameColor }}
-          onChange={(c) => {
-            if (c.ratio !== undefined) setAspectRatio(c.ratio);
-            if (c.fit !== undefined) setFrameFit(c.fit);
-            if (c.color !== undefined) setFrameColor(c.color);
-          }} />}
-        {leftTab === "elements" && <ElementsPanel elements={elements.filter((item) => item.kind !== "text")} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(char) => addElement(char, "sticker")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
-        {leftTab === "text" && <TextPanel elements={elements} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(text) => addElement(text, "text")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
-        {leftTab === "adjustment" && <ColorPanel value={{ brightness, contrast, saturation, warmth, tint }}
-          onChange={(c: Partial<ColorValues>) => {
-            if (c.brightness !== undefined) setBrightness(c.brightness);
-            if (c.contrast !== undefined) setContrast(c.contrast);
-            if (c.saturation !== undefined) setSaturation(c.saturation);
-            if (c.warmth !== undefined) setWarmth(c.warmth);
-            if (c.tint !== undefined) setTint(c.tint);
-          }} />}
-        {leftTab === "ai" && <AiToolsPanel words={words} onDeleteWords={deleteWords} onReassignEmphasis={reassignEmphasis} reassigning={reassigning} />}
-        <section className="preview-panel" data-testid="video-preview-panel">
-          <div className="video-stage" ref={stageRef}>
-          <div className="video-frame" ref={videoFrameRef} data-ratio={aspectRatio}
-            style={{ width: `${frameBox.w}px`, height: `${frameBox.h}px`, background: reframed && frameFit === "color" ? frameColor : undefined }}>
-            <WhiteBalanceFilter warmth={warmth} tint={tint} />
-            {reframed && frameFit === "blur" && <BlurFill videoRef={videoRef} aspect={frameAspect}
-              filter={`${videoFilter} blur(${Math.max(4, Math.round(48 * previewScale / 1.1))}px)`} />}
-            <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: videoFilter, objectFit: reframed && frameFit === "crop" ? "cover" : "contain" }} onLoadedMetadata={(e) => { if (pendingSeekRef.current > 0) { e.currentTarget.currentTime = Math.min(pendingSeekRef.current, e.currentTarget.duration || pendingSeekRef.current); pendingSeekRef.current = 0; } setMediaFailed(false); }} onError={() => { pendingSeekRef.current = currentTime; if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); else setMediaFailed(true); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
-            {hud && <div key={hud.key} className="preview-hud" role="status" data-testid="preview-shortcut-hud">{hud.text}</div>}
-            {mediaFailed && <div className="preview-media-error" data-testid="video-unavailable-message">This video couldn't be loaded. Your caption edits are safe. Try reloading the page.</div>}
-            <button className="preview-play" onClick={togglePlayback} data-testid="video-preview-play-button"><Play size={28} weight="fill" /></button>
-            <button className={`preview-safe-zone-toggle ${safeZone ? "active" : ""}`} onClick={() => setSafeZone((current) => !current)} title="Toggle Reels/Shorts safe-zone guide" data-testid="safe-zone-toggle-button"><FrameCorners size={18} weight={safeZone ? "fill" : "regular"} /></button>
-            {safeZone && <div className="safe-zone-overlay" data-testid="safe-zone-overlay">
-              <div className="safe-zone-icons">
-                <i><Heart size={20} weight="fill" /></i>
-                <i><ChatCircle size={20} weight="fill" /></i>
-                <i><BookmarkSimple size={20} weight="fill" /></i>
-                <i><Share size={20} weight="fill" /></i>
-                <i><DotsThreeVertical size={20} weight="fill" /></i>
-              </div>
-              <div className="safe-zone-meta" />
-            </div>}
-            {visibleWords.length > 0 && theme === STREET_GLOW && <StreetGlowOverlay
-              visibleWords={visibleWords} scriptMode={scriptMode}
-              boxX={boxX} boxY={boxY} boxRotation={boxRotation} previewScale={previewScale}
-              onMouseDown={startCaptionDrag} onResize={startResize} />}
-            {visibleWords.length > 0 && theme !== STREET_GLOW && <div className={`caption-overlay theme-${theme} ${(captionLines === 2 || tiers) ? "lines-2" : ""}`}
-              style={{ left: `${boxX}%`, top: `${boxY}%`,
-                      transform: `translate(-50%,-50%) rotate(${boxRotation}deg)`, lineHeight: NATIVE_LINE_HEIGHT,
-                      fontStyle: italic ? "italic" : "normal", textTransform: upperCase ? "uppercase" : undefined,
-                      // WebkitTextStroke / textShadow are always set explicitly (never left to the stylesheet's default rule) so every Outline/
-                      // Shadow combination - including both off - renders exactly what the controls say, matching the export 1:1.
-                      WebkitTextStroke: outlineStroke, textShadow: dropShadow }}
-              onMouseDown={startCaptionDrag} data-testid="live-caption-preview">
-              {/* Plain text flow with a literal line break between rows - no per-row wrapper with hand-computed margins. The browser lays out
-                  stacked lines with each line's own natural metrics, exactly the way libass stacks \N-separated lines in the export. Doodle
-                  Marker uses ONE size for every tier, so words flow on one line (null tiers = only an explicit two-line midpoint or a word's own
-                  new_line breaks), mirroring the server's break_tiers override. */}
-              {splitIntoRows(visibleWords, theme === DOODLE_MARKER || flowLines ? null : tiers, captionLines).map((row, rowIndex) => <Fragment key={rowIndex}>
-                {rowIndex > 0 && <br />}
-                {/* BorderStyle=3's opaque box in libass draws around each \N-separated VISUAL LINE on its own, so the background lives on a per-row wrapper. */}
-                <span style={textStyle.background_enabled
-                  ? { backgroundColor: hexToRgba(textStyle.background_color, textStyle.background_opacity),
-                      padding: "2px 10px", borderRadius: "3px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" } as React.CSSProperties
-                  : undefined}>
-                {row.map((word, wordIndex) => {
-                  // Colour/size always come from the word itself; a tiered theme only decides the font.
-                  const fontFamily = tiers
-                    ? tiers[tiers[word.emphasis] ? word.emphasis : "support"].css_font
-                    : cssFamily(fontById[fontId]?.family ?? "Poppins");
-                  const isActiveWord = activeIndex === word.index;
-                  // Glow can differ per word, so it is combined into an explicit per-word textShadow together with the Shadow entry.
-                  const glowEntry = glowShadowFor(word, isActiveWord);
-                  // Karaoke colour (export: an ASS colour switch for the word's spoken time); the manual Emphasize accent still wins.
-                  const style: React.CSSProperties = { color: isActiveWord && activeColor && !word.emphasize ? activeColor : word.color, fontSize: `${Math.max(20, word.font_size * previewScale)}px`, fontFamily,
-                    fontWeight: bold && isBoldCapableFont(fontFamily) ? 800 : 400,
-                    ...((isActiveWord || glowEntry) ? { textShadow: [isActiveWord ? dropShadowActive : dropShadow, glowEntry].filter((v) => v && v !== "none").join(", ") || "none" } : {}) };
-                  const className = [
-                    isActiveWord ? "active" : "",
-                    isActiveWord && word.kinetic ? `kinetic-${word.kinetic}` : "",
-                    isActiveWord && word.emphasize ? "emphasize-accent" : "",
-                  ].filter(Boolean).join(" ");
-                  const doodleTier = theme === DOODLE_MARKER && (word.emphasis === "key" || word.emphasis === "feature") ? word.emphasis : null;
-                  const relOnMs = Math.max(0, Math.round((word.start - visibleWords[0].start) * 1000));
-                  return <span key={word.index} className={doodleTier ? `doodle-decorated doodle-${doodleTier}` : undefined}>
-                    {wordIndex > 0 && " "}
-                    {doodleTier === "feature" && <svg className="doodle-loop" viewBox="0 0 100 40" style={{ animationDelay: `${relOnMs}ms` }}>
-                      <path d="M 10 20 C 10 8, 90 6, 92 20 C 94 34, 8 36, 14 18" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" pathLength="1" style={{ animationDelay: `${relOnMs}ms` }} />
-                    </svg>}
-                    <span className={[className, doodleTier === "key" ? "doodle-pill" : ""].filter(Boolean).join(" ")}
-                      style={{ ...style, ...(doodleTier === "key" ? { animationDelay: `${relOnMs}ms` } : {}) }}
-                      onClick={(e) => { e.stopPropagation(); if (dragMovedRef.current) { dragMovedRef.current = false; return; } openMoment(word.index); }}
-                      data-testid={`preview-caption-word-${word.index}`}>{scriptText(word)}</span>
-                  </span>;
-                })}
-                </span>
-              </Fragment>)}
-              <div className="selection-box">
-                {(["tl", "tc", "tr", "ml", "mr", "bl", "bc", "br"] as Handle[]).map((pos) => <i key={pos} className={`resize-handle handle-${pos}`} onMouseDown={startResize(pos)} data-testid={`caption-resize-handle-${pos}`} />)}
-              </div>
-            </div>}
-            {scopePrompt && <div className="position-scope-prompt" style={{ left: `${boxX}%`, top: `${Math.min(92, boxY + 8)}%` }} data-testid="position-scope-prompt">
-              <button onClick={() => setScopePrompt(false)} data-testid="apply-this-caption-button">This caption</button>
-              <button onClick={() => { applyTransformToAll(); setScopePrompt(false); }} data-testid="apply-all-captions-button">All captions</button>
-            </div>}
-            {elements.filter((item) => currentTime >= item.start && currentTime <= item.end).map((item) => {
-              const interactive = leftTab === "elements" || leftTab === "text";
-              return <div key={item.id} className={`element-overlay ${interactive && selectedElementId === item.id ? "selected" : ""}`}
-                style={{ left: `${item.pos_x}%`, top: `${item.pos_y}%`, fontSize: `${item.font_size * previewScale}px`, color: item.color,
-                        fontFamily: item.kind === "text" ? cssFamily(fontById[item.font_id]?.family ?? "Poppins") : undefined,
-                        fontWeight: item.kind === "text" ? 700 : undefined,
-                        // plain z-staging vs the caption overlay (z-index 3); mirrors the export's ASS Layer (no subject matting)
-                        zIndex: item.layer === "behind" ? 1 : 4,
-                        cursor: interactive ? "grab" : "default", pointerEvents: interactive ? "auto" : "none" }}
-                onMouseDown={interactive ? (e) => { setSelectedElementId(item.id); startMoveElement(item.id)(e); } : undefined}
-                data-testid={`element-overlay-${item.id}`}>
-                {item.char}
-                {interactive && selectedElementId === item.id && <div className="selection-box">
-                  {(["tl", "tc", "tr", "ml", "mr", "bl", "bc", "br"] as Handle[]).map((pos) => <i key={pos} className={`resize-handle handle-${pos}`} onMouseDown={startResizeElement(item.id, pos)} data-testid={`element-resize-handle-${pos}`} />)}
-                </div>}
-              </div>;
-            })}
-          </div>
-          </div>
-          <div className="preview-meta"><span data-testid="preview-format-label">9:16 PREVIEW</span><span data-testid="caption-engine-label">WORD SYNC · {theme.toUpperCase()}</span></div>
-        </section>
-        <ThemePanel theme={theme} onTheme={chooseTheme} fontId={fontId} onFont={setFontId}
-          wordsPerCaption={wordsPerCaption} onWordsPerCaption={setWordsPerCaption}
-          captionLines={captionLines} onCaptionLines={setCaptionLines}
-          captionPosition={captionPosition} onCaptionPosition={choosePosition}
-          selectedWord={words[selectedIndex]} onWordStyle={(change) => updateWord(selectedIndex, change)}
-          tab={themeTab} onTab={setThemeTab}
-          textStyle={textStyle} onTextStyle={updateTextStyle} bold={bold} onBold={setBold} italic={italic} onItalic={setItalic}
-          hasActiveCaption={visibleWords.length > 0} boxX={boxX} boxY={boxY} boxFontSize={boxFontSize} boxRotation={boxRotation}
-          onCaptionPos={setCaptionPos} onCaptionScale={setCaptionScale} onCaptionRotation={setCaptionRotation}
-          onApplyTransformToAll={applyTransformToAll} onResetTransform={resetTransform} />
-      </div>
+        {narrowLayout ? <div className="studio-grid">{toolPanelNode}{previewNode}</div> : (
+          // Desktop: drag the tool panel's right edge to change its width; the timeline keeps a fixed height under the preview.
+          // Same approach as tscaps' editor (react-resizable-panels; the width is saved in localStorage via autoSaveId).
+          <PanelGroup direction="horizontal" autoSaveId="captain-title:studio-columns" className="studio-panels" style={{ overflow: "visible" }}>
+            <Panel id="studio-tools" order={1} defaultSize={30} minSize={20} maxSize={50} className="studio-tools-slot">
+              {toolPanelNode}
+            </Panel>
+            <PanelResizeHandle className="ct-resize-handle ct-resize-handle-col" title="Drag to resize the panel" data-testid="tool-panel-resize-handle"><i /></PanelResizeHandle>
+            {/* overflow visible: the fixed-height timeline runs out to the window's right edge, as it always did. */}
+            <Panel id="studio-stage" order={2} minSize={35} className="studio-stage" style={{ overflow: "visible" }}>
+              {previewNode}
+              {timelineNode}
+            </Panel>
+          </PanelGroup>
+        )}
       {momentPopover != null && words[momentPopover] && <MomentPopover
         word={words[momentPopover]} index={momentPopover}
         frameRect={videoFrameRef.current?.getBoundingClientRect() ?? null}
@@ -1201,7 +1247,8 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         canSplitCaption={momentPopover > 0}
         canMergeCaptionUp={momentPopover > 0}
       />}
-      <Timeline words={words} groups={indexedWordGroups} duration={project.duration} currentTime={currentTime} playing={playing} onToggle={togglePlayback} onSeek={seek} selectedIndex={selectedIndex} onSelect={openMoment} onRetimeWord={updateWord} mediaUrl={mediaUrl} sfxMarkers={sfxMarkers} onAddSfx={addSfxMarker} onMoveSfx={moveSfxMarker} onDeleteSfx={deleteSfxMarker} scriptMode={scriptMode} onSplitAtPlayhead={splitAtPlayhead} canSplitAtPlayhead={canSplitAtPlayhead} mode={timelineMode} onModeChange={setTimelineMode} revealToken={revealToken} searchHits={searchHitSet} playShortcut={shortcutHint("play.toggle")} />
+        {narrowLayout && timelineNode}
+      </div>
     </main>
   );
 };

@@ -1,5 +1,5 @@
-import { ArrowsOutCardinal, Palette, Rows, Sparkle, SquaresFour, TextT, type Icon } from '@phosphor-icons/react'
-import { CtSlider } from './ui'
+import { ArrowsOutCardinal, Palette, Rows, Sparkle, TextT } from '@phosphor-icons/react'
+import { CtSlider, CtSwitchRow } from './ui'
 import { useCaptionCatalog } from '../catalogContext'
 import { cssFamily, DEFAULT_WORD_SIZE, DOODLE_MARKER, STREET_GLOW } from '../lib/styles'
 import type { CaptionPosition, CaptionTheme, CaptionWord, TextStyle } from '../types'
@@ -7,13 +7,8 @@ import type { CaptionPosition, CaptionTheme, CaptionWord, TextStyle } from '../t
 const wordsPerCaptionOptions: (number | null)[] = [null, 1, 2, 3, 4, 5, 6, 8]
 const positions: CaptionPosition[] = ['top', 'middle', 'bottom']
 
+// Which caption style tool to show. Picked from the left rail (Templates / Customize / Word / Transform), not from tabs in here.
 export type ThemeTab = 'templates' | 'customize' | 'text' | 'transform'
-const tabs: { id: ThemeTab; label: string; icon: Icon }[] = [
-  { id: 'templates', label: 'Templates', icon: SquaresFour },
-  { id: 'customize', label: 'Customize', icon: Rows },
-  { id: 'text', label: 'Text', icon: TextT },
-  { id: 'transform', label: 'Transform', icon: ArrowsOutCardinal },
-]
 // Quick Position Y presets inside the Transform tab - the same percentages as POSITION_DEFAULTS (CaptionStudio) and the server's
 // CaptionLayout.PositionDefaults, so a preset here lands exactly where the Top/Middle/Bottom layout button would.
 const TRANSFORM_Y_PRESETS = [{ label: 'Top', y: 14 }, { label: 'Middle', y: 50 }, { label: 'Bottom', y: 80 }]
@@ -64,13 +59,6 @@ const TemplateCard = ({ item }: { item: CaptionTheme }) => {
   })}</>
 }
 
-const OnOff = ({ on, onChange, id }: { on: boolean; onChange: (on: boolean) => void; id: string }) => (
-  <div className="layout-grid two" data-testid={`${id}-toggle-selector`}>
-    <button className={!on ? 'active' : ''} onClick={() => onChange(false)} data-testid={`${id}-off-button`}>Off</button>
-    <button className={on ? 'active' : ''} onClick={() => onChange(true)} data-testid={`${id}-on-button`}>On</button>
-  </div>
-)
-
 interface Props {
   theme: string
   onTheme: (id: string) => void
@@ -85,7 +73,6 @@ interface Props {
   selectedWord: CaptionWord | undefined
   onWordStyle: (change: Partial<CaptionWord>) => void
   tab: ThemeTab
-  onTab: (tab: ThemeTab) => void
   textStyle: TextStyle
   onTextStyle: (change: Partial<TextStyle>) => void
   bold: boolean
@@ -106,7 +93,7 @@ interface Props {
 }
 
 export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, onWordsPerCaption, captionLines, onCaptionLines,
-  captionPosition, onCaptionPosition, selectedWord, onWordStyle, tab, onTab, textStyle, onTextStyle, bold, onBold, italic, onItalic,
+  captionPosition, onCaptionPosition, selectedWord, onWordStyle, tab, textStyle, onTextStyle, bold, onBold, italic, onItalic,
   hasActiveCaption, boxX, boxY, boxFontSize, boxRotation, onCaptionPos, onCaptionScale, onCaptionRotation, onApplyTransformToAll, onResetTransform }: Props) => {
   const { catalog } = useCaptionCatalog()
   const activeTiers = catalog.themes.find((item) => item.id === theme)?.tiers ?? null
@@ -118,12 +105,6 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
   }
   return (
     <aside className="tool-panel" data-testid="caption-tools-panel">
-      <div className="panel-tabs" data-testid="caption-tool-tabs">
-        {tabs.map(({ id, label, icon: TabIcon }) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => onTab(id)} data-testid={`caption-tab-${id}-button`}>
-          <TabIcon size={14} /> {label}
-        </button>)}
-      </div>
-
       {tab === 'templates' && <>
         <div className="panel-heading"><Sparkle size={18} /><div><span>STYLE ENGINE</span><h2 data-testid="theme-panel-heading">Caption template</h2></div></div>
         <div className="template-grid" data-testid="caption-theme-selector">
@@ -153,8 +134,7 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
             <button className={bold ? 'active' : ''} onClick={() => onBold(!bold)} data-testid="bold-toggle-button" style={{ fontWeight: 800 }}>Bold</button>
             <button className={italic ? 'active' : ''} onClick={() => onItalic(!italic)} data-testid="italic-toggle-button" style={{ fontStyle: 'italic' }}>Italic</button>
           </div>
-          <label className="control-label" data-testid="background-toggle-label">Background box</label>
-          <OnOff id="background" on={textStyle.background_enabled} onChange={(on) => onTextStyle({ background_enabled: on })} />
+          <CtSwitchRow label="Background box" checked={textStyle.background_enabled} onCheckedChange={(on) => onTextStyle({ background_enabled: on })} data-testid="background-switch" />
           {textStyle.background_enabled ? <>
             <label className="control-label" data-testid="background-color-label"><span><Palette size={16} /> Box colour</span>
               <input type="color" value={textStyle.background_color} onChange={(e) => onTextStyle({ background_color: e.target.value })} data-testid="background-color-input" />
@@ -163,8 +143,7 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
             <CtSlider min={0.1} max={1} step={0.05} value={[textStyle.background_opacity]} onValueChange={([v]) => onTextStyle({ background_opacity: v })} data-testid="background-opacity-slider" />
             <p className="panel-note" data-testid="background-note">A solid box behind each caption line. Outline, Shadow and Glow turn off while a Background is on - an ASS export can't combine both.</p>
           </> : <>
-            <label className="control-label" data-testid="outline-toggle-label">Outline</label>
-            <OnOff id="outline" on={textStyle.outline_enabled} onChange={(on) => onTextStyle({ outline_enabled: on })} />
+            <CtSwitchRow label="Outline" checked={textStyle.outline_enabled} onCheckedChange={(on) => onTextStyle({ outline_enabled: on })} data-testid="outline-switch" />
             {textStyle.outline_enabled && <>
               <label className="control-label" data-testid="outline-width-label">Outline width <b>{textStyle.outline_width}px</b></label>
               <CtSlider min={0.5} max={8} step={0.5} value={[textStyle.outline_width]} onValueChange={([v]) => onTextStyle({ outline_width: v })} data-testid="outline-width-slider" />
@@ -172,8 +151,7 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
                 <input type="color" value={textStyle.outline_color} onChange={(e) => onTextStyle({ outline_color: e.target.value })} data-testid="outline-color-input" />
               </label>
             </>}
-            <label className="control-label" data-testid="shadow-toggle-label">Shadow</label>
-            <OnOff id="shadow" on={textStyle.shadow_enabled} onChange={(on) => onTextStyle({ shadow_enabled: on })} />
+            <CtSwitchRow label="Shadow" checked={textStyle.shadow_enabled} onCheckedChange={(on) => onTextStyle({ shadow_enabled: on })} data-testid="shadow-switch" />
             {textStyle.shadow_enabled && <>
               <label className="control-label" data-testid="shadow-angle-label">Direction <b>{textStyle.shadow_angle}°</b></label>
               <CtSlider min={0} max={360} step={15} value={[textStyle.shadow_angle]} onValueChange={([v]) => onTextStyle({ shadow_angle: v })} data-testid="shadow-angle-slider" />
@@ -187,8 +165,7 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
                 <input type="color" value={textStyle.shadow_color} onChange={(e) => onTextStyle({ shadow_color: e.target.value })} data-testid="shadow-color-input" />
               </label>
             </>}
-            <label className="control-label" data-testid="glow-toggle-label">Glow</label>
-            <OnOff id="glow" on={textStyle.glow_enabled} onChange={(on) => onTextStyle({ glow_enabled: on })} />
+            <CtSwitchRow label="Glow" checked={textStyle.glow_enabled} onCheckedChange={(on) => onTextStyle({ glow_enabled: on })} data-testid="glow-switch" />
             {textStyle.glow_enabled && <>
               <label className="control-label" data-testid="glow-blur-label">Intensity <b>{textStyle.glow_blur}</b></label>
               <CtSlider min={0} max={24} step={1} value={[textStyle.glow_blur]} onValueChange={([v]) => onTextStyle({ glow_blur: v })} data-testid="glow-blur-slider" />

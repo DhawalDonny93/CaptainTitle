@@ -3,6 +3,7 @@ import notificationService, { Notification } from '../services/notificationServi
 import { Card } from '@/components/ui/Card';
 import { Loader2, Bell, Check, AlertCircle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Switch } from '@/components/ui/Switch';
 import { toast } from '../utils/toast';
 
 const NotificationsPage = () => {
@@ -86,13 +87,10 @@ const NotificationsPage = () => {
                     <Bell className="h-6 w-6" /> Notifications
                 </h1>
                 <div className="flex items-center gap-2">
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setUnreadOnly(!unreadOnly)}
-                    >
-                        {unreadOnly ? 'Show All' : 'Unread Only'}
-                    </Button>
+                    <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        Unread only
+                        <Switch checked={unreadOnly} onCheckedChange={setUnreadOnly} data-testid="notifications-unread-only-switch" />
+                    </label>
                     {notifications.some(n => !n.isRead) && (
                         <Button variant="outline" size="sm" onClick={handleMarkAllRead}>
                             <Check className="h-4 w-4 mr-2" /> Mark all read

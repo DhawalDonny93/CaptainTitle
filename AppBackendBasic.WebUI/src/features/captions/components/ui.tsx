@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { Switch } from '@/components/ui/Switch'
 
 // Small, dependency-free primitives for the studio (the old app used shadcn/Radix; the template does not ship those).
 
@@ -84,5 +85,25 @@ export function CtDialog({ open, onOpenChange, className, children, ...rest }: C
         {children}
       </div>
     </div>
+  )
+}
+
+interface CtSwitchRowProps {
+  label: ReactNode
+  icon?: ReactNode
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  disabled?: boolean
+  'data-testid'?: string
+}
+
+/** A full-width "label ........ [switch]" row for on/off settings in the studio panels. The whole row is clickable. */
+export function CtSwitchRow({ label, icon, checked, onCheckedChange, disabled, ...rest }: CtSwitchRowProps) {
+  const testId = rest['data-testid']
+  return (
+    <label className={cn('ct-switch-row', checked && 'on', disabled && 'disabled')} data-testid={testId ? `${testId}-row` : undefined}>
+      <span>{icon}{label}</span>
+      <Switch checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} data-testid={testId} />
+    </label>
   )
 }

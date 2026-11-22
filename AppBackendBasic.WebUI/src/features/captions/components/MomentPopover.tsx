@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUUpLeft, ArrowUUpRight, ArrowsOutSimple, Lightning, PencilSimple,
   Scissors, Sparkle, Square, Target, WaveSquare, X,
 } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
+import { Switch } from "@/components/ui/Switch";
 import { playSfx } from "../lib/sfx";
 import { useCaptionCatalog } from "../catalogContext";
 import { SfxIcon } from "./sfxIcons";
@@ -124,16 +125,19 @@ export const MomentPopover = ({ word, index, frameRect, anchorRect, onClose, onT
         </div>
 
         <span className="block mb-1 text-[9px] font-semibold tracking-[.12em] text-[var(--ct-muted)]">QUICK ACTIONS</span>
+        <div className="mb-1.5 grid gap-1.5">
+          <label className="flex cursor-pointer items-center justify-between gap-2 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]">
+            <span className="flex items-center gap-1"><Lightning size={12} weight="fill" className={word.emphasize ? "text-[#EAB308]" : undefined} /> Emphasize</span>
+            {/* Keeps the yellow the emphasized state always had. */}
+            <Switch size="sm" checked={!!word.emphasize} onCheckedChange={() => onEmphasize(index)} style={{ "--switch-on": "#EAB308" } as CSSProperties}
+              data-testid={`moment-emphasize-${index}`} />
+          </label>
+          <label className="flex cursor-pointer items-center justify-between gap-2 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]" title="Start a new caption line at this word">
+            <span className="flex items-center gap-1"><Scissors size={12} /> Split line here</span>
+            <Switch size="sm" checked={word.new_line === true} onCheckedChange={() => onNewLine(index)} data-testid={`moment-split-line-${index}`} />
+          </label>
+        </div>
         <div className="grid grid-cols-2 gap-1.5">
-          <button onClick={() => onEmphasize(index)}
-            className={`flex items-center justify-center gap-1 rounded px-2 py-1.5 text-[11px] font-semibold ${word.emphasize ? "bg-[#EAB308] text-black" : "bg-[var(--ct-field)] text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]"}`}
-            data-testid={`moment-emphasize-${index}`}>
-            <Lightning size={12} weight="fill" /> Emphasize
-          </button>
-          <button onClick={() => onNewLine(index)} className="flex items-center justify-center gap-1 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)]"
-            data-testid={`moment-split-line-${index}`}>
-            <Scissors size={12} /> Split Line
-          </button>
           <button onClick={() => onMerge(index, "previous")} disabled={!canMergePrevious}
             className="flex items-center justify-center gap-1 rounded bg-[var(--ct-field)] px-2 py-1.5 text-[11px] font-semibold text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)] disabled:opacity-35 disabled:cursor-not-allowed"
             data-testid={`moment-merge-previous-${index}`}>
