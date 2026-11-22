@@ -41,8 +41,32 @@ public class CaptionProject
     public int Contrast { get; set; } = 100;
     public int Saturation { get; set; } = 100;
 
+    // ---- Color panel: white-balance on top of brightness/contrast/saturation (-50..50, 0 = neutral) ----
+    public int Warmth { get; set; }
+    public int Tint { get; set; }
+
+    // ---- Audio panel: fades (seconds) and loudness normalization of the original audio ----
+    public double AudioFadeIn { get; set; }
+    public double AudioFadeOut { get; set; }
+    public bool AudioNormalize { get; set; }
+
+    // ---- Ratio panel: the exported frame. "original" keeps the source size; otherwise FrameFit says how the source fills the new frame ----
+    [Required, MaxLength(10)]
+    public string AspectRatio { get; set; } = "original";
+    [Required, MaxLength(10)]
+    public string FrameFit { get; set; } = "blur";
+    [Required, MaxLength(9)]
+    public string FrameColor { get; set; } = "#000000";
+
     [Required, MaxLength(10)]
     public string RenderQuality { get; set; } = "high";
+
+    // ---- Export dialog: output size and container. "original" keeps the frame size; "1080"/"720"/"480" scale the frame's short side ----
+    [Required, MaxLength(10)]
+    public string RenderResolution { get; set; } = "original";
+    /// <summary>mp4 | mov (both H.264 + AAC; only the container differs).</summary>
+    [Required, MaxLength(10)]
+    public string RenderFormat { get; set; } = "mp4";
 
     /// <summary>Legacy style-variant id. The old app removed variants (replaced by the granular styling below); kept for old rows, ignored by the export.</summary>
     [MaxLength(50)]

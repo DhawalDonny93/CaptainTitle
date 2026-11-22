@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowClockwise, ListBullets, Scissors, TextAa, X } from "@phosphor-icons/react";
+import { ArrowClockwise, CaretDown, CaretUp, ListBullets, MagnifyingGlass, Scissors, TextAa, X } from "@phosphor-icons/react";
 import type { CaptionWord, ScriptMode } from "../types";
 
 const SENTENCE_END_CHARS = ".!?।॥"; // includes Devanagari danda/double danda
@@ -128,14 +128,54 @@ interface TranscriptPanelProps {
   relistening: boolean
   scriptMode?: ScriptMode
   onScriptMode?: (mode: ScriptMode) => void
+  /** Caption search (also highlighted on the Timeline): the query, and the matching word indices in order. */
+  searchQuery: string
+  onSearchQuery: (query: string) => void
+  searchHits: number[]
+  /** Selects and seeks to a word without opening its popover - used to step through search matches. */
+  onJumpTo: (index: number) => void
+  /** Changes when the search shortcut asks for the search box to take focus. */
+  searchFocusToken?: number
+  onSearchFocused?: () => void
+  /** Changes when the "go to the caption under the playhead" shortcut asks to scroll the picked word into view. */
+  revealToken?: number
 }
 
 export const TranscriptPanel = ({ words, originalTranscript, transcriptionMode, activeIndex, selectedIndex,
                                   onSelect, onText, onNewLine, onSplitWord, onEmphasis, onRelisten, relistening,
-                                  scriptMode = "roman", onScriptMode }: TranscriptPanelProps) => {
+                                  scriptMode = "roman", onScriptMode, searchQuery, onSearchQuery, searchHits, onJumpTo,
+                                  searchFocusToken = 0, onSearchFocused, revealToken = 0 }: TranscriptPanelProps) => {
   const sentences = useMemo(() => groupIntoChunks(words), [words]);
   const [popover, setPopover] = useState<{ index: number; x: number; y: number } | null>(null);
   const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const searchRef = useRef<HTMLInputElement>(null);
+  const hitSet = useMemo(() => new Set(searchHits), [searchHits]);
+  const hitPosition = searchHits.indexOf(selectedIndex);
+
+  // Handled once, then cleared by the studio, so reopening the Script tab later does not grab focus again.
+  useEffect(() => {
+    if (!searchFocusToken) return;
+    searchRef.current?.focus();
+    searchRef.current?.select();
+    onSearchFocused?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchFocusToken]);
+  useEffect(() => {
+    if (!revealToken) return;
+    const sentenceIndex = sentences.findIndex((sentence) => sentence.some(({ index }) => index === selectedIndex));
+    cardRefs.current[sentenceIndex]?.scrollIntoView({ block: "center", behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealToken]);
+
+  // Steps from the picked word to the next/previous match, wrapping around, so Enter keeps walking through the results.
+  const stepHit = (direction: 1 | -1) => {
+    if (!searchHits.length) return;
+    const next = direction === 1 ? searchHits.find((index) => index > selectedIndex) ?? searchHits[0]
+      : [...searchHits].reverse().find((index) => index < selectedIndex) ?? searchHits[searchHits.length - 1];
+    onJumpTo(next);
+    const sentenceIndex = sentences.findIndex((sentence) => sentence.some(({ index }) => index === next));
+    cardRefs.current[sentenceIndex]?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
 
   const activeSentenceIndex = sentences.findIndex((sentence) => sentence.some(({ index }) => index === activeIndex));
 
@@ -166,6 +206,21 @@ export const TranscriptPanel = ({ words, originalTranscript, transcriptionMode, 
         </div>
         <p data-testid="whisper-raw-transcript-text">{originalTranscript || words.map((word) => word.original).join(" ")}</p>
       </div>
+      <div className="script-search" data-testid="script-search">
+        <MagnifyingGlass size={14} />
+        <input ref={searchRef} value={searchQuery} onChange={(e) => onSearchQuery(e.target.value)} placeholder="Search captions"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { e.preventDefault(); stepHit(e.shiftKey ? -1 : 1); }
+            else if (e.key === "Escape") { e.preventDefault(); onSearchQuery(""); e.currentTarget.blur(); }
+          }}
+          aria-label="Search captions" data-testid="script-search-input" />
+        {searchQuery.trim() && <>
+          <span data-testid="script-search-count">{searchHits.length ? `${hitPosition >= 0 ? hitPosition + 1 : "–"}/${searchHits.length}` : "0"}</span>
+          <button onClick={() => stepHit(-1)} disabled={!searchHits.length} title="Previous match (Shift+Enter)" aria-label="Previous match"><CaretUp size={12} /></button>
+          <button onClick={() => stepHit(1)} disabled={!searchHits.length} title="Next match (Enter)" aria-label="Next match"><CaretDown size={12} /></button>
+          <button onClick={() => onSearchQuery("")} title="Clear search" aria-label="Clear search"><X size={11} /></button>
+        </>}
+      </div>
       <div className="transcript-scroll" data-testid="editable-transcript-list">
         {sentences.map((sentence, sentenceIndex) => {
           const start = sentence[0].word.start, end = sentence[sentence.length - 1].word.end;
@@ -186,7 +241,7 @@ export const TranscriptPanel = ({ words, originalTranscript, transcriptionMode, 
                   activeIndex === index ? "bg-[var(--ct-accent)] text-[var(--ct-on-accent)]"
                     : selectedIndex === index ? "bg-[var(--ct-accent-soft)] text-[var(--ct-text)] ring-1 ring-[var(--ct-accent)]"
                     : "bg-[var(--ct-field)] text-[var(--ct-text-2)] hover:bg-[var(--ct-hover)] hover:text-[var(--ct-text)]"
-                } ${word.important || word.emphasis === "key" ? "font-bold" : ""}`}
+                } ${word.important || word.emphasis === "key" ? "font-bold" : ""} ${hitSet.has(index) ? "search-hit" : ""}`}
                 title={word.uncertain ? "Uncertain transcription - double-click to fix the spelling" : "Click to seek · double-click or right-click to edit"}
                 data-testid={`script-word-${index}`} data-uncertain={word.uncertain ? "true" : undefined}>
                 <span className="text-[13px]" data-testid={`script-word-text-${index}`}>

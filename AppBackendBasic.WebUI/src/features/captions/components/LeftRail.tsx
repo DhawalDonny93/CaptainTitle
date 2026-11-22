@@ -1,6 +1,7 @@
-import { ClosedCaptioning, FilmSlate, MusicNotes, Shapes, Sparkle, SlidersHorizontal, TextT, type Icon } from '@phosphor-icons/react'
+import { ClosedCaptioning, FilmSlate, FrameCorners, MusicNotes, Palette, Shapes, Sparkle, TextT, type Icon } from '@phosphor-icons/react'
 
-export type LeftTab = 'media' | 'audio' | 'text' | 'elements' | 'captions' | 'adjustment' | 'ai'
+// 'adjustment' is the Color panel: the id is kept so editor states saved before the rename still open it.
+export type LeftTab = 'media' | 'audio' | 'text' | 'elements' | 'captions' | 'ratio' | 'adjustment' | 'ai'
 
 const sections: { id: LeftTab; label: string; icon: Icon }[] = [
   { id: 'media', label: 'Media', icon: FilmSlate },
@@ -8,7 +9,8 @@ const sections: { id: LeftTab; label: string; icon: Icon }[] = [
   { id: 'text', label: 'Text', icon: TextT },
   { id: 'elements', label: 'Elements', icon: Shapes },
   { id: 'captions', label: 'Captions', icon: ClosedCaptioning },
-  { id: 'adjustment', label: 'Adjustment', icon: SlidersHorizontal },
+  { id: 'ratio', label: 'Ratio', icon: FrameCorners },
+  { id: 'adjustment', label: 'Color', icon: Palette },
   { id: 'ai', label: 'AI tools', icon: Sparkle },
 ]
 

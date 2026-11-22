@@ -74,7 +74,17 @@ public class CaptionProjectEditDto
     [JsonPropertyName("brightness"), Range(-50, 50)] public int Brightness { get; set; }
     [JsonPropertyName("contrast"), Range(50, 200)] public int Contrast { get; set; } = 100;
     [JsonPropertyName("saturation"), Range(0, 200)] public int Saturation { get; set; } = 100;
+    [JsonPropertyName("warmth"), Range(-50, 50)] public int Warmth { get; set; }
+    [JsonPropertyName("tint"), Range(-50, 50)] public int Tint { get; set; }
+    [JsonPropertyName("audio_fade_in"), Range(0, 10)] public double AudioFadeIn { get; set; }
+    [JsonPropertyName("audio_fade_out"), Range(0, 10)] public double AudioFadeOut { get; set; }
+    [JsonPropertyName("audio_normalize")] public bool AudioNormalize { get; set; }
+    [JsonPropertyName("aspect_ratio"), RegularExpression("^(original|9:16|1:1|4:5|16:9)$")] public string AspectRatio { get; set; } = "original";
+    [JsonPropertyName("frame_fit"), RegularExpression("^(blur|color|crop)$")] public string FrameFit { get; set; } = "blur";
+    [JsonPropertyName("frame_color"), RegularExpression("^#[0-9A-Fa-f]{6}$")] public string FrameColor { get; set; } = "#000000";
     [JsonPropertyName("render_quality"), RegularExpression("^(high|draft)$")] public string RenderQuality { get; set; } = "high";
+    [JsonPropertyName("render_resolution"), RegularExpression("^(original|1080|720|480)$")] public string RenderResolution { get; set; } = "original";
+    [JsonPropertyName("render_format"), RegularExpression("^(mp4|mov)$")] public string RenderFormat { get; set; } = "mp4";
     [JsonPropertyName("words"), Required] public List<CaptionWordDto> Words { get; set; } = new();
     [JsonPropertyName("elements")] public List<CaptionElementDto> Elements { get; set; } = new();
     [JsonPropertyName("sfx_markers")] public List<CaptionSfxMarkerDto> SfxMarkers { get; set; } = new();
@@ -126,7 +136,17 @@ public class CaptionProjectDto
     [JsonPropertyName("brightness")] public int Brightness { get; set; }
     [JsonPropertyName("contrast")] public int Contrast { get; set; }
     [JsonPropertyName("saturation")] public int Saturation { get; set; }
+    [JsonPropertyName("warmth")] public int Warmth { get; set; }
+    [JsonPropertyName("tint")] public int Tint { get; set; }
+    [JsonPropertyName("audio_fade_in")] public double AudioFadeIn { get; set; }
+    [JsonPropertyName("audio_fade_out")] public double AudioFadeOut { get; set; }
+    [JsonPropertyName("audio_normalize")] public bool AudioNormalize { get; set; }
+    [JsonPropertyName("aspect_ratio")] public string AspectRatio { get; set; } = "original";
+    [JsonPropertyName("frame_fit")] public string FrameFit { get; set; } = "blur";
+    [JsonPropertyName("frame_color")] public string FrameColor { get; set; } = "#000000";
     [JsonPropertyName("render_quality")] public string RenderQuality { get; set; } = "high";
+    [JsonPropertyName("render_resolution")] public string RenderResolution { get; set; } = "original";
+    [JsonPropertyName("render_format")] public string RenderFormat { get; set; } = "mp4";
     [JsonPropertyName("elements")] public List<CaptionElementDto> Elements { get; set; } = new();
     [JsonPropertyName("sfx_markers")] public List<CaptionSfxMarkerDto> SfxMarkers { get; set; } = new();
     [JsonPropertyName("variant")] public string? Variant { get; set; }

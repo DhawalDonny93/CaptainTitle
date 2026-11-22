@@ -5,6 +5,8 @@
 -- Run it in the Supabase SQL editor. Result sets:
 --   1) MISSING TABLE    -> run 22_generic_template_schema.sql and/or 21_captain_title_captions.sql
 --   2) MISSING COLUMN   -> an existing table lacks a column the code reads/writes (for the Razorpay columns run 25_...sql;
+--                          for Warmth/Tint/AudioFade*/AudioNormalize/AspectRatio/FrameFit/FrameColor run 29_...sql;
+--                          for RenderResolution/RenderFormat run 30_...sql;
 --                          otherwise add it with ALTER TABLE ... ADD COLUMN)
 --   3) LEFTOVER AI-SEO  -> old AI-SEO tables still present (data count shown): remove with 24_remove_ai_seo_tables.sql
 --   4) "User"."Id" TYPE -> must be integer (21 references it as INTEGER); uuid means an old UUID-based schema
@@ -668,6 +670,16 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionProjects','RenderedRevision'),
   ('CaptionProjects','LastEditedAt'),
   ('CaptionProjects','CreditConsumedAt'),
+  ('CaptionProjects','Warmth'),
+  ('CaptionProjects','Tint'),
+  ('CaptionProjects','AudioFadeIn'),
+  ('CaptionProjects','AudioFadeOut'),
+  ('CaptionProjects','AudioNormalize'),
+  ('CaptionProjects','AspectRatio'),
+  ('CaptionProjects','FrameFit'),
+  ('CaptionProjects','FrameColor'),
+  ('CaptionProjects','RenderResolution'),
+  ('CaptionProjects','RenderFormat'),
   ('CaptionProjectEditorStates','ProjectId'),
   ('CaptionProjectEditorStates','StateJson'),
   ('CaptionProjectEditorStates','UpdatedAt'),
@@ -1425,6 +1437,16 @@ WITH expected(table_name, column_name) AS (VALUES
   ('CaptionProjects','RenderedRevision'),
   ('CaptionProjects','LastEditedAt'),
   ('CaptionProjects','CreditConsumedAt'),
+  ('CaptionProjects','Warmth'),
+  ('CaptionProjects','Tint'),
+  ('CaptionProjects','AudioFadeIn'),
+  ('CaptionProjects','AudioFadeOut'),
+  ('CaptionProjects','AudioNormalize'),
+  ('CaptionProjects','AspectRatio'),
+  ('CaptionProjects','FrameFit'),
+  ('CaptionProjects','FrameColor'),
+  ('CaptionProjects','RenderResolution'),
+  ('CaptionProjects','RenderFormat'),
   ('CaptionProjectEditorStates','ProjectId'),
   ('CaptionProjectEditorStates','StateJson'),
   ('CaptionProjectEditorStates','UpdatedAt'),

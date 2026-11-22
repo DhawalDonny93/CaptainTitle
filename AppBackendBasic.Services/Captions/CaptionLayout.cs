@@ -55,14 +55,15 @@ public static class CaptionLayout
 
     private static int PyRound(double v) => (int)Math.Round(v, MidpointRounding.ToEven);
 
-    /// <summary>The point (canvas px) the whole caption block is centred on: the first word's manual pos_x/pos_y, else the preset.</summary>
-    public static (int X, int Y) GroupCenter(IReadOnlyList<CaptionWordDto> group, string captionPosition)
+    /// <summary>The point (canvas px) the whole caption block is centred on: the first word's manual pos_x/pos_y, else the preset.
+    /// canvasHeight follows the exported frame's aspect (see FrameLayout.CanvasHeight); the canvas is always 1080 wide.</summary>
+    public static (int X, int Y) GroupCenter(IReadOnlyList<CaptionWordDto> group, string captionPosition, int canvasHeight = 1920)
     {
         var anchor = group[0];
         double x, y;
         if (anchor.PosX != null && anchor.PosY != null) { x = anchor.PosX.Value; y = anchor.PosY.Value; }
         else (x, y) = PositionDefaults.TryGetValue(captionPosition, out var p) ? p : PositionDefaults["bottom"];
-        return (PyRound(x / 100 * 1080), PyRound(y / 100 * 1920));
+        return (PyRound(x / 100 * 1080), PyRound(y / 100 * canvasHeight));
     }
 
     /// <summary>The Transform panel's Rotation slider, stored on the group's first word. 0 = none.</summary>

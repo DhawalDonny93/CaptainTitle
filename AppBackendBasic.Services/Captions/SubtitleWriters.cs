@@ -101,7 +101,7 @@ public static class AssSubtitleWriter
 
     public static AssScripts Build(IReadOnlyList<CaptionWordDto> words, string themeKey, string fontId, int? wordsPerCaption,
         int captionLines, string captionPosition, IReadOnlyList<CaptionElementDto>? elements, AssStyleOptions style,
-        CaptionStyleSet styles, ITextMeasurer measurer)
+        CaptionStyleSet styles, ITextMeasurer measurer, int canvasHeight = 1920)
     {
         var theme = styles.Theme(themeKey);
         var primaryFamily = styles.Font(fontId).Family;
@@ -129,7 +129,7 @@ public static class AssSubtitleWriter
             outlineColourField = "&H00000000"; backColourField = "&H80000000";
         }
         // WrapStyle 2: no automatic word-wrap, only our own explicit \N breaks.
-        var header = "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 2\n[V4+ Styles]\n" + StyleFormat
+        var header = $"[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: {canvasHeight}\nWrapStyle: 2\n[V4+ Styles]\n" + StyleFormat
             + $"Style: Default,{primaryFamily},52,&H00FFFFFF,&H00007AFF,{outlineColourField},{backColourField},0,{italicField},0,0,100,100,0,0,{borderStyle},{outlineField},{shadowField},2,70,70,210,1\n"
             + EventsFormat;
 
@@ -145,7 +145,7 @@ public static class AssSubtitleWriter
 
         foreach (var group in groups)
         {
-            var (centerX, centerY) = CaptionLayout.GroupCenter(group, captionPosition);
+            var (centerX, centerY) = CaptionLayout.GroupCenter(group, captionPosition, canvasHeight);
             // Street Glow is LINE-based (two independently animated roles), so it never goes through the word-tag path below. Anything without
             // tiers falls back to it too, so a legacy/unknown flat template on an older project still renders instead of crashing.
             if (tiers == null)
@@ -284,24 +284,24 @@ public static class AssSubtitleWriter
         }
 
         foreach (var element in elements ?? Array.Empty<CaptionElementDto>())
-            if (element.End > element.Start) lines.Append(ElementDialogue(element, styles));
+            if (element.End > element.Start) lines.Append(ElementDialogue(element, styles, canvasHeight));
 
         // Mask files are only produced when their layer actually has content, so the renderer builds only the blur stages it needs.
         // Flow templates (migration 28) put a whole caption on one long line; without WrapStyle 2 libass would auto-wrap the MASK copy while the
         // main layer stays on one line, so the shadow/glow would sit under the wrong words. Older templates keep their exact (golden-tested) header.
         var maskWrap = theme.Flow ? "WrapStyle: 2\n" : "";
-        var maskHeader = "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n" + maskWrap + "[V4+ Styles]\n" + StyleFormat
+        var maskHeader = $"[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: {canvasHeight}\n" + maskWrap + "[V4+ Styles]\n" + StyleFormat
             + $"Style: Default,{primaryFamily},52,&H00FFFFFF,&H00007AFF,&H00000000,&H00000000,0,{italicField},0,0,100,100,0,0,1,0,0,2,70,70,210,1\n"
             + EventsFormat;
         string? Mask(StringBuilder sb) => sb.Length > 0 ? maskHeader + sb : null;
         return new AssScripts(lines.ToString(), Mask(shadowAlphaLines), Mask(shadowColorLines), Mask(glowAlphaLines), Mask(glowColorLines));
     }
 
-    private static string ElementDialogue(CaptionElementDto element, CaptionStyleSet styles)
+    private static string ElementDialogue(CaptionElementDto element, CaptionStyleSet styles, int canvasHeight)
     {
         var safe = (element.Char ?? "").Replace("{", "").Replace("}", "");
         int x = PyRound(element.PosX / 100 * 1080);
-        int y = PyRound(element.PosY / 100 * 1920);
+        int y = PyRound(element.PosY / 100 * canvasHeight);
         // Matches .element-overlay's CSS text-shadow (0 2px 6px rgba(0,0,0,.7)) rather than inheriting the Style line's Outline/Shadow.
         var tags = $"\\an5\\pos({x},{y})\\fs{element.FontSize}\\c{AssColor(element.Color ?? "#FFFFFF")}\\bord0\\shad2\\blur3";
         if (element.Kind == "text") tags = $"\\fn{styles.Font(element.FontId).Family}" + tags;
@@ -489,4 +489,45 @@ public static class SrtWriter
         });
         return string.Join("\n", entries);
     }
+}
+
+/// <summary>The caption file formats the Export dialog offers ("Export captions instead").</summary>
+public static class SubtitleFormats
+{
+    public const string Srt = "srt";
+    public const string Vtt = "vtt";
+    public const string Txt = "txt";
+
+    public static bool IsKnown(string? format) => format == Srt || format == Vtt || format == Txt;
+
+    public static string ContentType(string format) => format switch
+    {
+        Vtt => "text/vtt",
+        Txt => "text/plain",
+        _ => "application/x-subrip",
+    };
+}
+
+/// <summary>WebVTT with the same one-cue-per-word timing as <see cref="SrtWriter"/> (VTT uses a dot before the milliseconds).</summary>
+public static class VttWriter
+{
+    public static string VttTime(double seconds) => SrtWriter.SrtTime(seconds).Replace(',', '.');
+
+    public static string Build(IReadOnlyList<CaptionWordDto> words, string scriptMode = "roman")
+    {
+        var entries = words.Select(w =>
+        {
+            var text = scriptMode == "native" && !string.IsNullOrEmpty(w.Original) ? w.Original : w.Text;
+            return $"{VttTime(w.Start)} --> {VttTime(w.End)}\n{text}\n";
+        });
+        return "WEBVTT\n\n" + string.Join("\n", entries);
+    }
+}
+
+/// <summary>The transcript as plain text: the words joined with spaces, no timings.</summary>
+public static class PlainTranscriptWriter
+{
+    public static string Build(IReadOnlyList<CaptionWordDto> words, string scriptMode = "roman") =>
+        string.Join(" ", words.Select(w => scriptMode == "native" && !string.IsNullOrEmpty(w.Original) ? w.Original : w.Text)
+            .Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => t.Trim())) + "\n";
 }

@@ -5,6 +5,16 @@ namespace AppBackendBasic.Services.Captions;
 /// <summary>The blur-mask companion scripts of one export (see <see cref="AssScripts"/>) as file names relative to the ffmpeg working directory.</summary>
 public sealed record BlurMaskFiles(string? ShadowAlpha, string? ShadowColor, double ShadowBlur, string? GlowAlpha, string? GlowColor, double GlowBlur);
 
+/// <summary>
+/// The studio's Color / Audio / Ratio panel settings for one export. The defaults reproduce the export as it was before these panels existed
+/// (same filter strings), so older projects render exactly as before.
+/// </summary>
+public sealed record RenderLook(
+    int Warmth = 0, int Tint = 0,
+    double FadeIn = 0, double FadeOut = 0, bool Normalize = false, double Duration = 0,
+    string AspectRatio = FrameLayout.Original, string FrameFit = "blur", string FrameColor = "#000000",
+    string Resolution = FrameLayout.Original);
+
 /// <summary>Builds the ffmpeg argument lists used for the export render (port of captions.py _render).</summary>
 public static class FfmpegRenderArgs
 {
@@ -111,12 +121,54 @@ public static class FfmpegRenderArgs
         }, $"{prefix}_layer");
     }
 
+    /// <summary>
+    /// filter_complex steps that put the graded source [input] into a WxH frame, ending in [framed]. blur: the source fills the frame blurred, with
+    /// the whole source centred on top; color: the whole source centred on a solid colour; crop: the source fills the frame, centre-cropped.
+    /// </summary>
+    public static List<string> ReframeSteps(string input, string fit, string frameColor, int width, int height)
+    {
+        var size = $"{width}:{height}";
+        switch (fit)
+        {
+            case "crop":
+                return new() { $"[{input}]scale={size}:force_original_aspect_ratio=increase,crop={size},setsar=1[framed]" };
+            case "color":
+                var hex = System.Text.RegularExpressions.Regex.IsMatch(frameColor ?? "", "^#[0-9A-Fa-f]{6}$") ? frameColor![1..] : "000000";
+                return new() { $"[{input}]scale={size}:force_original_aspect_ratio=decrease,pad={size}:(ow-iw)/2:(oh-ih)/2:color=0x{hex},setsar=1[framed]" };
+            default:
+                // The background is blurred at quarter size then scaled back up: the same look as a full-size blur at a fraction of the cost.
+                int bw = Math.Max(2, width / 4 / 2 * 2), bh = Math.Max(2, height / 4 / 2 * 2);
+                return new()
+                {
+                    $"[{input}]split[frame_bg_src][frame_fg_src]",
+                    $"[frame_bg_src]scale={bw}:{bh}:force_original_aspect_ratio=increase,crop={bw}:{bh},gblur=sigma=12,scale={size},setsar=1[frame_bg]",
+                    $"[frame_fg_src]scale={size}:force_original_aspect_ratio=decrease[frame_fg]",
+                    "[frame_bg][frame_fg]overlay=(W-w)/2:(H-h)/2,setsar=1[framed]",
+                };
+        }
+    }
+
+    /// <summary>The original-audio chain after the volume filter: loudness normalization (social-media target -14 LUFS), then the fades.</summary>
+    public static string AudioChain(double volume, RenderLook look)
+    {
+        var chain = $"volume={N(volume)}";
+        if (look.Normalize && volume > 0) chain += ",loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000";
+        if (look.FadeIn > 0) chain += $",afade=t=in:st=0:d={N(look.FadeIn)}";
+        if (look.FadeOut > 0 && look.Duration > 0)
+        {
+            var fade = Math.Min(look.FadeOut, look.Duration);
+            chain += $",afade=t=out:st={N(Math.Max(0, look.Duration - fade))}:d={N(fade)}";
+        }
+        return chain;
+    }
+
     public static List<string> Build(string source, string assPath, string output, string fontsDir,
         int audioVolume, bool audioMuted, int brightness, int contrast, int saturation, string quality,
         IEnumerable<(string Type, double Time)> sfxMarkers, Func<string, SfxTone> toneFor,
         int threads = 0, (string Preset, string Crf)? encode = null,
-        BlurMaskFiles? masks = null, int? videoWidth = null, int? videoHeight = null, bool hasAudio = true)
+        BlurMaskFiles? masks = null, int? videoWidth = null, int? videoHeight = null, bool hasAudio = true, RenderLook? look = null)
     {
+        look ??= new RenderLook();
         // ffmpeg runs from the .ass directory and references paths relatively. The fonts path stays absolute, drive letter included, when the
         // temp folder is on another Windows drive (GetRelativePath cannot bridge drives); EscapeFilterPath handles that colon.
         var workDir = Path.GetDirectoryName(assPath)!;
@@ -126,6 +178,11 @@ public static class FfmpegRenderArgs
         double volume = audioMuted ? 0 : Math.Max(0, audioVolume) / 100.0;
         // Colour grading runs BEFORE the burn-in so captions stay full-strength regardless of grading.
         var eq = $"eq=brightness={N(brightness / 100.0)}:contrast={N(contrast / 100.0)}:saturation={N(saturation / 100.0)}";
+        if (look.Warmth != 0 || look.Tint != 0)
+        {
+            var (gr, gg, gb) = FrameLayout.WhiteBalance(look.Warmth, look.Tint);
+            eq += $",colorchannelmixer=rr={N(gr)}:gg={N(gg)}:bb={N(gb)}";
+        }
         // Defaults reproduce the old app (high = medium/CRF 17). Admin settings can pass cheaper presets; threads caps CPU use.
         var (preset, crf) = encode ?? QualityPreset(quality);
         var common = new List<string> { "-c:v", "libx264", "-preset", preset, "-crf", crf };
@@ -133,10 +190,16 @@ public static class FfmpegRenderArgs
         if (hasAudio) common.AddRange(new[] { "-c:a", "aac", "-b:a", "192k" });
         common.AddRange(new[] { "-movflags", "+faststart", output });
 
-        int width = videoWidth ?? 1080, height = videoHeight ?? 1920;
+        // The frame captions are burned onto: the source size, or the Ratio panel's frame (grading runs first so a blurred fill is graded too).
+        var (width, height) = FrameLayout.OutputSize(look.AspectRatio, videoWidth, videoHeight);
         double canvasScale = width / 1080.0 * SigmaToCssBlurRadius;
         var videoSteps = new List<string> { $"[0:v]{eq}[graded]" };
         var current = "graded";
+        if (FrameLayout.Reframes(look.AspectRatio))
+        {
+            videoSteps.AddRange(ReframeSteps(current, look.FrameFit, look.FrameColor, width, height));
+            current = "framed";
+        }
         // Glow is composited further back than Shadow so a caption can combine a tight shadow for grounding with a wide glow for pop.
         // shortest=1: the mask layers come from an unbounded `color` source, so without it overlay would run for the longer (infinite) input.
         if (masks?.GlowAlpha != null && masks.GlowColor != null)
@@ -153,7 +216,11 @@ public static class FfmpegRenderArgs
             videoSteps.Add($"[{current}][{label}]overlay=0:0:shortest=1[with_shadow]");
             current = "with_shadow";
         }
-        videoSteps.Add($"[{current}]{subtitles}[vout]");
+        // Export dialog resolution: captions are burned at the frame size, then the finished picture is scaled, so a 720p export looks exactly like a
+        // smaller copy of the full-size one (same caption layout, no re-wrapping).
+        var (outWidth, outHeight) = FrameLayout.ScaledSize(look.Resolution, width, height);
+        var scale = outWidth != width || outHeight != height ? $",scale={outWidth}:{outHeight}:flags=lanczos,setsar=1" : "";
+        videoSteps.Add($"[{current}]{subtitles}{scale}[vout]");
 
         var (sfxLines, sfxLabels) = SfxMixFilters(sfxMarkers, toneFor);
         var audioSteps = new List<string>();
@@ -163,11 +230,11 @@ public static class FfmpegRenderArgs
             {
                 // SFX are a separate accent layer: normalize=0 stops amix dividing every input by 1/N, so the dialogue keeps its authored volume.
                 var mixInputs = string.Concat(new[] { "main_a" }.Concat(sfxLabels).Select(l => $"[{l}]"));
-                audioSteps.Add($"[0:a]volume={N(volume)}[main_a]");
+                audioSteps.Add($"[0:a]{AudioChain(volume, look)}[main_a]");
                 audioSteps.AddRange(sfxLines);
                 audioSteps.Add($"{mixInputs}amix=inputs={1 + sfxLabels.Count}:duration=first:dropout_transition=0:normalize=0[aout]");
             }
-            else audioSteps.Add($"[0:a]volume={N(volume)}[aout]");
+            else audioSteps.Add($"[0:a]{AudioChain(volume, look)}[aout]");
         }
 
         var args = new List<string> { "-y", "-i", source, "-filter_complex", string.Join(";", videoSteps.Concat(audioSteps)), "-map", "[vout]" };

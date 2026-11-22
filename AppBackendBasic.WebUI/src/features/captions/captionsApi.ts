@@ -72,8 +72,13 @@ export const captionsApi = {
   /** Queues the export (HTTP 202). Poll get() until status is 'rendered' (or 'ready' with error_message). */
   render: (id: number) => api.post<CaptionProject>(`${base}/projects/${id}/render`).then((r) => r.data),
   mediaUrl: (id: number) => api.post<{ url: string }>(`${base}/projects/${id}/media-url`).then((r) => r.data.url),
-  downloadBlob: (id: number) => api.get<Blob>(`${base}/projects/${id}/download`, { responseType: 'blob' }).then((r) => r.data),
+  /** The stored export plus its file extension (mp4 | mov), read from the response's content type. */
+  downloadBlob: (id: number) => api.get<Blob>(`${base}/projects/${id}/download`, { responseType: 'blob' })
+    .then((r) => ({ blob: r.data, extension: String(r.headers['content-type'] ?? '').includes('quicktime') ? 'mov' : 'mp4' })),
   srtBlob: (id: number) => api.get<Blob>(`${base}/projects/${id}/srt`, { responseType: 'blob' }).then((r) => r.data),
+  /** The captions as srt | vtt | txt (Export dialog: "Export captions instead"). */
+  subtitlesBlob: (id: number, format: 'srt' | 'vtt' | 'txt') =>
+    api.get<Blob>(`${base}/projects/${id}/subtitles`, { params: { format }, responseType: 'blob' }).then((r) => r.data),
   paymentCatalog: () => api.get<PlanCatalog>(`${base}/payments/catalog`).then((r) => r.data),
   checkout: (packageId: string) =>
     api.post<CheckoutResponse>(`${base}/payments/checkout`, { package_id: packageId, origin_url: window.location.origin }).then((r) => r.data),

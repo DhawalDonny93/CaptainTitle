@@ -27,12 +27,15 @@ public interface ICaptionProjectService
     /// <summary>Replaces the document with a restore point (the current document is kept as a new restore point first).</summary>
     Task<CaptionProjectDto> RestoreVersionAsync(int userId, int projectId, int versionId, CancellationToken ct = default);
     Task<string> ExportSrtAsync(int userId, int projectId, CancellationToken ct = default);
+    /// <summary>The captions as a subtitle/text file: format "srt" | "vtt" | "txt".</summary>
+    Task<string> ExportSubtitlesAsync(int userId, int projectId, string format, CancellationToken ct = default);
     Task<CaptionProjectDto> RetranscribeAsync(int userId, int projectId, string speechLanguage, CancellationToken ct = default);
     Task<CaptionEmphasisResultDto> ReassignEmphasisAsync(int userId, int projectId, CancellationToken ct = default);
     /// <summary>Marks the project as rendering and queues the export; poll the project status for the result.</summary>
     Task<CaptionProjectDto> RequestRenderAsync(int userId, int projectId, CancellationToken ct = default);
     Task<(Stream Stream, string ContentType)> OpenMediaAsync(int userId, int projectId, CancellationToken ct = default);
-    Task<Stream> OpenRenderAsync(int userId, int projectId, CancellationToken ct = default);
+    /// <summary>The stored export and its container ("mp4" | "mov").</summary>
+    Task<(Stream Stream, string Format)> OpenRenderAsync(int userId, int projectId, CancellationToken ct = default);
     Task<Stream> OpenThumbnailAsync(int userId, int projectId, CancellationToken ct = default);
 }
 
@@ -67,6 +70,9 @@ public class CaptionProjectService : ICaptionProjectService
         Theme = p.Theme, FontId = p.FontId, WordsPerCaption = p.WordsPerCaption, CaptionLines = p.CaptionLines,
         CaptionPosition = p.CaptionPosition, AudioVolume = p.AudioVolume, AudioMuted = p.AudioMuted, Brightness = p.Brightness,
         Contrast = p.Contrast, Saturation = p.Saturation, RenderQuality = p.RenderQuality, Variant = p.Variant,
+        RenderResolution = p.RenderResolution, RenderFormat = p.RenderFormat,
+        Warmth = p.Warmth, Tint = p.Tint, AudioFadeIn = p.AudioFadeIn, AudioFadeOut = p.AudioFadeOut, AudioNormalize = p.AudioNormalize,
+        AspectRatio = p.AspectRatio, FrameFit = p.FrameFit, FrameColor = p.FrameColor,
         ScriptMode = p.ScriptMode, OutlineEnabled = p.OutlineEnabled, OutlineWidth = p.OutlineWidth, OutlineColor = p.OutlineColor,
         ShadowEnabled = p.ShadowEnabled, ShadowAngle = p.ShadowAngle, ShadowDistance = p.ShadowDistance, ShadowBlur = p.ShadowBlur,
         ShadowOpacity = p.ShadowOpacity, ShadowColor = p.ShadowColor, GlowEnabled = p.GlowEnabled, GlowColor = p.GlowColor,
@@ -87,6 +93,9 @@ public class CaptionProjectService : ICaptionProjectService
         Theme = p.Theme, FontId = p.FontId, WordsPerCaption = p.WordsPerCaption, CaptionLines = p.CaptionLines, CaptionPosition = p.CaptionPosition,
         AudioVolume = p.AudioVolume, AudioMuted = p.AudioMuted, Brightness = p.Brightness, Contrast = p.Contrast, Saturation = p.Saturation,
         RenderQuality = p.RenderQuality, Variant = p.Variant, ScriptMode = p.ScriptMode,
+        RenderResolution = p.RenderResolution, RenderFormat = p.RenderFormat,
+        Warmth = p.Warmth, Tint = p.Tint, AudioFadeIn = p.AudioFadeIn, AudioFadeOut = p.AudioFadeOut, AudioNormalize = p.AudioNormalize,
+        AspectRatio = p.AspectRatio, FrameFit = p.FrameFit, FrameColor = p.FrameColor,
         Words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson), Elements = CaptionJson.ParseList<CaptionElementDto>(p.ElementsJson),
         SfxMarkers = CaptionJson.ParseList<CaptionSfxMarkerDto>(p.SfxMarkersJson),
         OutlineEnabled = p.OutlineEnabled, OutlineWidth = p.OutlineWidth, OutlineColor = p.OutlineColor,
@@ -101,6 +110,9 @@ public class CaptionProjectService : ICaptionProjectService
         p.Theme = edit.Theme; p.FontId = edit.FontId; p.WordsPerCaption = edit.WordsPerCaption; p.CaptionLines = edit.CaptionLines;
         p.CaptionPosition = edit.CaptionPosition; p.AudioVolume = edit.AudioVolume; p.AudioMuted = edit.AudioMuted;
         p.Brightness = edit.Brightness; p.Contrast = edit.Contrast; p.Saturation = edit.Saturation; p.RenderQuality = edit.RenderQuality;
+        p.RenderResolution = edit.RenderResolution; p.RenderFormat = edit.RenderFormat;
+        p.Warmth = edit.Warmth; p.Tint = edit.Tint; p.AudioFadeIn = edit.AudioFadeIn; p.AudioFadeOut = edit.AudioFadeOut;
+        p.AudioNormalize = edit.AudioNormalize; p.AspectRatio = edit.AspectRatio; p.FrameFit = edit.FrameFit; p.FrameColor = edit.FrameColor;
         p.WordsJson = CaptionJson.Serialize(edit.Words); p.ElementsJson = CaptionJson.Serialize(edit.Elements);
         p.SfxMarkersJson = CaptionJson.Serialize(edit.SfxMarkers); p.Variant = edit.Variant;
         p.ScriptMode = edit.ScriptMode; p.OutlineEnabled = edit.OutlineEnabled; p.OutlineWidth = edit.OutlineWidth; p.OutlineColor = edit.OutlineColor;
@@ -264,6 +276,11 @@ public class CaptionProjectService : ICaptionProjectService
     public async Task<CaptionSaveResultDto> SaveAsync(int userId, int projectId, CaptionProjectEditDto edit, CancellationToken ct = default)
     {
         if (!Positions.Contains(edit.CaptionPosition)) throw new CaptionServiceException(400, "Unknown caption position");
+        // [RegularExpression] only runs on API model binding; the service is also called directly (restore points, tests).
+        if (!FrameLayout.IsKnownRatio(edit.AspectRatio)) throw new CaptionServiceException(400, "Unknown aspect ratio");
+        if (!FrameLayout.IsKnownFit(edit.FrameFit)) throw new CaptionServiceException(400, "Unknown frame fit");
+        if (!FrameLayout.IsKnownResolution(edit.RenderResolution)) throw new CaptionServiceException(400, "Unknown export resolution");
+        if (!RenderFormats.IsKnown(edit.RenderFormat)) throw new CaptionServiceException(400, "Unknown export format");
 
         var p = await OwnedAsync(userId, projectId, true, ct);
         // Saving now would be overwritten by (or overwrite) the transcription job's result.
@@ -346,12 +363,21 @@ public class CaptionProjectService : ICaptionProjectService
         return await WithEditorStateAsync(p, ct);
     }
 
-    public async Task<string> ExportSrtAsync(int userId, int projectId, CancellationToken ct = default)
+    public Task<string> ExportSrtAsync(int userId, int projectId, CancellationToken ct = default) =>
+        ExportSubtitlesAsync(userId, projectId, SubtitleFormats.Srt, ct);
+
+    public async Task<string> ExportSubtitlesAsync(int userId, int projectId, string format, CancellationToken ct = default)
     {
+        if (!SubtitleFormats.IsKnown(format)) throw new CaptionServiceException(400, "Unknown captions format");
         var p = await OwnedAsync(userId, projectId, false, ct);
         var words = CaptionJson.ParseList<CaptionWordDto>(p.WordsJson);
         if (words.Count == 0) throw new CaptionServiceException(422, "No captions to export yet");
-        return SrtWriter.Build(words, p.ScriptMode);
+        return format switch
+        {
+            SubtitleFormats.Vtt => VttWriter.Build(words, p.ScriptMode),
+            SubtitleFormats.Txt => PlainTranscriptWriter.Build(words, p.ScriptMode),
+            _ => SrtWriter.Build(words, p.ScriptMode),
+        };
     }
 
     public async Task<CaptionProjectDto> RetranscribeAsync(int userId, int projectId, string speechLanguage, CancellationToken ct = default)
@@ -428,11 +454,12 @@ public class CaptionProjectService : ICaptionProjectService
         catch (FileNotFoundException) { throw new CaptionServiceException(410, "The video file for this project is no longer available"); }
     }
 
-    public async Task<Stream> OpenRenderAsync(int userId, int projectId, CancellationToken ct = default)
+    public async Task<(Stream Stream, string Format)> OpenRenderAsync(int userId, int projectId, CancellationToken ct = default)
     {
         var files = await _projects.GetFilesAsync(userId, projectId, ct) ?? throw new CaptionServiceException(404, "Project not found");
         if (string.IsNullOrEmpty(files.RenderPath)) throw new CaptionServiceException(404, "Rendered video not found");
-        return await OpenStoredAsync(files.RenderPath, "The exported video is no longer available. Please export it again.", ct);
+        var stream = await OpenStoredAsync(files.RenderPath, "The exported video is no longer available. Please export it again.", ct);
+        return (stream, RenderFormats.FromPath(files.RenderPath));
     }
 
     public async Task<Stream> OpenThumbnailAsync(int userId, int projectId, CancellationToken ct = default)

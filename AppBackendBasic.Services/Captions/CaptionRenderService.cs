@@ -16,7 +16,7 @@ public sealed class CaptionRenderTimeoutException : Exception
 
 public interface ICaptionRenderService
 {
-    /// <summary>Renders the project export (ASS burn-in + grading + audio) in the background and stores the MP4.</summary>
+    /// <summary>Renders the project export (ASS burn-in + grading + audio) in the background and stores the MP4 / MOV.</summary>
     Task RunAsync(int projectId, CancellationToken ct = default);
 }
 
@@ -64,7 +64,9 @@ public class CaptionRenderService : ICaptionRenderService
             Directory.CreateDirectory(tempDir);
             var source = Path.Combine(tempDir, "source.mp4");
             var ass = Path.Combine(tempDir, "captions.ass");
-            var output = Path.Combine(tempDir, "captain-title.mp4");
+            // ffmpeg picks the container from the output extension (mp4 or mov; same codecs).
+            var format = RenderFormats.Normalize(p.RenderFormat);
+            var output = Path.Combine(tempDir, "captain-title." + format);
             await using (var src = (await _storage.OpenAsync(p.SourcePath, ct)).Stream)
             await using (var dst = File.Create(source))
                 await src.CopyToAsync(dst, ct);
@@ -87,8 +89,10 @@ public class CaptionRenderService : ICaptionRenderService
                 GlowEnabled = p.GlowEnabled, GlowColor = p.GlowColor, GlowBlur = glowBlur, GlowOpacity = p.GlowOpacity,
                 BackgroundEnabled = p.BackgroundEnabled, BackgroundColor = p.BackgroundColor, BackgroundOpacity = p.BackgroundOpacity,
             };
+            // Captions are laid out on a 1080-wide canvas with the exported frame's aspect (the Ratio panel may change the frame).
+            var (frameWidth, frameHeight) = FrameLayout.OutputSize(p.AspectRatio, p.Width, p.Height);
             var scripts = AssSubtitleWriter.Build(words, p.Theme, p.FontId, p.WordsPerCaption, p.CaptionLines, p.CaptionPosition, elements, style,
-                styles, new TrueTypeTextMeasurer(_options.ResolveFontsDir()));
+                styles, new TrueTypeTextMeasurer(_options.ResolveFontsDir()), FrameLayout.CanvasHeight(frameWidth, frameHeight));
             var utf8 = new System.Text.UTF8Encoding(false);
             await File.WriteAllTextAsync(ass, scripts.Main, utf8, ct);
             string? Write(string name, string? content)
@@ -103,7 +107,9 @@ public class CaptionRenderService : ICaptionRenderService
             var probe = await _ffmpeg.ProbeAsync(source, ct);
             var args = FfmpegRenderArgs.Build(source, ass, output, _options.ResolveFontsDir(), p.AudioVolume, p.AudioMuted,
                 p.Brightness, p.Contrast, p.Saturation, p.RenderQuality, markers, ToneFor, _options.FfmpegThreads, await EncodeSettingsAsync(p.RenderQuality),
-                masks, p.Width, p.Height, hasAudio: probe.AudioCodec != null);
+                masks, p.Width, p.Height, hasAudio: probe.AudioCodec != null,
+                look: new RenderLook(p.Warmth, p.Tint, p.AudioFadeIn, p.AudioFadeOut, p.AudioNormalize, probe.Duration > 0 ? probe.Duration : p.Duration,
+                    p.AspectRatio, p.FrameFit, p.FrameColor, p.RenderResolution));
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(_options.RenderTimeoutSeconds));
             FfmpegResult result;
@@ -118,8 +124,8 @@ public class CaptionRenderService : ICaptionRenderService
                 throw new InvalidOperationException("ffmpeg render failed");
             }
 
-            var outputPath = $"captain-title/renders/{p.UserId}/{Guid.NewGuid():N}.mp4";
-            await _storage.PutFileAsync(outputPath, output, "video/mp4", ct);
+            var outputPath = $"captain-title/renders/{p.UserId}/{Guid.NewGuid():N}.{format}";
+            await _storage.PutFileAsync(outputPath, output, RenderFormats.ContentType(format), ct);
             await _db.CaptionProjects.Where(x => x.Id == projectId).ExecuteUpdateAsync(s => s
                 .SetProperty(x => x.RenderPath, outputPath).SetProperty(x => x.RenderedRevision, p.Revision)
                 .SetProperty(x => x.Status, CaptionProjectStatus.Rendered)

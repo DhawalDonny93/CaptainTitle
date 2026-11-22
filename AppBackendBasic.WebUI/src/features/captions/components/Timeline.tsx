@@ -73,23 +73,30 @@ interface TimelineProps {
   scriptMode?: ScriptMode
   onSplitAtPlayhead?: () => void
   canSplitAtPlayhead?: boolean
+  /** Words or Lines view - owned by the studio so the Esc shortcut can switch it back to Lines. */
+  mode: TimelineMode
+  onModeChange: (mode: TimelineMode) => void
+  /** Changes whenever the studio asks to bring the playhead into view (the "Go to the caption under the playhead" shortcut). */
+  revealToken?: number
+  /** Word indices matching the caption search, highlighted on the track. */
+  searchHits?: Set<number>
+  /** Tooltip text for the play button, e.g. "Space". */
+  playShortcut?: string
 }
+
+export type TimelineMode = "words" | "lines";
 
 export const Timeline = ({ words, groups, duration, currentTime, playing, onToggle, onSeek, selectedIndex, onSelect,
                           onRetimeWord, mediaUrl, sfxMarkers, onAddSfx, onMoveSfx, onDeleteSfx, scriptMode = "roman",
-                          onSplitAtPlayhead, canSplitAtPlayhead }: TimelineProps) => {
+                          onSplitAtPlayhead, canSplitAtPlayhead, mode, onModeChange: setMode, revealToken = 0, searchHits, playShortcut }: TimelineProps) => {
   const { catalog, sfxById } = useCaptionCatalog();
   const trackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const peaksRef = useRef<{ data: Float32Array; fallback: boolean } | null>(null);
   const [filmstrip, setFilmstrip] = useState<{ time: number; url: string }[]>([]);
   const wordLabel = (word: CaptionWord) => (scriptMode === "native" && word.original) ? word.original : word.text;
-  // Lines by default - that's the view that actually shows how captions
-  // are distributed across the video; Words is there for fine-grained
-  // per-word timing work (and is the only mode where retime handles make
-  // sense - a Lines block spans several words, so "drag its edge" has no
-  // single unambiguous word boundary to move).
-  const [mode, setMode] = useState<"words" | "lines">("lines");
+  // Lines (the studio's default) shows how captions are distributed across the video; Words is there for fine-grained per-word timing work
+  // (and is the only mode where retime handles make sense - a Lines block spans several words, so "drag its edge" has no single word boundary).
   const [zoom, setZoom] = useState(1);
   const pxPerSecond = BASE_PIXELS_PER_SECOND * zoom;
   const trackWidth = Math.max(1, duration) * pxPerSecond;
@@ -319,17 +326,14 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     }
   }, [currentTime, playing, pxPerSecond]);
 
+  // Play/pause and every other key is a studio shortcut (lib/shortcuts.ts); this only answers "bring the playhead into view".
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== "Space") return;
-      const target = document.activeElement as HTMLElement | null;
-      if (["INPUT", "TEXTAREA"].includes(target?.tagName ?? "") || target?.isContentEditable) return;
-      e.preventDefault();
-      onToggle();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onToggle]);
+    if (!revealToken) return;
+    const track = trackRef.current;
+    if (!track) return;
+    track.scrollLeft = Math.max(0, currentTime * pxPerSecond - track.clientWidth * 0.4);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealToken]);
 
   const interval = tickInterval(pxPerSecond);
   const ticks: number[] = [];
@@ -339,7 +343,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
     <section className="timeline" data-testid="caption-timeline">
       <div className="timeline-controls">
         <div className="timeline-controls-row">
-          <button onClick={onToggle} title={playing ? "Pause (space)" : "Play (space)"} data-testid="timeline-play-toggle">{playing ? <Pause weight="fill" /> : <Play weight="fill" />}</button>
+          <button onClick={onToggle} title={`${playing ? "Pause" : "Play"}${playShortcut ? ` (${playShortcut})` : ""}`} data-testid="timeline-play-toggle">{playing ? <Pause weight="fill" /> : <Play weight="fill" />}</button>
           <span data-testid="current-playback-time">{currentTime.toFixed(1)}s</span>
           <b data-testid="video-total-duration">/ {duration.toFixed(1)}s</b>
           <button className="timeline-split-playhead" onClick={onSplitAtPlayhead} disabled={!canSplitAtPlayhead}
@@ -372,7 +376,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
             {mode === "words" && words.map((word, index) => {
               const isActive = currentTime >= word.start && currentTime <= word.end;
               const isSelected = selectedIndex === index;
-              return <div key={index} className={`caption-block ${isActive ? "active" : ""} ${isSelected ? "selected" : ""}`}
+              return <div key={index} className={`caption-block ${isActive ? "active" : ""} ${isSelected ? "selected" : ""} ${searchHits?.has(index) ? "search-hit" : ""}`}
                 style={{ left: `${word.start * pxPerSecond}px`, width: `${Math.max(MIN_BLOCK_WIDTH, (word.end - word.start) * pxPerSecond)}px` }}
                 data-testid={`word-block-${index}`}>
                 <i className="retime-handle left" onMouseDown={startRetime(index, "left")} data-testid={`word-retime-left-${index}`} />
@@ -385,7 +389,7 @@ export const Timeline = ({ words, groups, duration, currentTime, playing, onTogg
               const indices = group.map((item) => item.index);
               const isActive = currentTime >= start && currentTime <= end;
               const isSelected = indices.includes(selectedIndex);
-              return <button key={cueIndex} className={`line-block ${isActive ? "active" : ""} ${isSelected ? "selected" : ""}`}
+              return <button key={cueIndex} className={`line-block ${isActive ? "active" : ""} ${isSelected ? "selected" : ""} ${indices.some((i) => searchHits?.has(i)) ? "search-hit" : ""}`}
                 style={{ left: `${start * pxPerSecond}px`, width: `${Math.max(MIN_BLOCK_WIDTH, (end - start) * pxPerSecond)}px` }}
                 onMouseDown={(e) => e.stopPropagation()} onClick={() => { onSeek(start); onSelect?.(group[0].index); }} data-testid={`line-block-${cueIndex}`}>
                 {group.map((item) => wordLabel(item.word)).join(" ")}

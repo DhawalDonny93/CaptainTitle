@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, BookmarkSimple, ChatCircle, DotsThreeVertical, Export, FrameCorners, Heart, Play, Share, SpinnerGap } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowClockwise, ArrowLeft, BookmarkSimple, ChatCircle, DotsThreeVertical, Export, FrameCorners, Heart, Keyboard, Play, Share, SpinnerGap } from "@phosphor-icons/react";
 import { toast } from "@/utils/toast";
 import { absoluteApiUrl as absoluteUrl, captionsApi, errorMessage, saveBlob } from "../captionsApi";
 import { useCaptionCatalog } from "../catalogContext";
@@ -7,20 +7,28 @@ import { bakeWordStyle, cssFamily, DEFAULT_WORD_SIZE, DOODLE_MARKER, STREET_GLOW
 import { playSfx } from "../lib/sfx";
 import { useEditorStatePersistence } from "../hooks/useEditorStatePersistence";
 import { useProjectAutosave } from "../hooks/useProjectAutosave";
+import { useUndoHistory } from "../hooks/useUndoHistory";
+import { useStudioShortcuts, type ShortcutHandlers } from "../hooks/useShortcuts";
+import { comboText, SHORTCUT_BINDINGS, type ShortcutId } from "../lib/shortcuts";
+import { ShortcutsDialog } from "./ShortcutsDialog";
+import { VersionHistoryMenu } from "./VersionHistoryMenu";
 import { SaveIndicator } from "./SaveIndicator";
 import { HeaderLeft, HeaderRight } from "./HeaderSlots";
 import { ProjectNameEditor } from "./ProjectNameEditor";
-import { ExportDialog } from "./ExportDialog";
+import { ExportDialog, type CaptionFileFormat } from "./ExportDialog";
 import { isLeftTab, isThemeTab } from "../lib/editorTabs";
 import { ThemePanel, type ThemeTab } from "./ThemePanel";
 import { TranscriptPanel } from "./TranscriptPanel";
-import { Timeline } from "./Timeline";
+import { Timeline, type TimelineMode } from "./Timeline";
 import { LeftRail, type LeftTab } from "./LeftRail";
 import { MediaPanel } from "./MediaPanel";
 import { AudioPanel } from "./AudioPanel";
 import { ElementsPanel } from "./ElementsPanel";
 import { TextPanel } from "./TextPanel";
-import { AdjustmentPanel } from "./AdjustmentPanel";
+import { ColorPanel } from "./ColorPanel";
+import { RatioPanel } from "./RatioPanel";
+import { BlurFill, WhiteBalanceFilter, WHITE_BALANCE_FILTER_ID } from "./FramePreview";
+import { fadeGain, outputSize, type AspectRatio, type ColorValues, type FrameFit, type RenderFormat, type RenderResolution } from "../lib/frame";
 import { AiToolsPanel } from "./AiToolsPanel";
 import { MomentPopover } from "./MomentPopover";
 import type {
@@ -68,6 +76,9 @@ function splitIntoRows(groupWords: CaptionWord[], tiers: Tiers, captionLines: nu
 }
 
 const MIN_DISPLAY_SECONDS = 0.35;
+// Keyboard stepping: one frame at 30 fps, preview volume in 10% steps, and the playback speeds Slower/Faster walk through.
+const FRAME_SECONDS = 1 / 30;
+const PLAYBACK_RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const MAX_WORDS_PER_LINE = 3;
 const MAX_GROUP_GAP = 0.4;
 const SENTENCE_END_CHARS = ".!?।॥"; // includes Devanagari danda/double danda
@@ -105,12 +116,6 @@ function hexToRgba(hex: string | null | undefined, opacity: number) {
 function shadowOffset(angleDeg: number, distance: number): [number, number] {
   const radians = (angleDeg * Math.PI) / 180;
   return [distance * Math.sin(radians), distance * Math.cos(radians)];
-}
-
-function gcd(a: number, b: number): number { return b === 0 ? a : gcd(b, a % b); }
-function aspectLabel(width: number, height: number) {
-  const divisor = gcd(width, height) || 1;
-  return `${width / divisor}:${height / divisor}`;
 }
 
 function endsSentence(word: CaptionWord) {
@@ -214,6 +219,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   // affordance.
   const selectWord = (index: number) => {
     setSelectedIndex(index);
+    setWordPicked(true);
     setThemeTab("text");
     const word = words[index];
     if (word && videoRef.current) {
@@ -251,7 +257,17 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const [brightness, setBrightness] = useState(initialProject.brightness ?? 0);
   const [contrast, setContrast] = useState(initialProject.contrast ?? 100);
   const [saturation, setSaturation] = useState(initialProject.saturation ?? 100);
+  const [warmth, setWarmth] = useState(initialProject.warmth ?? 0);
+  const [tint, setTint] = useState(initialProject.tint ?? 0);
+  const [audioFadeIn, setAudioFadeIn] = useState(initialProject.audio_fade_in ?? 0);
+  const [audioFadeOut, setAudioFadeOut] = useState(initialProject.audio_fade_out ?? 0);
+  const [audioNormalize, setAudioNormalize] = useState(initialProject.audio_normalize ?? false);
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>(initialProject.aspect_ratio ?? "original");
+  const [frameFit, setFrameFit] = useState<FrameFit>(initialProject.frame_fit ?? "blur");
+  const [frameColor, setFrameColor] = useState(initialProject.frame_color ?? "#000000");
   const [renderQuality, setRenderQuality] = useState<RenderQuality>(initialProject.render_quality ?? "high");
+  const [renderResolution, setRenderResolution] = useState<RenderResolution>(initialProject.render_resolution ?? "original");
+  const [renderFormat, setRenderFormat] = useState<RenderFormat>(initialProject.render_format ?? "mp4");
   const [sfxMarkers, setSfxMarkers] = useState<SfxMarker[]>(initialProject.sfx_markers || []);
   const [momentPopover, setMomentPopover] = useState<number | null>(null); // word index, or null when closed
   const [momentAnchor, setMomentAnchor] = useState<DOMRect | null>(null); // clicked chip/span's rect, or null to anchor by the video frame
@@ -282,9 +298,25 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const [reassigning, setReassigning] = useState(false);
   const [safeZone, setSafeZone] = useState(savedState?.safe_zone ?? false);
   const [exportOpen, setExportOpen] = useState(false);
+  // Keyboard shortcuts: the dialog, plus the editor state only the shortcuts touch.
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  // selectedIndex always points at some word (it drives the Text tab), so "a word is picked" - what Delete cuts and Esc lets go of - is tracked
+  // separately: true once the user picks a word, false again after Esc.
+  const [wordPicked, setWordPicked] = useState(false);
+  const [timelineMode, setTimelineMode] = useState<TimelineMode>("lines");
+  const [revealToken, setRevealToken] = useState(0);
+  const [searchFocusToken, setSearchFocusToken] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  // Preview-only: never saved and never part of the export (the export volume is the Audio panel's).
+  const [previewVolume, setPreviewVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [hud, setHud] = useState<{ text: string; key: number } | null>(null);
+  const hudTimerRef = useRef(0);
+  const prevLeftTabRef = useRef<LeftTab>("captions");
+  const [restoring, setRestoring] = useState(false);
   const [renderProgress, setRenderProgress] = useState(initialProject.status === "rendering" ? initialProject.progress ?? 0 : 0);
   const [frameWidth, setFrameWidth] = useState(0);
-  const [frameBox, setFrameBox] = useState({ w: 360, h: 640 });
+  const [stageSize, setStageSize] = useState({ w: 360, h: 640 });
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoFrameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -300,30 +332,37 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     return () => { cancelled = true; };
   }, [project.project_id, mediaRetry]);
 
-  // The 9:16 video box should be sized to the largest rectangle that fits
-  // the actual available area (not a flat vh guess, which left a lot of
-  // dead black space around a too-small box on most screens) - whichever
-  // dimension is the binding constraint, width or height, depends on the
-  // stage's own shape, so this has to be measured rather than assumed.
+  // The video box is the largest rectangle with the EXPORTED frame's shape (Ratio panel; the source's own shape for "original") that fits the
+  // stage - measured, because whether width or height is the binding constraint depends on the stage's own shape.
   useEffect(() => {
     const node = stageRef.current;
     if (!node || typeof ResizeObserver === "undefined") return undefined;
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      const unit = Math.max(0, Math.min(width / 9, height / 16));
-      setFrameBox({ w: Math.floor(unit * 9), h: Math.floor(unit * 16) });
+      setStageSize({ w: width, h: height });
     });
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  const [outputWidth, outputHeight] = outputSize(aspectRatio, project.width, project.height);
+  const frameAspect = outputWidth / outputHeight;
+  const frameBox = useMemo(() => {
+    const w = Math.max(0, Math.min(stageSize.w, stageSize.h * frameAspect));
+    return { w: Math.floor(w), h: Math.floor(w / frameAspect) };
+  }, [stageSize, frameAspect]);
+  const reframed = aspectRatio !== "original";
 
   // The <video> element's own volume tops out at 1.0 (100%) - boosting past
   // that only happens in the exported render's ffmpeg volume filter, not here.
+  // Fades follow the playhead (currentTime updates every animation frame while playing), the same linear ramp as ffmpeg's afade.
   useEffect(() => {
     if (!videoRef.current) return;
-    videoRef.current.volume = Math.min(1, Math.max(0, audioVolume / 100));
+    const gain = fadeGain(currentTime, project.duration, audioFadeIn, audioFadeOut);
+    videoRef.current.volume = Math.min(1, Math.max(0, audioVolume / 100)) * gain * previewVolume;
     videoRef.current.muted = audioMuted;
-  }, [audioVolume, audioMuted]);
+  }, [audioVolume, audioMuted, currentTime, project.duration, audioFadeIn, audioFadeOut, previewVolume]);
+  useEffect(() => { if (videoRef.current) videoRef.current.playbackRate = playbackRate; }, [playbackRate, mediaUrl]);
+  useEffect(() => () => window.clearTimeout(hudTimerRef.current), []);
 
   // Caption/element font sizes are defined against the 1080x1920 canvas the
   // backend bakes into the ASS script (see captions.py's PlayResX/PlayResY),
@@ -340,6 +379,8 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     return () => observer.disconnect();
   }, []);
   const previewScale = frameWidth ? frameWidth / 1080 : 0.62;
+  // Same order as the export: eq (brightness, contrast, saturation) then the white-balance channel mixer.
+  const videoFilter = `brightness(${100 + brightness}%) contrast(${contrast}%) saturate(${saturation}%)${warmth || tint ? ` url(#${WHITE_BALANCE_FILTER_ID})` : ""}`;
 
   // The video element's own timeupdate event fires at a coarse, inconsistent
   // rate (often just 4-10x/sec), which visibly lags captions behind the
@@ -513,15 +554,35 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const payload = useMemo((): ProjectEditPayload => ({ theme, font_id: fontId, words_per_caption: wordsPerCaption,
                            caption_lines: captionLines, caption_position: captionPosition, words,
                            audio_volume: audioVolume, audio_muted: audioMuted,
-                           brightness, contrast, saturation, render_quality: renderQuality, elements,
+                           brightness, contrast, saturation, render_quality: renderQuality, render_resolution: renderResolution, render_format: renderFormat, elements,
+                           warmth, tint, audio_fade_in: audioFadeIn, audio_fade_out: audioFadeOut, audio_normalize: audioNormalize,
+                           aspect_ratio: aspectRatio, frame_fit: frameFit, frame_color: frameColor,
                            sfx_markers: sfxMarkers, script_mode: scriptMode,
                            ...textStyle, bold, italic }),
     [theme, fontId, wordsPerCaption, captionLines, captionPosition, words, audioVolume, audioMuted, brightness, contrast, saturation, renderQuality,
-      elements, sfxMarkers, scriptMode, textStyle, bold, italic]);
+      renderResolution, renderFormat, elements, sfxMarkers, scriptMode, textStyle, bold, italic, warmth, tint, audioFadeIn, audioFadeOut, audioNormalize, aspectRatio, frameFit, frameColor]);
   // Jobs that replace the words on the server (and the restore flow) own the document while they run; autosaving over them would only conflict.
   const autosave = useProjectAutosave({ projectId: initialProject.project_id, initialRevision: initialProject.revision, payload,
-    paused: relistening || reassigning });
+    paused: relistening || reassigning || restoring });
   const { flush: flushEdits } = autosave;
+  // Undo / redo over the whole editable document (the autosave payload): putting a snapshot back just sets every piece of editor state from it.
+  const applyDocument = useCallback((doc: ProjectEditPayload) => {
+    setTheme(doc.theme); setFontId(doc.font_id); setWordsPerCaption(doc.words_per_caption); setCaptionLines(doc.caption_lines);
+    setCaptionPosition(doc.caption_position); setWords(doc.words); setElements(doc.elements); setSfxMarkers(doc.sfx_markers);
+    setAudioVolume(doc.audio_volume); setAudioMuted(doc.audio_muted); setAudioFadeIn(doc.audio_fade_in); setAudioFadeOut(doc.audio_fade_out);
+    setAudioNormalize(doc.audio_normalize); setBrightness(doc.brightness); setContrast(doc.contrast); setSaturation(doc.saturation);
+    setWarmth(doc.warmth); setTint(doc.tint); setAspectRatio(doc.aspect_ratio); setFrameFit(doc.frame_fit); setFrameColor(doc.frame_color);
+    setRenderQuality(doc.render_quality); setRenderResolution(doc.render_resolution ?? "original"); setRenderFormat(doc.render_format ?? "mp4");
+    setScriptMode(doc.script_mode); setBold(doc.bold); setItalic(doc.italic);
+    setTextStyle({
+      outline_enabled: doc.outline_enabled, outline_width: doc.outline_width, outline_color: doc.outline_color,
+      shadow_enabled: doc.shadow_enabled, shadow_angle: doc.shadow_angle, shadow_distance: doc.shadow_distance, shadow_blur: doc.shadow_blur,
+      shadow_opacity: doc.shadow_opacity, shadow_color: doc.shadow_color, glow_enabled: doc.glow_enabled, glow_color: doc.glow_color,
+      glow_blur: doc.glow_blur, glow_opacity: doc.glow_opacity, background_enabled: doc.background_enabled,
+      background_color: doc.background_color, background_opacity: doc.background_opacity,
+    });
+  }, []);
+  const history = useUndoHistory(payload, applyDocument, !(relistening || reassigning || restoring));
   const exportIsCurrent = project.rendered_revision != null && project.rendered_revision === autosave.revision && autosave.status === "saved";
 
   // Reads the React state, not the <video>: until the saved position has been seeked to, the element itself still reports 0.
@@ -620,15 +681,25 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     } catch (error) { toast.error(errorMessage(error)); }
     finally { setRelistening(false); }
   };
+  const restoreVersion = async (versionId: number) => {
+    setRestoring(true);
+    try {
+      await flushEdits(); // the unsaved edits become part of the restore point the server keeps
+      const restored = await captionsApi.restoreVersion(project.project_id, versionId);
+      toast.success("Version restored. Your previous edits were kept in History.");
+      onReplaced(restored);
+    } catch (error) { toast.error(errorMessage(error)); setRestoring(false); }
+  };
   const download = async () => {
     try {
-      saveBlob(await captionsApi.downloadBlob(project.project_id), "captain-title.mp4");
+      const { blob, extension } = await captionsApi.downloadBlob(project.project_id);
+      saveBlob(blob, `captain-title.${extension}`);
     } catch (error) { toast.error(errorMessage(error)); }
   };
-  const downloadSrt = async () => {
+  const downloadCaptions = async (format: CaptionFileFormat) => {
     try {
       await flushEdits();
-      saveBlob(await captionsApi.srtBlob(project.project_id), "captain-title.srt");
+      saveBlob(await captionsApi.subtitlesBlob(project.project_id, format), `captain-title.${format}`);
     } catch (error) { toast.error(errorMessage(error)); }
   };
   const togglePlayback = () => { const video = videoRef.current; if (!video) return; if (video.paused) void video.play(); else video.pause(); };
@@ -786,6 +857,144 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     window.addEventListener("mouseup", onUp);
   };
 
+  // --- Keyboard shortcuts (lib/shortcuts.ts lists them; useStudioShortcuts only runs them on /studio URLs) ---
+  const searchHits = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return [];
+    return words.flatMap((word, index) => `${word.text} ${word.original ?? ""}`.toLowerCase().includes(query) ? [index] : []);
+  }, [words, searchQuery]);
+  const searchHitSet = useMemo(() => new Set(searchHits), [searchHits]);
+  const showHud = (text: string) => {
+    window.clearTimeout(hudTimerRef.current);
+    setHud({ text, key: Date.now() });
+    hudTimerRef.current = window.setTimeout(() => setHud(null), 900);
+  };
+  // The <video> is ahead of the React state while playing, so read it directly.
+  const now = () => videoRef.current?.currentTime ?? currentTime;
+  const groupOfWord = (index: number) => indexedWordGroups.findIndex((group) => group.some((item) => item.index === index));
+  // The caption under the playhead, or in a gap the last one that started before it.
+  const groupAtTime = (time: number) => {
+    let found = -1;
+    indexedWordGroups.forEach((group, i) => { if (group[0].word.start <= time + 0.001) found = i; });
+    return found < 0 && indexedWordGroups.length ? 0 : found;
+  };
+  // "The caption being edited": the picked word's caption, otherwise the one under the playhead.
+  const editedGroup = () => {
+    const picked = wordPicked ? groupOfWord(selectedIndex) : -1;
+    return picked >= 0 ? picked : groupAtTime(now());
+  };
+  const groupStarts = () => indexedWordGroups.map((group) => group[0].word.start);
+  const seekPaused = (time: number) => { videoRef.current?.pause(); seek(Math.min(project.duration, Math.max(0, time))); };
+  const editGroup = (offset: 1 | -1) => {
+    const target = editedGroup() + offset;
+    if (target < 0 || target >= indexedWordGroups.length) return false;
+    setLeftTab("captions");
+    selectWord(indexedWordGroups[target][0].index);
+    setRevealToken((n) => n + 1);
+  };
+  const deleteWordAt = (position: number) => {
+    setWords((current) => current.filter((_, i) => i !== position).map((word, i) => ({ ...word, index: i })));
+    setSelectedIndex(Math.max(0, Math.min(position, words.length - 2)));
+    setMomentPopover(null);
+  };
+  const shortcutHandlers: ShortcutHandlers = {
+    "shortcuts.show": () => setShortcutsOpen(true),
+    undo: () => { if (!history.canUndo) return false; history.undo(); },
+    redo: () => { if (!history.canRedo) return false; history.redo(); },
+    "element.remove": () => {
+      if (!selectedElementId || (leftTab !== "elements" && leftTab !== "text")) return false;
+      deleteElement(selectedElementId);
+    },
+    "play.toggle": () => { if (!videoRef.current) return false; togglePlayback(); },
+    play: () => { if (!videoRef.current) return false; void videoRef.current.play(); },
+    pause: () => { if (!videoRef.current) return false; videoRef.current.pause(); },
+    "frame.prev": () => seekPaused(now() - FRAME_SECONDS),
+    "frame.next": () => seekPaused(now() + FRAME_SECONDS),
+    "word.prev": () => {
+      const t = now();
+      const word = [...words].reverse().find((w) => w.start < t - 0.05);
+      if (!word) return false;
+      seek(word.start);
+    },
+    "word.next": () => {
+      const t = now();
+      const word = words.find((w) => w.start > t + 0.01);
+      if (!word) return false;
+      seek(word.start);
+    },
+    // Like a media player: from inside a caption "previous" goes back to its start first, then to the caption before.
+    "caption.prev": () => {
+      const t = now();
+      const start = [...groupStarts()].reverse().find((s) => s < t - 0.25);
+      seek(start ?? 0);
+    },
+    "caption.next": () => {
+      const t = now();
+      const start = groupStarts().find((s) => s > t + 0.01);
+      if (start == null) return false;
+      seek(start);
+    },
+    "volume.up": () => { const v = Math.min(1, Math.round((previewVolume + 0.1) * 10) / 10); setPreviewVolume(v); showHud(`Volume ${Math.round(v * 100)}%`); },
+    "volume.down": () => { const v = Math.max(0, Math.round((previewVolume - 0.1) * 10) / 10); setPreviewVolume(v); showHud(`Volume ${Math.round(v * 100)}%`); },
+    "speed.down": () => { const r = PLAYBACK_RATES[Math.max(0, PLAYBACK_RATES.indexOf(playbackRate) - 1)]; setPlaybackRate(r); showHud(`Speed ${r}×`); },
+    "speed.up": () => { const r = PLAYBACK_RATES[Math.min(PLAYBACK_RATES.length - 1, PLAYBACK_RATES.indexOf(playbackRate) + 1)]; setPlaybackRate(r); showHud(`Speed ${r}×`); },
+    "caption.search": () => { setLeftTab("captions"); setSearchFocusToken((n) => n + 1); },
+    "caption.reveal": () => {
+      const group = groupAtTime(now());
+      if (group < 0) return false;
+      setLeftTab("captions");
+      setSelectedIndex(indexedWordGroups[group][0].index);
+      setWordPicked(true);
+      setThemeTab("text");
+      setRevealToken((n) => n + 1);
+    },
+    "caption.editPrev": () => editGroup(-1),
+    "caption.editNext": () => editGroup(1),
+    "caption.playFromStart": () => {
+      const group = editedGroup();
+      if (group < 0 || !videoRef.current) return false;
+      seek(indexedWordGroups[group][0].word.start);
+      void videoRef.current.play();
+    },
+    "caption.split": () => {
+      const group = wordPicked ? groupOfWord(selectedIndex) : -1;
+      if (group >= 0 && indexedWordGroups[group][0].index !== selectedIndex) splitCaptionBeforeWord(selectedIndex);
+      else if (canSplitAtPlayhead) splitAtPlayhead();
+      else return false;
+    },
+    "caption.joinPrev": () => {
+      const group = editedGroup();
+      if (group <= 0) return false;
+      mergeCaptionUp(indexedWordGroups[group][0].index);
+    },
+    "caption.joinNext": () => {
+      const group = editedGroup();
+      if (group < 0 || group >= indexedWordGroups.length - 1) return false;
+      mergeCaptionUp(indexedWordGroups[group + 1][0].index);
+    },
+    // Popovers and the drag scope prompt close themselves on Esc; this only lets go of what is picked, one level at a time.
+    "selection.clear": () => {
+      if (momentPopover != null || scopePrompt) return false;
+      if (selectedElementId) setSelectedElementId(null);
+      else if (wordPicked) setWordPicked(false);
+      else if (timelineMode === "words") setTimelineMode("lines");
+      else return false;
+    },
+    "selection.cut": () => {
+      if (!wordPicked || !words[selectedIndex]) return false;
+      deleteWordAt(selectedIndex);
+    },
+    "assistant.toggle": () => {
+      if (leftTab === "ai") setLeftTab(prevLeftTabRef.current);
+      else { prevLeftTabRef.current = leftTab; setLeftTab("ai"); }
+    },
+  };
+  useStudioShortcuts(shortcutHandlers);
+  const shortcutHint = (id: ShortcutId) => {
+    const combo = SHORTCUT_BINDINGS[id][0];
+    return combo ? comboText(combo) : undefined;
+  };
+
   return (
     <main className="studio" data-testid="caption-editor-workspace">
       <HeaderLeft>
@@ -796,31 +1005,76 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         </ProjectNameEditor>
       </HeaderLeft>
       <HeaderRight>
+        <div className="header-tools" data-testid="editor-history-tools">
+          <button className="header-icon-button" onClick={history.undo} disabled={!history.canUndo} title={`Undo${shortcutHint("undo") ? ` (${shortcutHint("undo")})` : ""}`} aria-label="Undo" data-testid="undo-button">
+            <ArrowCounterClockwise size={18} />
+          </button>
+          <button className="header-icon-button" onClick={history.redo} disabled={!history.canRedo} title={`Redo${shortcutHint("redo") ? ` (${shortcutHint("redo")})` : ""}`} aria-label="Redo" data-testid="redo-button">
+            <ArrowClockwise size={18} />
+          </button>
+          <span className="header-tools-divider" aria-hidden="true" />
+          <VersionHistoryMenu projectId={project.project_id} busy={restoring} onRestore={restoreVersion} />
+          <span className="header-tools-divider" aria-hidden="true" />
+          <button className="header-icon-button" onClick={() => setShortcutsOpen(true)} aria-haspopup="dialog" aria-expanded={shortcutsOpen}
+            title={`Keyboard shortcuts${shortcutHint("shortcuts.show") ? ` (${shortcutHint("shortcuts.show")})` : ""}`} aria-label="Keyboard shortcuts"
+            data-testid="open-shortcuts-dialog-button">
+            <Keyboard size={18} />
+          </button>
+        </div>
         <button className="export-button" onClick={() => setExportOpen(true)} data-testid="open-export-dialog-button">
           {rendering ? <SpinnerGap className="spin" size={18} /> : <Export size={18} weight="bold" />} {rendering ? `Exporting ${Math.round(renderProgress)}%` : "Export"}
         </button>
       </HeaderRight>
       <ExportDialog open={exportOpen} onOpenChange={setExportOpen}
-        resolution={project.width && project.height ? `${project.width}×${project.height} · ${aspectLabel(project.width, project.height)}` : null}
-        duration={project.duration} quality={renderQuality} onQuality={setRenderQuality} rendering={rendering} renderProgress={renderProgress}
-        exportIsCurrent={exportIsCurrent} hasExport={project.rendered_revision != null} onExport={render} onDownload={download} onDownloadSrt={downloadSrt} />
+        frameSize={reframed || (project.width && project.height) ? [outputWidth, outputHeight] : null}
+        resolution={renderResolution} onResolution={setRenderResolution} format={renderFormat} onFormat={setRenderFormat}
+        quality={renderQuality} onQuality={setRenderQuality} rendering={rendering} renderProgress={renderProgress}
+        exportIsCurrent={exportIsCurrent} hasExport={project.rendered_revision != null} onExport={render} onDownload={download} onDownloadCaptions={downloadCaptions} />
+      <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
       {autosave.status === "conflict" && <div className="studio-conflict-banner" role="alert" data-testid="save-conflict-banner">
         <span>{autosave.error}</span>
         <button onClick={() => window.location.reload()} data-testid="save-conflict-reload-button">Reload</button>
       </div>}
       <div className="studio-grid">
         <LeftRail active={leftTab} onSelect={setLeftTab} />
-        {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} />}
+        {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} searchQuery={searchQuery} onSearchQuery={setSearchQuery} searchHits={searchHits} onJumpTo={selectWord} searchFocusToken={searchFocusToken} onSearchFocused={() => setSearchFocusToken(0)} revealToken={revealToken} />}
         {leftTab === "media" && <MediaPanel project={project} />}
-        {leftTab === "audio" && <AudioPanel volume={audioVolume} onVolume={setAudioVolume} muted={audioMuted} onMuted={setAudioMuted} />}
+        {leftTab === "audio" && <AudioPanel duration={project.duration}
+          value={{ volume: audioVolume, muted: audioMuted, fadeIn: audioFadeIn, fadeOut: audioFadeOut, normalize: audioNormalize }}
+          onChange={(c) => {
+            if (c.volume !== undefined) setAudioVolume(c.volume);
+            if (c.muted !== undefined) setAudioMuted(c.muted);
+            if (c.fadeIn !== undefined) setAudioFadeIn(c.fadeIn);
+            if (c.fadeOut !== undefined) setAudioFadeOut(c.fadeOut);
+            if (c.normalize !== undefined) setAudioNormalize(c.normalize);
+          }} />}
+        {leftTab === "ratio" && <RatioPanel sourceWidth={project.width} sourceHeight={project.height}
+          value={{ ratio: aspectRatio, fit: frameFit, color: frameColor }}
+          onChange={(c) => {
+            if (c.ratio !== undefined) setAspectRatio(c.ratio);
+            if (c.fit !== undefined) setFrameFit(c.fit);
+            if (c.color !== undefined) setFrameColor(c.color);
+          }} />}
         {leftTab === "elements" && <ElementsPanel elements={elements.filter((item) => item.kind !== "text")} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(char) => addElement(char, "sticker")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
         {leftTab === "text" && <TextPanel elements={elements} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(text) => addElement(text, "text")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
-        {leftTab === "adjustment" && <AdjustmentPanel brightness={brightness} contrast={contrast} saturation={saturation} onBrightness={setBrightness} onContrast={setContrast} onSaturation={setSaturation} onReset={() => { setBrightness(0); setContrast(100); setSaturation(100); }} />}
+        {leftTab === "adjustment" && <ColorPanel value={{ brightness, contrast, saturation, warmth, tint }}
+          onChange={(c: Partial<ColorValues>) => {
+            if (c.brightness !== undefined) setBrightness(c.brightness);
+            if (c.contrast !== undefined) setContrast(c.contrast);
+            if (c.saturation !== undefined) setSaturation(c.saturation);
+            if (c.warmth !== undefined) setWarmth(c.warmth);
+            if (c.tint !== undefined) setTint(c.tint);
+          }} />}
         {leftTab === "ai" && <AiToolsPanel words={words} onDeleteWords={deleteWords} onReassignEmphasis={reassignEmphasis} reassigning={reassigning} />}
         <section className="preview-panel" data-testid="video-preview-panel">
           <div className="video-stage" ref={stageRef}>
-          <div className="video-frame" ref={videoFrameRef} style={{ width: `${frameBox.w}px`, height: `${frameBox.h}px` }}>
-            <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: `brightness(${100 + brightness}%) contrast(${contrast}%) saturate(${saturation}%)` }} onLoadedMetadata={(e) => { if (pendingSeekRef.current > 0) { e.currentTarget.currentTime = Math.min(pendingSeekRef.current, e.currentTarget.duration || pendingSeekRef.current); pendingSeekRef.current = 0; } setMediaFailed(false); }} onError={() => { pendingSeekRef.current = currentTime; if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); else setMediaFailed(true); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
+          <div className="video-frame" ref={videoFrameRef} data-ratio={aspectRatio}
+            style={{ width: `${frameBox.w}px`, height: `${frameBox.h}px`, background: reframed && frameFit === "color" ? frameColor : undefined }}>
+            <WhiteBalanceFilter warmth={warmth} tint={tint} />
+            {reframed && frameFit === "blur" && <BlurFill videoRef={videoRef} aspect={frameAspect}
+              filter={`${videoFilter} blur(${Math.max(4, Math.round(48 * previewScale / 1.1))}px)`} />}
+            <video ref={videoRef} src={mediaUrl ?? undefined} style={{ filter: videoFilter, objectFit: reframed && frameFit === "crop" ? "cover" : "contain" }} onLoadedMetadata={(e) => { if (pendingSeekRef.current > 0) { e.currentTarget.currentTime = Math.min(pendingSeekRef.current, e.currentTarget.duration || pendingSeekRef.current); pendingSeekRef.current = 0; } setMediaFailed(false); }} onError={() => { pendingSeekRef.current = currentTime; if (mediaRetry < 2) window.setTimeout(() => setMediaRetry((n) => n + 1), 1200); else setMediaFailed(true); }} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} playsInline data-testid="caption-video-player" />
+            {hud && <div key={hud.key} className="preview-hud" role="status" data-testid="preview-shortcut-hud">{hud.text}</div>}
             {mediaFailed && <div className="preview-media-error" data-testid="video-unavailable-message">This video couldn't be loaded. Your caption edits are safe. Try reloading the page.</div>}
             <button className="preview-play" onClick={togglePlayback} data-testid="video-preview-play-button"><Play size={28} weight="fill" /></button>
             <button className={`preview-safe-zone-toggle ${safeZone ? "active" : ""}`} onClick={() => setSafeZone((current) => !current)} title="Toggle Reels/Shorts safe-zone guide" data-testid="safe-zone-toggle-button"><FrameCorners size={18} weight={safeZone ? "fill" : "regular"} /></button>
@@ -947,7 +1201,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         canSplitCaption={momentPopover > 0}
         canMergeCaptionUp={momentPopover > 0}
       />}
-      <Timeline words={words} groups={indexedWordGroups} duration={project.duration} currentTime={currentTime} playing={playing} onToggle={togglePlayback} onSeek={seek} selectedIndex={selectedIndex} onSelect={openMoment} onRetimeWord={updateWord} mediaUrl={mediaUrl} sfxMarkers={sfxMarkers} onAddSfx={addSfxMarker} onMoveSfx={moveSfxMarker} onDeleteSfx={deleteSfxMarker} scriptMode={scriptMode} onSplitAtPlayhead={splitAtPlayhead} canSplitAtPlayhead={canSplitAtPlayhead} />
+      <Timeline words={words} groups={indexedWordGroups} duration={project.duration} currentTime={currentTime} playing={playing} onToggle={togglePlayback} onSeek={seek} selectedIndex={selectedIndex} onSelect={openMoment} onRetimeWord={updateWord} mediaUrl={mediaUrl} sfxMarkers={sfxMarkers} onAddSfx={addSfxMarker} onMoveSfx={moveSfxMarker} onDeleteSfx={deleteSfxMarker} scriptMode={scriptMode} onSplitAtPlayhead={splitAtPlayhead} canSplitAtPlayhead={canSplitAtPlayhead} mode={timelineMode} onModeChange={setTimelineMode} revealToken={revealToken} searchHits={searchHitSet} playShortcut={shortcutHint("play.toggle")} />
     </main>
   );
 };

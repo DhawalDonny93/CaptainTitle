@@ -63,8 +63,8 @@ public class SchemaTests
         foreach (var m in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/25_razorpay_payments_and_render_settings.sql")),
                      "ALTER TABLE \"(\\w+)\"\\s+ADD COLUMN IF NOT EXISTS \"(\\w+)\"").Cast<Match>())
             actual[m.Groups[1].Value].Add(m.Groups[2].Value);
-        // scripts 26 and 27 add many columns in ONE multi-column ALTER TABLE
-        foreach (var script in new[] { "26_captions_templates_and_text_styling.sql", "27_caption_project_persistence.sql" })
+        // scripts 26, 27, 29 and 30 add many columns in ONE multi-column ALTER TABLE
+        foreach (var script in new[] { "26_captions_templates_and_text_styling.sql", "27_caption_project_persistence.sql", "29_caption_audio_ratio_color.sql", "30_caption_export_options.sql" })
             foreach (Match stmt in Regex.Matches(File.ReadAllText(RepoFile("Database_Migrations/" + script)),
                          "ALTER TABLE \"(\\w+)\"(.*?);", RegexOptions.Singleline))
                 foreach (Match col in Regex.Matches(stmt.Groups[2].Value, "ADD COLUMN IF NOT EXISTS \"(\\w+)\""))

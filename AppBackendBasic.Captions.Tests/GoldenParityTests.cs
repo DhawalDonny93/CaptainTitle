@@ -245,6 +245,7 @@ public class GoldenParityTests
     {
         Assert.Equal("00:00:01,000", SrtWriter.SrtTime(0.9996));
         Assert.Equal("01:01:01,500", SrtWriter.SrtTime(3661.5));
+        Assert.Equal("01:01:01.500", VttWriter.VttTime(3661.5));
     }
 
     [Fact]
@@ -320,5 +321,19 @@ public class GoldenParityTests
         Assert.Equal(k.GetProperty("default_emphasize_accent").GetString(), AssSubtitleWriter.DefaultEmphasizeAccent);
         Assert.Equal(t.GetProperty("quality").GetProperty("high").GetProperty("preset").GetString(), FfmpegRenderArgs.QualityPreset("high").Preset);
         Assert.Equal(t.GetProperty("quality").GetProperty("draft").GetProperty("crf").GetString(), FfmpegRenderArgs.QualityPreset("draft").Crf);
+    }
+
+    [Fact]
+    public void Vtt_and_plain_text_exports_use_the_chosen_script()
+    {
+        var words = new List<CaptionWordDto>
+        {
+            new() { Index = 0, Text = "namaste", Original = "नमस्ते", Start = 0, End = 0.5 },
+            new() { Index = 1, Text = "dosto", Original = "", Start = 0.5, End = 1.25 },
+        };
+        Assert.Equal("WEBVTT\n\n00:00:00.000 --> 00:00:00.500\nनमस्ते\n\n00:00:00.500 --> 00:00:01.250\ndosto\n", VttWriter.Build(words, "native"));
+        Assert.Equal("namaste dosto\n", PlainTranscriptWriter.Build(words));
+        Assert.True(SubtitleFormats.IsKnown("vtt"));
+        Assert.False(SubtitleFormats.IsKnown("ass"));
     }
 }

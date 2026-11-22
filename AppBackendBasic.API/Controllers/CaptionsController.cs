@@ -106,6 +106,15 @@ public class CaptionsController : CaptionsControllerBase
         return File(System.Text.Encoding.UTF8.GetBytes(srt), "application/x-subrip", "captain-title.srt");
     });
 
+    /// <summary>The captions as a file for the Export dialog's "Export captions instead": format = srt | vtt | txt.</summary>
+    [HttpGet("projects/{id:int}/subtitles")]
+    [Authorize]
+    public Task<IActionResult> Subtitles(int id, [FromQuery] string format = "srt") => RunAsync(async () =>
+    {
+        var text = await _projects.ExportSubtitlesAsync(CurrentUserId, id, format, HttpContext.RequestAborted);
+        return File(System.Text.Encoding.UTF8.GetBytes(text), SubtitleFormats.ContentType(format), "captain-title." + format);
+    });
+
     [HttpPost("projects/{id:int}/retranscribe")]
     [Authorize]
     public Task<IActionResult> Retranscribe(int id, [FromBody] CaptionRetranscribeRequest request) => RunAsync(async () =>
@@ -130,8 +139,8 @@ public class CaptionsController : CaptionsControllerBase
     [Authorize]
     public Task<IActionResult> Download(int id) => RunAsync(async () =>
     {
-        var stream = await _projects.OpenRenderAsync(CurrentUserId, id, HttpContext.RequestAborted);
-        return File(stream, "video/mp4", "captain-title.mp4");
+        var (stream, format) = await _projects.OpenRenderAsync(CurrentUserId, id, HttpContext.RequestAborted);
+        return File(stream, RenderFormats.ContentType(format), "captain-title." + format);
     });
 
     /// <summary>Short-lived signed URL the &lt;video&gt; element can use (it cannot send a bearer header).</summary>

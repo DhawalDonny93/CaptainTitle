@@ -1,5 +1,6 @@
 // Wire types for the Captain Title caption API (snake_case is preserved from the original API - see
 // docs/captain-title/DECISIONS.md D-04).
+import type { AspectRatio, FrameFit, RenderFormat, RenderResolution } from './lib/frame'
 
 export type Emphasis = 'support' | 'feature' | 'key'
 export type KineticStyle = 'pulse' | 'pop' | 'scale' | 'box' | 'wobble'
@@ -71,7 +72,17 @@ export interface CaptionProject {
   brightness: number
   contrast: number
   saturation: number
+  warmth: number
+  tint: number
+  audio_fade_in: number
+  audio_fade_out: number
+  audio_normalize: boolean
+  aspect_ratio: AspectRatio
+  frame_fit: FrameFit
+  frame_color: string
   render_quality: RenderQuality
+  render_resolution: RenderResolution
+  render_format: RenderFormat
   elements: CaptionElement[]
   sfx_markers: SfxMarker[]
   variant: string | null
@@ -288,4 +299,5 @@ export type TextStyle = Pick<CaptionProject,
 
 export type ProjectEditPayload = Pick<CaptionProject,
   'theme' | 'font_id' | 'words_per_caption' | 'caption_lines' | 'caption_position' | 'words' | 'audio_volume' | 'audio_muted' |
-  'brightness' | 'contrast' | 'saturation' | 'render_quality' | 'elements' | 'sfx_markers' | 'script_mode' | 'bold' | 'italic'> & TextStyle
+  'brightness' | 'contrast' | 'saturation' | 'render_quality' | 'render_resolution' | 'render_format' | 'elements' | 'sfx_markers' | 'script_mode' | 'bold' | 'italic' |
+  'warmth' | 'tint' | 'audio_fade_in' | 'audio_fade_out' | 'audio_normalize' | 'aspect_ratio' | 'frame_fit' | 'frame_color'> & TextStyle
