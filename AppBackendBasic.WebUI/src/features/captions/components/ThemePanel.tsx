@@ -1,14 +1,14 @@
 import { ArrowsOutCardinal, Palette, Rows, Sparkle, TextT } from '@phosphor-icons/react'
 import { CtSlider, CtSwitchRow } from './ui'
 import { useCaptionCatalog } from '../catalogContext'
-import { cssFamily, DEFAULT_WORD_SIZE, DOODLE_MARKER, STREET_GLOW } from '../lib/styles'
-import type { CaptionPosition, CaptionTheme, CaptionWord, TextStyle } from '../types'
+import { cssFamily, DOODLE_MARKER, STREET_GLOW } from '../lib/styles'
+import type { CaptionPosition, CaptionTheme, TextStyle } from '../types'
 
 const wordsPerCaptionOptions: (number | null)[] = [null, 1, 2, 3, 4, 5, 6, 8]
 const positions: CaptionPosition[] = ['top', 'middle', 'bottom']
 
-// Which caption style tool to show. Picked from the left rail (Templates / Customize / Word / Transform), not from tabs in here.
-export type ThemeTab = 'templates' | 'customize' | 'text' | 'transform'
+// Which caption style tool to show. Picked from the left rail (Templates / Customize / Transform); per-word styling lives in TextPanel, not from tabs in here.
+export type ThemeTab = 'templates' | 'customize' | 'transform'
 // Quick Position Y presets inside the Transform tab - the same percentages as POSITION_DEFAULTS (CaptionStudio) and the server's
 // CaptionLayout.PositionDefaults, so a preset here lands exactly where the Top/Middle/Bottom layout button would.
 const TRANSFORM_Y_PRESETS = [{ label: 'Top', y: 14 }, { label: 'Middle', y: 50 }, { label: 'Bottom', y: 80 }]
@@ -70,8 +70,6 @@ interface Props {
   onCaptionLines: (n: number) => void
   captionPosition: CaptionPosition
   onCaptionPosition: (p: CaptionPosition) => void
-  selectedWord: CaptionWord | undefined
-  onWordStyle: (change: Partial<CaptionWord>) => void
   tab: ThemeTab
   textStyle: TextStyle
   onTextStyle: (change: Partial<TextStyle>) => void
@@ -93,16 +91,11 @@ interface Props {
 }
 
 export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, onWordsPerCaption, captionLines, onCaptionLines,
-  captionPosition, onCaptionPosition, selectedWord, onWordStyle, tab, textStyle, onTextStyle, bold, onBold, italic, onItalic,
+  captionPosition, onCaptionPosition, tab, textStyle, onTextStyle, bold, onBold, italic, onItalic,
   hasActiveCaption, boxX, boxY, boxFontSize, boxRotation, onCaptionPos, onCaptionScale, onCaptionRotation, onApplyTransformToAll, onResetTransform }: Props) => {
   const { catalog } = useCaptionCatalog()
   const activeTiers = catalog.themes.find((item) => item.id === theme)?.tiers ?? null
   const isTiered = !!activeTiers
-  const setEmphasis = (tier: string) => {
-    if (!activeTiers) return
-    const config = activeTiers[tier]
-    onWordStyle({ emphasis: tier, important: tier !== 'support', color: config.color, font_size: config.size })
-  }
   return (
     <aside className="tool-panel" data-testid="caption-tools-panel">
       {tab === 'templates' && <>
@@ -198,35 +191,6 @@ export const ThemePanel = ({ theme, onTheme, fontId, onFont, wordsPerCaption, on
         <div className="layout-grid three" data-testid="caption-position-selector">
           {positions.map((p) => <button key={p} className={captionPosition === p ? 'active' : ''} onClick={() => onCaptionPosition(p)} data-testid={`caption-position-${p}-button`}>{p[0].toUpperCase() + p.slice(1)}</button>)}
         </div>
-      </>}
-
-      {tab === 'text' && <>
-        <div className="panel-heading"><TextT size={18} /><div><span>SELECTED WORD</span><h2 data-testid="selected-word-heading">{selectedWord?.text || 'Select a word'}</h2></div></div>
-        {theme === STREET_GLOW && <p className="panel-note" data-testid="street-glow-word-note">Street Glow's size and colour come from which line a word is on (set below), not per word.</p>}
-        <label className="control-label" data-testid="font-size-control-label">Font size <b data-testid="selected-word-font-size">{selectedWord?.font_size || DEFAULT_WORD_SIZE}px</b></label>
-        <CtSlider min={16} max={120} step={1} value={[selectedWord?.font_size || DEFAULT_WORD_SIZE]} disabled={!selectedWord || theme === STREET_GLOW} onValueChange={([value]) => onWordStyle({ font_size: value })} data-testid="font-size-slider" />
-        <label className="control-label" data-testid="word-color-control-label"><span><Palette size={16} /> Word colour</span>
-          <input type="color" value={selectedWord?.color || '#FFFFFF'} disabled={!selectedWord || theme === STREET_GLOW} onChange={(e) => onWordStyle({ color: e.target.value })} data-testid="word-color-input" />
-        </label>
-        {isTiered && <>
-          <label className="control-label" data-testid="word-emphasis-label">Role in caption</label>
-          <div className="layout-grid three" data-testid="word-emphasis-selector">
-            {['support', 'feature', 'key'].map((tier) => <button key={tier} className={selectedWord?.emphasis === tier ? 'active' : ''} disabled={!selectedWord} onClick={() => setEmphasis(tier)} data-testid={`word-emphasis-${tier}-button`}>{tier[0].toUpperCase() + tier.slice(1)}</button>)}
-          </div>
-        </>}
-        <label className="control-label" data-testid="line-break-label">Line break before this word</label>
-        <div className="layout-grid three" data-testid="line-break-selector">
-          <button className={(selectedWord?.new_line ?? null) === null ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_line: null })} data-testid="line-break-auto-button">Auto</button>
-          <button className={selectedWord?.new_line === false ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_line: false })} data-testid="line-break-merge-button">Merge up</button>
-          <button className={selectedWord?.new_line === true ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_line: true })} data-testid="line-break-split-button">Split here</button>
-        </div>
-        <label className="control-label" data-testid="caption-break-label">Caption split before this word</label>
-        <div className="layout-grid three" data-testid="caption-break-selector">
-          <button className={(selectedWord?.new_caption ?? null) === null ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_caption: null })} data-testid="caption-break-auto-button">Auto</button>
-          <button className={selectedWord?.new_caption === false ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_caption: false })} data-testid="caption-break-merge-button">Merge up</button>
-          <button className={selectedWord?.new_caption === true ? 'active' : ''} disabled={!selectedWord} onClick={() => onWordStyle({ new_caption: true })} data-testid="caption-break-split-button">Split here</button>
-        </div>
-        <p className="panel-note" data-testid="caption-break-note">A caption split starts a whole new caption box (own position/size/timing) here - a line break above only wraps text within the same box.</p>
       </>}
 
       {tab === 'transform' && <>

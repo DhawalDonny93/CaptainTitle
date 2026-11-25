@@ -32,7 +32,7 @@ Legend: ✅ same behaviour · ➕ same + improvement · 🔁 intentionally repla
 | 26 | Moment popover: kinetic styles, SFX, emphasize, split/merge, spelling | `MomentPopover.tsx` | ✅ |
 | 27 | Script panel with sentence cards + word popover | `TranscriptPanel.tsx` | ✅ |
 | 28 | Filler-word cleanup | `AiToolsPanel.tsx` (list from DB) | ➕ |
-| 29 | Stickers / free text layers | `ElementsPanel.tsx`, `TextPanel.tsx` | ✅ |
+| 29 | Free text layers (stickers removed; old ones still render and can be deleted) | `TextPanel.tsx` (Text tool, "Text overlay" mode) | ✅ |
 | 30 | Auth screen with brand hero ("Turn every spoken word...") | Template Login (functional) | ⏳ branding (P6) |
 | 31 | Dark "tactical" design system (Outfit/IBM Plex/JetBrains Mono, cherry-red palette) | `studio.css` (namespaced) | ✅ editor; ⏳ rest of site |
 | 32 | `UNLIMITED_TESTING` env | `captions.unlimited_testing` setting | ➕ |

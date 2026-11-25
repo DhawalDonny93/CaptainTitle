@@ -15,7 +15,7 @@ import { VersionHistoryMenu } from "./VersionHistoryMenu";
 import { HeaderLeft, HeaderRight } from "./HeaderSlots";
 import { ProjectNameEditor } from "./ProjectNameEditor";
 import { ExportDialog, type CaptionFileFormat } from "./ExportDialog";
-import { isCaptionStyleTab, isLeftTab, isThemeTab, themeTabOf } from "../lib/editorTabs";
+import { isCaptionStyleTab, isThemeTab, restoreLeftTab, themeTabOf } from "../lib/editorTabs";
 import { ThemePanel, type ThemeTab } from "./ThemePanel";
 import { TranscriptPanel } from "./TranscriptPanel";
 import { Timeline, type TimelineMode } from "./Timeline";
@@ -23,10 +23,8 @@ import { Switch } from "@/components/ui/Switch";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useMediaQuery } from "../lib/useMediaQuery";
 import { LeftRail, type LeftTab } from "./LeftRail";
-import { MediaPanel } from "./MediaPanel";
 import { AudioPanel } from "./AudioPanel";
-import { ElementsPanel } from "./ElementsPanel";
-import { TextPanel } from "./TextPanel";
+import { TextPanel, type TextMode } from "./TextPanel";
 import { ColorPanel } from "./ColorPanel";
 import { RatioPanel } from "./RatioPanel";
 import { BlurFill, WhiteBalanceFilter, WHITE_BALANCE_FILTER_ID } from "./FramePreview";
@@ -215,8 +213,8 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const [savedThemeTab] = useState<ThemeTab>(isThemeTab(savedState?.theme_tab) ? savedState.theme_tab : "templates");
   // Selecting a word from the Captions list or the bottom timeline should
   // land you straight on its edit controls: while a caption style tool
-  // (Templates / Customize / Transform) is open in the left column, it
-  // switches to the Word tool. The Captions list itself stays open, so
+  // (Templates / Customize / Transform) or the Text tool is open in the left
+  // column, it switches to the Text tool's caption-word mode. The Captions list itself stays open, so
   // clicking through the transcript keeps working. It should also seek
   // the video there, matching how a real script/transcript editor works -
   // clicking a line is how you navigate the footage, not just an editing
@@ -224,7 +222,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const selectWord = (index: number) => {
     setSelectedIndex(index);
     setWordPicked(true);
-    setLeftTab((tab) => (isCaptionStyleTab(tab) ? "word" : tab));
+    if (isCaptionStyleTab(leftTab) || leftTab === "text") { setLeftTab("text"); setTextMode("word"); }
     const word = words[index];
     if (word && videoRef.current) {
       videoRef.current.currentTime = word.start;
@@ -253,7 +251,10 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   // Shown right after a direct drag/resize on the canvas box releases - the move/resize has ALREADY been committed to this caption by then,
   // so this is purely an optional one-tap shortcut to also broadcast it to every caption, not a gate. Dismissing it just closes it.
   const [scopePrompt, setScopePrompt] = useState(false);
-  const [leftTab, setLeftTab] = useState<LeftTab>(isLeftTab(savedState?.left_tab) ? savedState.left_tab : "captions");
+  const [restoredTab] = useState(() => restoreLeftTab(savedState?.left_tab));
+  const [leftTab, setLeftTab] = useState<LeftTab>(restoredTab.tab);
+  // Which kind of text the Text tool edits: a caption word, or the free text overlays on the video.
+  const [textMode, setTextMode] = useState<TextMode>(restoredTab.textMode ?? "word");
   const themeTab: ThemeTab = isCaptionStyleTab(leftTab) ? themeTabOf(leftTab) : savedThemeTab;
   const [elements, setElements] = useState(initialProject.elements || []);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
@@ -611,12 +612,11 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   const moveSfxMarker = (id: string, time: number) => setSfxMarkers((current) => current.map((marker) => marker.id === id ? { ...marker, time } : marker));
   const deleteSfxMarker = (id: string) => setSfxMarkers((current) => current.filter((marker) => marker.id !== id));
 
-  const addElement = (char: string, kind: "sticker" | "text" = "sticker") => {
+  const addTextOverlay = (text: string) => {
     const id = `el_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     const start = currentTime;
     const end = Math.min(project.duration, currentTime + 2);
-    const fontSize = kind === "text" ? 48 : 120;
-    setElements((current) => [...current, { id, kind, char, font_id: fontId, color: "#FFFFFF", font_size: fontSize, start, end, pos_x: 50, pos_y: 30, layer: "front" }]);
+    setElements((current) => [...current, { id, kind: "text", char: text, font_id: fontId, color: "#FFFFFF", font_size: 48, start, end, pos_x: 50, pos_y: 30, layer: "front" }]);
     setSelectedElementId(id);
   };
   const updateElement = (id: string, changes: Partial<CaptionElement>) => setElements((current) => current.map((item) => item.id === id ? { ...item, ...changes } : item));
@@ -819,7 +819,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     return () => { window.removeEventListener("keydown", onKeyDown); window.removeEventListener("mousedown", onMouseDown); };
   }, [scopePrompt]);
 
-  // Elements are standalone stickers (not word-synced cues), so a drag or
+  // Elements are standalone overlays (not word-synced cues), so a drag or
   // resize applies straight to that one element - no "this/all" scope
   // prompt needed, unlike the shared caption box above.
   const startMoveElement = (id: string) => (e: React.MouseEvent) => {
@@ -916,7 +916,7 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
     undo: () => { if (!history.canUndo) return false; history.undo(); },
     redo: () => { if (!history.canRedo) return false; history.redo(); },
     "element.remove": () => {
-      if (!selectedElementId || (leftTab !== "elements" && leftTab !== "text")) return false;
+      if (!selectedElementId || leftTab !== "text" || textMode !== "layer") return false;
       deleteElement(selectedElementId);
     },
     "play.toggle": () => { if (!videoRef.current) return false; togglePlayback(); },
@@ -1011,7 +1011,6 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
   // The studio's three resizable regions, built once and placed by the layout below (resizable panels on desktop, stacked on phones).
   const toolPanelNode = (<>
     {leftTab === "captions" && <TranscriptPanel words={words} originalTranscript={project.source_transcript} transcriptionMode={project.transcription_mode} activeIndex={activeIndex} selectedIndex={selectedIndex} onSelect={openMoment} onText={(index, text) => updateWord(index, { text })} onNewLine={toggleWordNewLine} onSplitWord={splitWord} onEmphasis={setWordEmphasis} onRelisten={relisten} relistening={relistening} scriptMode={scriptMode} onScriptMode={setScriptMode} searchQuery={searchQuery} onSearchQuery={setSearchQuery} searchHits={searchHits} onJumpTo={selectWord} searchFocusToken={searchFocusToken} onSearchFocused={() => setSearchFocusToken(0)} revealToken={revealToken} />}
-    {leftTab === "media" && <MediaPanel project={project} />}
     {leftTab === "audio" && <AudioPanel duration={project.duration}
       value={{ volume: audioVolume, muted: audioMuted, fadeIn: audioFadeIn, fadeOut: audioFadeOut, normalize: audioNormalize }}
       onChange={(c) => {
@@ -1028,8 +1027,10 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
         if (c.fit !== undefined) setFrameFit(c.fit);
         if (c.color !== undefined) setFrameColor(c.color);
       }} />}
-    {leftTab === "elements" && <ElementsPanel elements={elements.filter((item) => item.kind !== "text")} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(char) => addElement(char, "sticker")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
-    {leftTab === "text" && <TextPanel elements={elements} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={(text) => addElement(text, "text")} onUpdate={updateElement} onDelete={deleteElement} currentTime={currentTime} duration={project.duration} />}
+    {leftTab === "text" && <TextPanel mode={textMode} onMode={setTextMode}
+      theme={theme} selectedWord={wordPicked ? words[selectedIndex] : undefined} onWordStyle={(change) => updateWord(selectedIndex, change)}
+      elements={elements} selectedId={selectedElementId} onSelect={setSelectedElementId} onAdd={addTextOverlay} onUpdate={updateElement} onDelete={deleteElement}
+      currentTime={currentTime} duration={project.duration} />}
     {leftTab === "adjustment" && <ColorPanel value={{ brightness, contrast, saturation, warmth, tint }}
       onChange={(c: Partial<ColorValues>) => {
         if (c.brightness !== undefined) setBrightness(c.brightness);
@@ -1043,7 +1044,6 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
       wordsPerCaption={wordsPerCaption} onWordsPerCaption={setWordsPerCaption}
       captionLines={captionLines} onCaptionLines={setCaptionLines}
       captionPosition={captionPosition} onCaptionPosition={choosePosition}
-      selectedWord={words[selectedIndex]} onWordStyle={(change) => updateWord(selectedIndex, change)}
       tab={themeTab}
       textStyle={textStyle} onTextStyle={updateTextStyle} bold={bold} onBold={setBold} italic={italic} onItalic={setItalic}
       hasActiveCaption={visibleWords.length > 0} boxX={boxX} boxY={boxY} boxFontSize={boxFontSize} boxRotation={boxRotation}
@@ -1136,18 +1136,18 @@ export const CaptionStudio = ({ initialProject, onNew, onReplaced }: CaptionStud
           <button onClick={() => { applyTransformToAll(); setScopePrompt(false); }} data-testid="apply-all-captions-button">All captions</button>
         </div>}
         {elements.filter((item) => currentTime >= item.start && currentTime <= item.end).map((item) => {
-          const interactive = leftTab === "elements" || leftTab === "text";
-          return <div key={item.id} className={`element-overlay ${interactive && selectedElementId === item.id ? "selected" : ""}`}
+          const interactive = leftTab === "text";
+          return <div key={item.id} className={`element-overlay ${interactive && textMode === "layer" && selectedElementId === item.id ? "selected" : ""}`}
             style={{ left: `${item.pos_x}%`, top: `${item.pos_y}%`, fontSize: `${item.font_size * previewScale}px`, color: item.color,
                     fontFamily: item.kind === "text" ? cssFamily(fontById[item.font_id]?.family ?? "Poppins") : undefined,
                     fontWeight: item.kind === "text" ? 700 : undefined,
                     // plain z-staging vs the caption overlay (z-index 3); mirrors the export's ASS Layer (no subject matting)
                     zIndex: item.layer === "behind" ? 1 : 4,
                     cursor: interactive ? "grab" : "default", pointerEvents: interactive ? "auto" : "none" }}
-            onMouseDown={interactive ? (e) => { setSelectedElementId(item.id); startMoveElement(item.id)(e); } : undefined}
+            onMouseDown={interactive ? (e) => { setTextMode("layer"); setSelectedElementId(item.id); startMoveElement(item.id)(e); } : undefined}
             data-testid={`element-overlay-${item.id}`}>
             {item.char}
-            {interactive && selectedElementId === item.id && <div className="selection-box">
+            {interactive && textMode === "layer" && selectedElementId === item.id && <div className="selection-box">
               {(["tl", "tc", "tr", "ml", "mr", "bl", "bc", "br"] as Handle[]).map((pos) => <i key={pos} className={`resize-handle handle-${pos}`} onMouseDown={startResizeElement(item.id, pos)} data-testid={`element-resize-handle-${pos}`} />)}
             </div>}
           </div>;
